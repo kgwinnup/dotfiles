@@ -23,6 +23,7 @@
      ;; markdown
      ;; org
      ;; syntax-checking
+     sass
      scala
      javascript
      auto-completion
@@ -32,6 +33,8 @@
      slime
      python
      ipython-notebook
+     markdown
+     haskell
      )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
@@ -142,6 +145,12 @@ before layers configuration."
    dotspacemacs-default-package-repository nil
    )
   ;; User initialization goes here
+
+
+  (add-to-list 'default-frame-alist '(height . 60))
+  (add-to-list 'default-frame-alist '(width . 90))
+  (set-frame-parameter nil 'user-position t)
+  (set-frame-position nil 0 0)
   )
 
 (defun dotspacemacs/config ()
@@ -151,11 +160,16 @@ layers configuration."
   (global-linum-mode t)
   ;; JSX in `web-mode`
   (add-to-list 'auto-mode-alist '("\\.jsx" . web-mode))
+
   ;; JS Indentation
   (setq web-mode-code-indent-offset 4)
   (setq web-mode-markup-indent-offset 4)
   (setq web-mode-css-indent-offset 4)
   (setq js-indent-level 4)
+  (add-hook 'web-mode-hook (local-set-key (kdb "RET") 'newline-and-indent))
+
+  ;; eslint
+  (setq flycheck-eslintrc "/Users/kyle/.eslintrc")
 
   ;; C/C++ Indentation
   (setq c-basic-offset 4)
@@ -168,6 +182,12 @@ layers configuration."
   ;; lisp stuff
   ;; (setq inferior-lisp-program "/usr/local/bin/sbcl")
   (slime-setup '(slime-fancy))
+
+  ;; flycheck
+  (setq flycheck-eslintrc "~/.eslintrc")
+  (add-hook 'js-mode-hook
+            (lambda () (flycheck-mode t)))
+
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
