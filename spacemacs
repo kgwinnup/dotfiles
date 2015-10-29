@@ -25,16 +25,21 @@
      ;; syntax-checking
      sass
      scala
-     javascript
-     auto-completion
-     c-c++
      syntax-checking
+     javascript
+     react
+     (auto-completion :variables
+                      auto-completion-enable-snippets-in-popup t)
+     (c-c++ :variables
+            c-c++-default-mode-for-headers 'c++-mode
+            c-c++-enable-clang-support t)
      html
      slime
      python
      ipython-notebook
      markdown
      haskell
+     shell-scripts
      )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
@@ -72,6 +77,8 @@ before layers configuration."
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(zenburn
                          solarized-dark
+                         spacemacs-light
+                         spacemacs-dark
                          solarized-light
                          leuven
                          monokai)
@@ -160,6 +167,7 @@ layers configuration."
   (global-linum-mode t)
   ;; JSX in `web-mode`
   (add-to-list 'auto-mode-alist '("\\.jsx" . web-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.js" . web-mode))
 
   ;; JS Indentation
   (setq web-mode-code-indent-offset 4)
@@ -169,7 +177,12 @@ layers configuration."
   (add-hook 'web-mode-hook (local-set-key (kdb "RET") 'newline-and-indent))
 
   ;; eslint
-  (setq flycheck-eslintrc "/Users/kyle/.eslintrc")
+  (flycheck-add-mode 'javascript-eslint 'web-mode)
+  (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  (add-hook 'js2-mode-hook 'flycheck-mode)
+  (setq-default flycheck-disabled-checkers
+                (append flycheck-disabled-checkers
+                        '(javascript-jshint)))
 
   ;; C/C++ Indentation
   (setq c-basic-offset 4)
@@ -182,11 +195,6 @@ layers configuration."
   ;; lisp stuff
   ;; (setq inferior-lisp-program "/usr/local/bin/sbcl")
   (slime-setup '(slime-fancy))
-
-  ;; flycheck
-  (setq flycheck-eslintrc "~/.eslintrc")
-  (add-hook 'js-mode-hook
-            (lambda () (flycheck-mode t)))
 
 )
 
