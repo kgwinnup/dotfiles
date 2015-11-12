@@ -24,6 +24,7 @@
      ;; org
      ;; syntax-checking
      sass
+     php
      scala
      syntax-checking
      javascript
@@ -175,6 +176,11 @@ layers configuration."
   (setq web-mode-css-indent-offset 4)
   (setq js-indent-level 4)
   (add-hook 'web-mode-hook (local-set-key (kdb "RET") 'newline-and-indent))
+
+  ;; flow
+  (add-to-list 'load-path "~/.emacs.d/")
+  (load "flow_emacs.el")
+  (require 'flow)
 
   ;; eslint
   (flycheck-add-mode 'javascript-eslint 'web-mode)
