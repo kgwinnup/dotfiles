@@ -37,7 +37,7 @@ values."
             c-c++-default-mode-for-headers 'c++-mode
             c-c++-enable-clang-support t)
      html
-     slime
+     common-lisp
      python
      ipython-notebook
      markdown
@@ -95,9 +95,9 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(solarized-light
+   dotspacemacs-themes '(zenburn
+                         solarized-light
                          spacemacs-light
-                         zenburn
                          spacemacs-dark
                          solarized-dark
                          leuven
@@ -250,7 +250,7 @@ layers configuration. You are free to put any user code."
   (c-set-style "k&r")
 
   ;; lisp stuff
-  ;; (setq inferior-lisp-program "/usr/local/bin/sbcl")
+  (setq inferior-lisp-program "/usr/local/bin/sbcl --load ~/.cl/quicklisp.lisp")
   (slime-setup '(slime-fancy))
 
   ;;(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
