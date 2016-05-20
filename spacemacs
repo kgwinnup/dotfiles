@@ -29,10 +29,15 @@ values."
      common-lisp
      haskell
      python
+     ipython-notebook
      markdown
+     javascript
+     react
+     html
      (auto-completion :variables
                       auto-completion-tab-key-behavior 'cycle
                       auto-completion-private-snippets-directory t)
+     themes-megapack
      ;; git
      ;; markdown
      ;; org
@@ -103,10 +108,11 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(zenburn
-                         spacemacs-dark
-                         spacemacs-light
                          solarized-light
                          solarized-dark
+                         spacemacs-dark
+                         ample
+                         spacemacs-light
                          leuven
                          monokai)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
@@ -213,7 +219,7 @@ values."
    ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
    ;; derivatives. If set to `relative', also turns on relative line numbers.
    ;; (default nil)
-   dotspacemacs-line-numbers nil
+   dotspacemacs-line-numbers t
    ;; If non-nil smartparens-strict-mode will be enabled in programming modes.
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode nil
@@ -251,6 +257,12 @@ in `dotspacemacs/user-config'."
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
 layers configuration. You are free to put any user code."
+  global-linum-mode
+  
+  (when (configuration-layer/layer-usedp 'haskell)
+    (add-hook 'haskell-interactive-mode-hook
+              (lambda ()
+                (setq-local evil-move-cursor-back nil))))
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
