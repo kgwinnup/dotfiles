@@ -28,15 +28,14 @@ values."
      emacs-lisp
      common-lisp
      haskell
+     swift
      python
      ipython-notebook
      markdown
      javascript
      react
      html
-     (auto-completion :variables
-                      auto-completion-tab-key-behavior 'cycle
-                      auto-completion-private-snippets-directory t)
+     auto-completion
      themes-megapack
      ;; git
      ;; markdown
@@ -54,7 +53,7 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '()
    ;; A list of packages and/or extensions that will not be install and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(company-ghc ghc-mod company-cabal)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
    ;; are declared in a layer which is not a member of
    ;; the list `dotspacemacs-configuration-layers'. (default t)
@@ -109,10 +108,10 @@ values."
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(zenburn
                          solarized-light
-                         solarized-dark
                          spacemacs-dark
-                         ample
                          spacemacs-light
+                         solarized-dark
+                         ample
                          leuven
                          monokai)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
@@ -257,13 +256,19 @@ in `dotspacemacs/user-config'."
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
 layers configuration. You are free to put any user code."
-  global-linum-mode
-  
+  (global-auto-complete-mode)
   (when (configuration-layer/layer-usedp 'haskell)
     (add-hook 'haskell-interactive-mode-hook
               (lambda ()
                 (setq-local evil-move-cursor-back nil))))
+
+  (spacemacs/set-leader-keys-for-major-mode 'haskell-mode
+    "mht" 'ghc-show-type)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
+
+'(global-linum-mode t)
+'(haskell-check-command "/bin/true")
+'(haskell-hoogle-url "https://www.stackage.org/lts/hoogle?q=%s")
