@@ -27,7 +27,13 @@ values."
      ;; better-defaults
      emacs-lisp
      common-lisp
-     haskell
+     (haskell :variables
+              haskell-enable-ghc-mod-support nil
+              ;; haskell-enable-ghci-ng-support t
+              haskell-process-type 'stack-ghci
+              haskell-process-args-stack-ghci '("--ghc-options=-ferror-spans" "--with-ghc=intero")
+              hindent-style  "johan-tibell"
+              haskell-stylish-on-save t)
      swift
      python
      ipython-notebook
@@ -51,9 +57,9 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages '(intero company-ghci)
    ;; A list of packages and/or extensions that will not be install and loaded.
-   dotspacemacs-excluded-packages '(company-ghc ghc-mod company-cabal)
+   dotspacemacs-excluded-packages '(company-cabal)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
    ;; are declared in a layer which is not a member of
    ;; the list `dotspacemacs-configuration-layers'. (default t)
@@ -106,7 +112,8 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(zenburn
+   dotspacemacs-themes '(gruvbox
+                         zenburn
                          solarized-light
                          spacemacs-dark
                          spacemacs-light
@@ -257,14 +264,56 @@ in `dotspacemacs/user-config'."
 This function is called at the very end of Spacemacs initialization after
 layers configuration. You are free to put any user code."
   (global-auto-complete-mode)
+
+  (global-flycheck-mode)
+  (global-company-mode)
+  (setq company-idle-delay 0)
+  (require 'company-ghci)
+
+  ;;fix bug with ghci terminal and cursor issue
   (when (configuration-layer/layer-usedp 'haskell)
     (add-hook 'haskell-interactive-mode-hook
               (lambda ()
                 (setq-local evil-move-cursor-back nil))))
 
+  ;; HASKELL
+  (add-hook 'haskell-mode-hook (lambda ()
+                                 (message "haskell-mode-hook")
+                                 (intero-mode)
+                                 (push '(company-ghci :with company-yasnippet :with company-dabbrev) company-backends-haskell-mode)
+                                 (interactive-haskell-mode)
+                                 (turn-on-haskell-indentation)
+                                 (hindent-mode)
+                                 (setq haskell-stylish-on-save t) ;; override haskell layer
+                                 ))
+
   (spacemacs/set-leader-keys-for-major-mode 'haskell-mode
-    "mht" 'ghc-show-type)
-  )
+    "ht" 'haskell-process-do-type
+    "l"  'hayoo
+    "t"  'intero-type-at
+    "T"  'spacemacs/haskell-process-do-type-on-prev-line
+    "r"  'haskell-process-load-file
+    "i"  'intero-info
+    "I"  'haskell-do-info
+    "g"  'intero-goto-definition)
+)
+
+
+(defun haskell-do-info (cPos cEnd)
+  "Bring repl and do :info under the current cursor word"
+  (interactive "r")
+  (let (inputStr oldPos endSymbol)
+    ;; grab the string
+    (setq oldPos cPos)
+    (setq endSymbol (cdr (bounds-of-thing-at-point 'symbol)))
+    (skip-syntax-backward "^(, ")
+    (setq inputStr (buffer-substring-no-properties (point) endSymbol))
+
+    (goto-char oldPos)
+    (haskell-interactive-switch)
+    (haskell-interactive-mode-run-expr (format ":info %s" inputStr))
+    (haskell-interactive-switch-back)
+))
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
