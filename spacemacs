@@ -127,7 +127,7 @@ values."
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
                                :size 13
-                               :weight light
+                               :weight ultra-light
                                :width normal
                                :powerline-scale 1.0)
    ;; The leader key
