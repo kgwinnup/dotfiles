@@ -34,7 +34,6 @@ values."
               haskell-process-args-stack-ghci '("--ghc-options=-ferror-spans" "--with-ghc=intero")
               hindent-style  "johan-tibell"
               haskell-stylish-on-save t)
-     swift
      python
      ipython-notebook
      markdown
@@ -125,8 +124,8 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
-   dotspacemacs-default-font '("Source Code Pro"
-                               :size 13
+   dotspacemacs-default-font '("Meslo LG M DZ Regular for Powerline";"Source Code Pro"
+                               :size 12
                                :weight ultra-light
                                :width normal
                                :powerline-scale 1.0)
@@ -296,6 +295,12 @@ layers configuration. You are free to put any user code."
     "i"  'intero-info
     "I"  'haskell-do-info
     "g"  'intero-goto-definition)
+
+  (spacemacs/set-leader-keys-for-major-mode 'python-mode
+    "b" 'python-shell-send-buffer
+    "B" 'python-shell-send-buffer-switch
+    "f" 'python-shell-send-defun
+    "F" 'python-shell-send-defun-switch)
 )
 
 
