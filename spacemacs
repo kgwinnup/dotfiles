@@ -35,7 +35,6 @@ values."
               hindent-style  "johan-tibell"
               haskell-stylish-on-save t)
      python
-     ipython-notebook
      markdown
      javascript
      react
@@ -124,7 +123,7 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
-   dotspacemacs-default-font '("Meslo LG M DZ Regular for Powerline";"Source Code Pro"
+   dotspacemacs-default-font '("Source Code Pro";"Meslo LG M DZ Regular for Powerline"
                                :size 12
                                :weight ultra-light
                                :width normal
@@ -262,7 +261,7 @@ in `dotspacemacs/user-config'."
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
 layers configuration. You are free to put any user code."
-  (global-auto-complete-mode)
+  ;;(global-auto-complete-mode)
 
   (global-flycheck-mode)
   (global-company-mode)
@@ -326,3 +325,4 @@ layers configuration. You are free to put any user code."
 '(global-linum-mode t)
 '(haskell-check-command "/bin/true")
 '(haskell-hoogle-url "https://www.stackage.org/lts/hoogle?q=%s")
+
