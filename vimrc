@@ -8,6 +8,8 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 " start plugin includes
 
+" Plugin 'vim-syntastic/syntastic'
+" Plugin 'Valloric/YouCompleteMe'
 Plugin 'jonathanfilip/vim-lucius'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
@@ -19,7 +21,8 @@ Plugin 'Shougo/unite.vim'
 Plugin 'eagletmt/unite-haddock'
 Plugin 'ujihisa/unite-haskellimport'
 Plugin 'elzr/vim-json'
-Plugin 'keith/swift.vim'
+" Plugin 'kballard/vim-swift'
+Plugin 'toyamarinyon/vim-swift'
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'pangloss/vim-javascript'
@@ -38,37 +41,47 @@ endif
 
 syntax enable
 colorscheme lucius
+" LuciusDarkLowContrast
 LuciusDarkHighContrast
 
 let mapleader=" "
 let g:mapleader=" "
 set timeoutlen=2000
 
-nnoremap <leader>bp :bprevious<cr>
-nnoremap <leader>bn :bnext<cr>
-nnoremap <leader>bd :bdelete<cr>
+nnoremap <leader>np :bprevious<cr>
+nnoremap <leader>nn :bnext<cr>
+nnoremap <leader>nd :bdelete<cr>
 nnoremap <leader>nt :NERDTreeToggle<cr>
 
 set ruler
 set number
-set autoindent           	" Copy indent from current line
-set softtabstop=4
+set autoindent              	" Copy indent from current line
 set tabstop=4
 set shiftwidth=4
-set autoread             	" Automatically reload changed files
-set expandtab            	" Use spaces not tabs
+set autoread                 	" Automatically reload changed files
+set expandtab               	" Use spaces not tabs
 set exrc                        " Read ./.vimrc
 set fileformats=unix,dos,mac    " Choose line ending sanely
-set shiftwidth=2	        " 2 space indent stops
-set showmatch            	" Highlight matching brackets
-set splitbelow           	" Put new splits down
-set splitright           	" Put new vsplits right
-set wildmenu             	" Show the completion menu when tab completing
+set showmatch                 	" Highlight matching brackets
+set splitbelow                	" Put new splits down
+set splitright                 	" Put new vsplits right
+set wildmenu                	" Show the completion menu when tab completing
 set wildmode=list:longest,full  " Configure wildmenu
+set cursorline
 
 " nerdtree settings
 let g:NERDTreeQuitOnOpen=1
 
 " airline settings
-let g:airline_powerline_fonts = 1
-let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts=1
+let g:airline#extensions#tabline#enabled=1
+
+" syntastic
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list=1
+let g:syntastic_auto_loc_list=1
+let g:syntastic_check_on_open=1
+let g:syntastic_check_on_wq=0
