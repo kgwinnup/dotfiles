@@ -9,19 +9,15 @@ Plugin 'VundleVim/Vundle.vim'
 " start plugin includes
 
 " Plugin 'vim-syntastic/syntastic'
-" Plugin 'Valloric/YouCompleteMe'
+Plugin 'Shougo/vimproc.vim'
 Plugin 'jonathanfilip/vim-lucius'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'scrooloose/nerdtree'
-Plugin 'Shougo/neocomplete.vim'
+Plugin 'vim-scripts/gitignore'
+Plugin 'Valloric/YouCompleteMe'
 Plugin 'vim-scripts/haskell.vim'
-Plugin 'Shougo/neomru.vim'
-Plugin 'Shougo/unite.vim' 
-Plugin 'eagletmt/unite-haddock'
-Plugin 'ujihisa/unite-haskellimport'
 Plugin 'elzr/vim-json'
-" Plugin 'kballard/vim-swift'
 Plugin 'toyamarinyon/vim-swift'
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
@@ -32,6 +28,7 @@ Plugin 'mxw/vim-jsx'
 call vundle#end()            " required
 filetype plugin indent on    " required
 
+set omnifunc=syntaxcomplete#Complete
 " custom config below
 
 if has("gui_macvim")
@@ -41,8 +38,8 @@ endif
 
 syntax enable
 colorscheme lucius
-" LuciusDarkLowContrast
-LuciusDarkHighContrast
+LuciusDark
+" LuciusDarkHighContrast
 
 let mapleader=" "
 let g:mapleader=" "
@@ -51,6 +48,7 @@ set timeoutlen=2000
 nnoremap <leader>np :bprevious<cr>
 nnoremap <leader>nn :bnext<cr>
 nnoremap <leader>nd :bdelete<cr>
+nnoremap <leader>nc :bclose<cr>
 nnoremap <leader>nt :NERDTreeToggle<cr>
 
 set ruler
@@ -68,6 +66,7 @@ set splitright                 	" Put new vsplits right
 set wildmenu                	" Show the completion menu when tab completing
 set wildmode=list:longest,full  " Configure wildmenu
 set cursorline
+set colorcolumn=110
 
 " nerdtree settings
 let g:NERDTreeQuitOnOpen=1
@@ -75,6 +74,8 @@ let g:NERDTreeQuitOnOpen=1
 " airline settings
 let g:airline_powerline_fonts=1
 let g:airline#extensions#tabline#enabled=1
+let g:airline#extensions#tabline#show_buffers=1
+set laststatus=2
 
 " syntastic
 set statusline+=%#warningmsg#
@@ -85,3 +86,16 @@ let g:syntastic_always_populate_loc_list=1
 let g:syntastic_auto_loc_list=1
 let g:syntastic_check_on_open=1
 let g:syntastic_check_on_wq=0
+
+" neocomplete
+let g:neocomplete#enable_at_startup=1
+
+" haskell
+let g:no_haskell_conceal=1
+let g:haskell_conceal=0
+let g:haskell_conceal_wide=0
+let g:haskell_conceal_enumerations=0
+let g:haskell_tabular=1
+
+" ycm
+let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
