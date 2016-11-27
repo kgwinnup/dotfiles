@@ -1,9 +1,10 @@
-
+ 
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
 " init vundle
 set rtp+=~/.vim/bundle/Vundle.vim
+set rtp+=~/.local/bin
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 " start plugin includes
@@ -16,29 +17,30 @@ Plugin 'vim-airline/vim-airline-themes'
 Plugin 'scrooloose/nerdtree'
 Plugin 'vim-scripts/gitignore'
 Plugin 'Valloric/YouCompleteMe'
+Plugin 'rdnetto/YCM-Generator'
 Plugin 'vim-scripts/haskell.vim'
 Plugin 'vim-scripts/cabal.vim'
-Plugin 'eagletmt/ghcmod-vim'
-Plugin 'eagletmt/neco-ghc'
 Plugin 'ervandew/supertab'
-Plugin 'Shougo/neocomplete.vim'
+" Plugin 'Shougo/neocomplete.vim'
 Plugin 'elzr/vim-json'
 Plugin 'toyamarinyon/vim-swift'
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'pangloss/vim-javascript'
+Plugin 'rust-lang/rust.vim'
+Plugin 'cespare/vim-toml'
 Plugin 'mxw/vim-jsx'
 
 " end plugin includes
 call vundle#end()            " required
 filetype plugin indent on    " required
 
-set omnifunc=syntaxcomplete#Complete
+" set omnifunc=syntaxcomplete#Complete
 " custom config below
 
 if has("gui_macvim")
     set macligatures
-    set guifont=Meslo LG M DZ Regular for Powerline:h13
+    set guifont=Meslo\ LG\ M\ DZ\ Regular\ for\ Powerline:h13
 endif
 
 syntax enable
@@ -58,10 +60,7 @@ nnoremap <leader>nc :bclose<cr>
 nnoremap <leader>no :only<cr>
 nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>st :SyntasticToggleMode<cr>
-nnoremap <leader>tw :GhcModTypeInsert<cr>
-nnoremap <leader>ts :GhcModSplitFunCase<cr>
-nnoremap <leader>tt :GhcModType<cr>
-nnoremap <leader>tc :GhcModTypeClear<cr>
+nnoremap <leader>ym :YcmGenerateConfig<cr>
 
 set ruler
 set number
@@ -80,6 +79,7 @@ set wildmode=list:longest,full  " Configure wildmenu
 set cursorline
 set colorcolumn=110
 set mouse=a
+set backspace=indent,eol,start
 
 " nerdtree settings
 let g:NERDTreeQuitOnOpen=1
@@ -100,21 +100,16 @@ let g:syntastic_auto_loc_list=1
 let g:syntastic_check_on_open=1
 let g:syntastic_check_on_wq=0
 
-" supertab
-let g:SuperTabDefaultCompletionType = '<c-x><c-o>'
-inoremap <Nul> <c-r>=SuperTabAlternateCompletion("\<lt>c-x>\<lt>c-o>")<cr>
-
-" neocomplete
-let g:neocomplete#enable_at_startup=1
-
 " haskell
 let g:no_haskell_conceal=1
 let g:haskell_conceal=0
 let g:haskell_conceal_wide=0
 let g:haskell_conceal_enumerations=0
 let g:haskell_tabular=1
-let g:haskellmode_completion_ghc=1
-autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
+
+" rust
+let g:ycm_rust_src_path='/usr/local/rust/rustc-1.13.0/src'
+let g:rustfmt_autosave=0
 
 " ycm
 let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
