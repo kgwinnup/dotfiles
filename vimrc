@@ -8,7 +8,7 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 " start plugin includes
 
-" Plugin 'vim-syntastic/syntastic'
+Plugin 'vim-syntastic/syntastic'
 Plugin 'Shougo/vimproc.vim'
 Plugin 'jonathanfilip/vim-lucius'
 Plugin 'vim-airline/vim-airline'
@@ -17,6 +17,11 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'vim-scripts/gitignore'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'vim-scripts/haskell.vim'
+Plugin 'vim-scripts/cabal.vim'
+Plugin 'eagletmt/ghcmod-vim'
+Plugin 'eagletmt/neco-ghc'
+Plugin 'ervandew/supertab'
+Plugin 'Shougo/neocomplete.vim'
 Plugin 'elzr/vim-json'
 Plugin 'toyamarinyon/vim-swift'
 Plugin 'godlygeek/tabular'
@@ -52,6 +57,11 @@ nnoremap <leader>nd :bdelete<cr>
 nnoremap <leader>nc :bclose<cr>
 nnoremap <leader>no :only<cr>
 nnoremap <leader>nt :NERDTreeToggle<cr>
+nnoremap <leader>st :SyntasticToggleMode<cr>
+nnoremap <leader>tw :GhcModTypeInsert<cr>
+nnoremap <leader>ts :GhcModSplitFunCase<cr>
+nnoremap <leader>tq :GhcModType<cr>
+nnoremap <leader>te :GhcModTypeClear<cr>
 
 set ruler
 set number
@@ -69,6 +79,7 @@ set wildmenu                	" Show the completion menu when tab completing
 set wildmode=list:longest,full  " Configure wildmenu
 set cursorline
 set colorcolumn=110
+set mouse=a
 
 " nerdtree settings
 let g:NERDTreeQuitOnOpen=1
@@ -89,6 +100,10 @@ let g:syntastic_auto_loc_list=1
 let g:syntastic_check_on_open=1
 let g:syntastic_check_on_wq=0
 
+" supertab
+let g:SuperTabDefaultCompletionType = '<c-x><c-o>'
+inoremap <Nul> <c-r>=SuperTabAlternateCompletion("\<lt>c-x>\<lt>c-o>")<cr>
+
 " neocomplete
 let g:neocomplete#enable_at_startup=1
 
@@ -98,6 +113,8 @@ let g:haskell_conceal=0
 let g:haskell_conceal_wide=0
 let g:haskell_conceal_enumerations=0
 let g:haskell_tabular=1
+let g:haskellmode_completion_ghc=1
+autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
 
 " ycm
 let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
