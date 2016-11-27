@@ -60,8 +60,8 @@ nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>st :SyntasticToggleMode<cr>
 nnoremap <leader>tw :GhcModTypeInsert<cr>
 nnoremap <leader>ts :GhcModSplitFunCase<cr>
-nnoremap <leader>tq :GhcModType<cr>
-nnoremap <leader>te :GhcModTypeClear<cr>
+nnoremap <leader>tt :GhcModType<cr>
+nnoremap <leader>tc :GhcModTypeClear<cr>
 
 set ruler
 set number
