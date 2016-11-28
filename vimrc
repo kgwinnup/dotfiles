@@ -1,16 +1,16 @@
- 
+
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
 " init vundle
 set rtp+=~/.vim/bundle/Vundle.vim
 set rtp+=~/.local/bin
+
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 " start plugin includes
 
 Plugin 'vim-syntastic/syntastic'
-Plugin 'Shougo/vimproc.vim'
 Plugin 'jonathanfilip/vim-lucius'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
@@ -21,7 +21,6 @@ Plugin 'rdnetto/YCM-Generator'
 Plugin 'vim-scripts/haskell.vim'
 Plugin 'vim-scripts/cabal.vim'
 Plugin 'ervandew/supertab'
-" Plugin 'Shougo/neocomplete.vim'
 Plugin 'elzr/vim-json'
 Plugin 'toyamarinyon/vim-swift'
 Plugin 'godlygeek/tabular'
@@ -61,6 +60,8 @@ nnoremap <leader>no :only<cr>
 nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>st :SyntasticToggleMode<cr>
 nnoremap <leader>ym :YcmGenerateConfig<cr>
+nnoremap <leader>rr :!clear && cargo run<cr>
+nnoremap <leader>rb :!clear && cargo build<cr>
 
 set ruler
 set number
@@ -112,4 +113,4 @@ let g:ycm_rust_src_path='/usr/local/rust/rustc-1.13.0/src'
 let g:rustfmt_autosave=0
 
 " ycm
-let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
+let g:ycm_global_ycm_extra_conf="~/.vim/.ycm_extra_conf.py"
