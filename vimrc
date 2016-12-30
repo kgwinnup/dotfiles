@@ -5,7 +5,8 @@ filetype off                  " required
 " init vundle
 set rtp+=~/.vim/bundle/Vundle.vim
 set rtp+=~/.local/bin
-set rtp+=~/usr/local/bin/rustc
+set rtp+=~/.cargo/bin
+set rtp+=~/.cargo/bin/rustc
 
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
@@ -27,9 +28,9 @@ Plugin 'toyamarinyon/vim-swift'
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'pangloss/vim-javascript'
+Plugin 'mxw/vim-jsx'
 Plugin 'rust-lang/rust.vim'
 Plugin 'cespare/vim-toml'
-Plugin 'mxw/vim-jsx'
 
 " end plugin includes
 call vundle#end()            " required
@@ -64,6 +65,7 @@ nnoremap <leader>ym :YcmGenerateConfig<cr>
 nnoremap <leader>rr :!clear && cargo run<cr>
 nnoremap <leader>rb :!clear && cargo build<cr>
 nnoremap <leader>rt :!clear && cargo test<cr>
+nnoremap <leader>sb :!clear && stack build<cr>
 
 set ruler
 set number
@@ -111,9 +113,10 @@ let g:haskell_conceal_enumerations=0
 let g:haskell_tabular=1
 
 " rust
-let g:ycm_rust_src_path='/usr/local/rust/rustc-1.13.0/src'
+let g:ycm_rust_src_path='/usr/local/rust/src'
 let g:rustfmt_autosave=0
-" autocmd FileType rust let g:syntastic_rust_checkers=['rustc']
+autocmd FileType rust let g:syntastic_rust_checkers=['rustc']
+set hidden
 
 " ycm
 let g:ycm_global_ycm_extra_conf="~/.vim/.ycm_extra_conf.py"
