@@ -65,7 +65,9 @@ nnoremap <leader>ym :YcmGenerateConfig<cr>
 nnoremap <leader>rr :!clear && cargo run<cr>
 nnoremap <leader>rb :!clear && cargo build<cr>
 nnoremap <leader>rt :!clear && cargo test<cr>
+nnoremap <leader>rf :RustFmt<cr>
 nnoremap <leader>sb :!clear && stack build<cr>
+nnoremap <leader>sf :Hindent<cr>
 
 set ruler
 set number
@@ -115,7 +117,7 @@ let g:haskell_tabular=1
 " rust
 let g:ycm_rust_src_path='/usr/local/rust/src'
 let g:rustfmt_autosave=0
-autocmd FileType rust let g:syntastic_rust_checkers=['rustc']
+" autocmd FileType rust let g:syntastic_rust_checkers=['rustc']
 set hidden
 
 " ycm
