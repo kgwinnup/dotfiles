@@ -21,6 +21,7 @@ Plugin 'vim-scripts/gitignore'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'rdnetto/YCM-Generator'
 Plugin 'vim-scripts/haskell.vim'
+Plugin 'itchyny/vim-haskell-indent'
 Plugin 'vim-scripts/cabal.vim'
 Plugin 'ervandew/supertab'
 Plugin 'elzr/vim-json'
@@ -67,6 +68,8 @@ nnoremap <leader>rb :!clear && cargo build<cr>
 nnoremap <leader>rt :!clear && cargo test<cr>
 nnoremap <leader>rf :RustFmt<cr>
 nnoremap <leader>sb :!clear && stack build<cr>
+nnoremap <leader>st :!clear && stack test<cr>
+nnoremap <leader>sr :!clear && stack run<cr>
 nnoremap <leader>sf :Hindent<cr>
 
 set ruler
