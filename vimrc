@@ -57,8 +57,7 @@ set timeoutlen=2000
 " keybinds
 nnoremap <leader>np :bprevious<cr>
 nnoremap <leader>nn :bnext<cr>
-nnoremap <leader>nd :bdelete<cr>
-nnoremap <leader>nc :bclose<cr>
+nnoremap <leader>nc :bdelete<cr>
 nnoremap <leader>no :only<cr>
 nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>st :SyntasticToggleMode<cr>
