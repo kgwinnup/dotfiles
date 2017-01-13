@@ -116,6 +116,7 @@ let g:haskell_conceal=0
 let g:haskell_conceal_wide=0
 let g:haskell_conceal_enumerations=0
 let g:haskell_tabular=1
+au FileType haskell setl sw=2 sts=2 et
 
 " rust
 let g:ycm_rust_src_path='/usr/local/rust/src'
