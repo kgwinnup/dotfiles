@@ -32,6 +32,7 @@ Plugin 'pangloss/vim-javascript'
 Plugin 'mxw/vim-jsx'
 Plugin 'rust-lang/rust.vim'
 Plugin 'cespare/vim-toml'
+Plugin 'lervag/vimtex'
 
 " end plugin includes
 call vundle#end()            " required
