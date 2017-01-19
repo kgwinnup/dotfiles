@@ -49,8 +49,9 @@ endif
 
 syntax enable
 colorscheme lucius
-LuciusDark
-" LuciusDarkHighContrast
+" LuciusDark
+"LuciusDarkHighContrast
+LuciusDarkLowContrast
 
 let mapleader=" "
 let g:mapleader=" "
