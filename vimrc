@@ -21,7 +21,8 @@ Plugin 'vim-scripts/gitignore'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'rdnetto/YCM-Generator'
 Plugin 'vim-scripts/haskell.vim'
-Plugin 'itchyny/vim-haskell-indent'
+Plugin 'eagletmt/ghcmod-vim'
+Plugin 'Shougo/vimproc'
 Plugin 'vim-scripts/cabal.vim'
 Plugin 'ervandew/supertab'
 Plugin 'elzr/vim-json'
@@ -70,7 +71,8 @@ nnoremap <leader>rf :RustFmt<cr>
 nnoremap <leader>sb :!clear && stack build<cr>
 nnoremap <leader>st :!clear && stack test<cr>
 nnoremap <leader>sr :!clear && stack run<cr>
-nnoremap <leader>sf :Hindent<cr>
+nnoremap <leader>sc :GhcModCheck<cr>
+nnoremap <leader>St :SyntasticToggleMode<cr>
 
 set ruler
 set number
