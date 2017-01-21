@@ -319,6 +319,8 @@ you should place your code here."
   (global-flycheck-mode)
   (global-company-mode)
   (global-linum-mode)
+  (unless (display-graphic-p)
+    (setq linum-format "%d "))
   (setq company-idle-delay 0)
   (require 'company-ghci)
 
@@ -341,13 +343,14 @@ you should place your code here."
 
   (spacemacs/set-leader-keys-for-major-mode 'haskell-mode
     "ht" 'haskell-process-do-type
-    "l"  'hayoo
-    "t"  'intero-type-at
-    "T"  'spacemacs/haskell-process-do-type-on-prev-line
-    "r"  'haskell-process-load-file
-    "i"  'intero-info
-    "I"  'haskell-do-info
-    "g"  'intero-goto-definition)
+    "l" 'hayoo
+    "t" 'intero-type-at
+    "T" 'spacemacs/haskell-process-do-type-on-prev-line
+    "r" 'haskell-process-load-file
+    "i" 'intero-info
+    "I" 'haskell-do-info
+    "f" 'haskell-mode-stylish-buffer
+    "g" 'intero-goto-definition)
 
   (spacemacs/set-leader-keys-for-major-mode 'python-mode
     "b" 'python-shell-send-buffer
