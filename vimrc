@@ -61,6 +61,7 @@ set timeoutlen=2000
 nnoremap <leader>np :bprevious<cr>
 nnoremap <leader>nn :bnext<cr>
 nnoremap <leader>nc :bdelete<cr>
+nnoremap <leader>nd :bdelete<cr>
 nnoremap <leader>no :only<cr>
 nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>st :SyntasticToggleMode<cr>
@@ -74,6 +75,7 @@ nnoremap <leader>st :!clear && stack test<cr>
 nnoremap <leader>sr :!clear && stack run<cr>
 nnoremap <leader>sc :GhcModCheck<cr>
 nnoremap <leader>St :SyntasticToggleMode<cr>
+inoremap jj <esc>
 
 set ruler
 set number
