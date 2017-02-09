@@ -34,6 +34,7 @@ Plugin 'mxw/vim-jsx'
 Plugin 'rust-lang/rust.vim'
 Plugin 'cespare/vim-toml'
 Plugin 'lervag/vimtex'
+Plugin 'jalvesaq/Nvim-R'
 
 " end plugin includes
 call vundle#end()            " required
@@ -66,15 +67,20 @@ nnoremap <leader>no :only<cr>
 nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>st :SyntasticToggleMode<cr>
 nnoremap <leader>ym :YcmGenerateConfig<cr>
-nnoremap <leader>rr :!clear && cargo run<cr>
-nnoremap <leader>rb :!clear && cargo build<cr>
-nnoremap <leader>rt :!clear && cargo test<cr>
-nnoremap <leader>rf :RustFmt<cr>
+nnoremap <leader>cr :!clear && cargo run<cr>
+nnoremap <leader>cb :!clear && cargo build<cr>
+nnoremap <leader>ct :!clear && cargo test<cr>
+nnoremap <leader>cf :RustFmt<cr>
 nnoremap <leader>sb :!clear && stack build<cr>
 nnoremap <leader>st :!clear && stack test<cr>
 nnoremap <leader>sr :!clear && stack run<cr>
 nnoremap <leader>sc :GhcModCheck<cr>
 nnoremap <leader>St :SyntasticToggleMode<cr>
+nnoremap <leader>rs :call StartR("R")<cr>
+nnoremap <leader>rc :call StopR()<cr>
+nnoremap <leader>rl :call SendLineToR("down")<cr>
+nnoremap <leader>rb :call SendMBlockToR("silent", "down")<cr>
+nnoremap <leader>rf :call SendFileToR("%")<cr>
 inoremap jj <esc>
 
 set ruler
