@@ -18,8 +18,6 @@ Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'scrooloose/nerdtree'
 Plugin 'vim-scripts/gitignore'
-"Plugin 'Valloric/YouCompleteMe'
-"Plugin 'rdnetto/YCM-Generator'
 Plugin 'vim-scripts/haskell.vim'
 Plugin 'eagletmt/ghcmod-vim'
 Plugin 'Shougo/vimproc'
@@ -58,12 +56,34 @@ let mapleader=" "
 let g:mapleader=" "
 set timeoutlen=2000
 
+function! Smart_TabComplete()
+    let line = getline('.')                         " current line
+    let substr = strpart(line, -1, col('.')+1)      " from the start of the current
+                                                    " line to one character right
+                                                    " of the cursor
+    let substr = matchstr(substr, "[^ \t]*$")       " word till cursor
+    if (strlen(substr)==0)                          " nothing to match on empty string
+        return "\<tab>"
+    endif
+    let has_period = match(substr, '\.') != -1      " position of period, if any
+    let has_slash = match(substr, '\/') != -1       " position of slash, if any
+    let has_dollar = match(substr, '\$') != -1      " position of slash, if any
+    if (!has_period && !has_slash && !has_dollar)
+        return "\<C-X>\<C-P>"                       " existing text matching
+    elseif ( has_slash )
+        return "\<C-X>\<C-F>"                       " file matching
+    else
+        return "\<C-X>\<C-O>"                       " plugin matching
+    endif
+endfunction
+
 " keybinds
 nnoremap <leader>np :bprevious<cr>
 nnoremap <leader>nn :bnext<cr>
 nnoremap <leader>nc :bdelete<cr>
 nnoremap <leader>nd :bdelete<cr>
 nnoremap <leader>no :only<cr>
+nnoremap <leader>ns <C-W><C-W>
 nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>st :SyntasticToggleMode<cr>
 nnoremap <leader>ym :YcmGenerateConfig<cr>
@@ -104,6 +124,12 @@ set cursorline
 set colorcolumn=110
 set mouse=a
 set backspace=indent,eol,start
+set completeopt=longest,menuone
+
+" omni complete / supertab
+"let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
+let g:SuperTabContextTextMemberPatterns = ['\.', '>\?::', '->', '\$']
+let g:SuperTabDefaultCompletionType = "context"
 
 " nerdtree settings
 let g:NERDTreeQuitOnOpen=1
@@ -140,3 +166,4 @@ set hidden
 
 " ycm
 let g:ycm_global_ycm_extra_conf="~/.vim/.ycm_extra_conf.py"
+
