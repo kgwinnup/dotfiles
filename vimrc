@@ -5,8 +5,6 @@ filetype off                  " required
 " init vundle
 set rtp+=~/.vim/bundle/Vundle.vim
 set rtp+=~/.local/bin
-set rtp+=~/.cargo/bin
-set rtp+=~/.cargo/bin/rustc
 
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
@@ -20,19 +18,16 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'vim-scripts/gitignore'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'rdnetto/YCM-Generator'
+Plugin 'rhysd/vim-clang-format'
 Plugin 'vim-scripts/haskell.vim'
-Plugin 'eagletmt/ghcmod-vim'
 Plugin 'Shougo/vimproc'
 Plugin 'vim-scripts/cabal.vim'
 Plugin 'ervandew/supertab'
 Plugin 'elzr/vim-json'
-Plugin 'toyamarinyon/vim-swift'
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'pangloss/vim-javascript'
 Plugin 'mxw/vim-jsx'
-Plugin 'rust-lang/rust.vim'
-Plugin 'cespare/vim-toml'
 Plugin 'lervag/vimtex'
 Plugin 'jalvesaq/Nvim-R'
 
@@ -67,21 +62,14 @@ nnoremap <leader>no :only<cr>
 nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>st :SyntasticToggleMode<cr>
 nnoremap <leader>ym :YcmGenerateConfig<cr>
-nnoremap <leader>cr :!clear && cargo run<cr>
-nnoremap <leader>cb :!clear && cargo build<cr>
-nnoremap <leader>ct :!clear && cargo test<cr>
-nnoremap <leader>cf :RustFmt<cr>
-nnoremap <leader>sb :!clear && stack build<cr>
-nnoremap <leader>st :!clear && stack test<cr>
-nnoremap <leader>sr :!clear && stack run<cr>
-nnoremap <leader>sc :GhcModCheck<cr>
-nnoremap <leader>St :SyntasticToggleMode<cr>
-nnoremap <leader>rs :call StartR("R")<cr>
-nnoremap <leader>rc :call StopR()<cr>
-nnoremap <leader>rl :call SendLineToR("down")<cr>
-nnoremap <leader>rb :call SendMBlockToR("silent", "down")<cr>
-nnoremap <leader>rf :call SendFileToR("%")<cr>
 inoremap jj <esc>
+autocmd FileType c,cpp nnoremap <buffer><leader>rr :!clear && make<cr>
+autocmd FileType c,cpp nnoremap <buffer><leader>rt :!clear && make test<cr>
+autocmd FileType c,cpp nnoremap <buffer><leader>rb :!clear && make build<cr>
+autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
+autocmd FileType haskell nnoremap <buffer><leader>rr :!clear && stack run<cr>
+autocmd FileType haskell nnoremap <buffer><leader>rt :!clear && stack test<cr>
+autocmd FileType haskell nnoremap <buffer><leader>rb :!clear && stack build<cr>
 
 set ruler
 set number
@@ -121,6 +109,13 @@ let g:syntastic_auto_loc_list=1
 let g:syntastic_check_on_open=1
 let g:syntastic_check_on_wq=0
 
+" clang format
+let g:clang_format#style_options = {
+            \ "AccessModifierOffset" : -4,
+            \ "AllowShortIfStatementsOnASingleLine" : "true",
+            \ "AlwaysBreakTemplateDeclarations" : "true",
+            \ "Standard" : "C++11"}
+
 " haskell
 let g:no_haskell_conceal=1
 let g:haskell_conceal=0
@@ -128,12 +123,6 @@ let g:haskell_conceal_wide=0
 let g:haskell_conceal_enumerations=0
 let g:haskell_tabular=1
 au FileType haskell setl sw=2 sts=2 et
-
-" rust
-let g:ycm_rust_src_path='/usr/local/rust/src'
-let g:rustfmt_autosave=0
-" autocmd FileType rust let g:syntastic_rust_checkers=['rustc']
-set hidden
 
 " ycm
 let g:ycm_global_ycm_extra_conf="~/.vim/.ycm_extra_conf.py"
