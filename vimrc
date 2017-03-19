@@ -30,6 +30,7 @@ Plugin 'pangloss/vim-javascript'
 Plugin 'mxw/vim-jsx'
 Plugin 'lervag/vimtex'
 Plugin 'jalvesaq/Nvim-R'
+Plugin 'nvie/vim-flake8'
 
 " end plugin includes
 call vundle#end()            " required
@@ -56,9 +57,11 @@ set timeoutlen=2000
 " keybinds
 nnoremap <leader>np :bprevious<cr>
 nnoremap <leader>nn :bnext<cr>
-nnoremap <leader>nc :bdelete<cr>
 nnoremap <leader>nd :bdelete<cr>
 nnoremap <leader>no :only<cr>
+nnoremap <leader>ns <C-W><C-W>
+nnoremap <leader>+ :exe "resize " . (winheight(0) + 5)<cr>
+nnoremap <leader>- :exe "resize " . (winheight(0) - 5)<cr>
 nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>st :SyntasticToggleMode<cr>
 nnoremap <leader>ym :YcmGenerateConfig<cr>
@@ -126,3 +129,4 @@ au FileType haskell setl sw=2 sts=2 et
 
 " ycm
 let g:ycm_global_ycm_extra_conf="~/.vim/.ycm_extra_conf.py"
+
