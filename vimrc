@@ -139,6 +139,9 @@ let g:rustfmt_autosave=0
 autocmd FileType rust let g:syntastic_rust_checkers=['rustc']
 set hidden
 
+" python
+let g:ycm_python_binary_path = 'python'
+
 " ycm
 let g:ycm_global_ycm_extra_conf="~/.vim/.ycm_extra_conf.py"
 
