@@ -31,6 +31,8 @@ Plugin 'plasticboy/vim-markdown'
 Plugin 'pangloss/vim-javascript'
 Plugin 'mxw/vim-jsx'
 Plugin 'lervag/vimtex'
+Plugin 'rust-lang/rust.vim'
+Plugin 'cespare/vim-toml'
 Plugin 'jalvesaq/Nvim-R'
 Plugin 'nvie/vim-flake8'
 
