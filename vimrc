@@ -80,7 +80,7 @@ autocmd FileType haskell nnoremap <buffer><leader>rb :!clear && stack build<cr>
 autocmd FileType rust nnoremap <buffer><leader>rr :!clear && cargo run<cr>
 autocmd FileType rust nnoremap <buffer><leader>rb :!clear && cargo build<cr>
 autocmd FileType rust nnoremap <buffer><leader>rt :!clear && cargo test<cr>
-autocmd FileType rust nnoremap <buffer><leader>rf :RustFmt<cr>
+autocmd FileType rust nnoremap <buffer><leader>rf :RustFmt<cr><cr>
 
 set ruler
 set number
