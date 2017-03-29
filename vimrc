@@ -81,6 +81,8 @@ autocmd FileType rust nnoremap <buffer><leader>rr :!clear && cargo run<cr>
 autocmd FileType rust nnoremap <buffer><leader>rb :!clear && cargo build<cr>
 autocmd FileType rust nnoremap <buffer><leader>rt :!clear && cargo test<cr>
 autocmd FileType rust nnoremap <buffer><leader>rf :RustFmt<cr><cr>
+autocmd FileType python nnoremap <buffer><leader>rr :!clear && python %<cr>
+autocmd FileType python nnoremap <buffer><leader>rt :!clear && pytest<cr>
 
 set ruler
 set number
