@@ -14,6 +14,8 @@ Plugin 'VundleVim/Vundle.vim'
 
 Plugin 'vim-syntastic/syntastic'
 Plugin 'jonathanfilip/vim-lucius'
+Plugin 'morhetz/gruvbox'
+Plugin 'jordwalke/flatlandia'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'scrooloose/nerdtree'
@@ -49,10 +51,11 @@ if has("gui_macvim")
 endif
 
 syntax enable
+"set background=light
+"colorscheme gruvbox
 colorscheme lucius
-" LuciusDark
-"LuciusDarkHighContrast
 LuciusDarkLowContrast
+"colorscheme flatlandia
 
 let mapleader=" "
 let g:mapleader=" "
@@ -149,3 +152,8 @@ let g:ycm_python_binary_path = 'python'
 " ycm
 let g:ycm_global_ycm_extra_conf="~/.vim/.ycm_extra_conf.py"
 
+" javascript/jsx
+let g:jsx_ext_required = 0
+
+" markdown
+let g:vim_markdown_folding_disabled = 1
