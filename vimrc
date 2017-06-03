@@ -35,7 +35,7 @@ Plugin 'mxw/vim-jsx'
 Plugin 'lervag/vimtex'
 Plugin 'rust-lang/rust.vim'
 Plugin 'cespare/vim-toml'
-Plugin 'jalvesaq/Nvim-R'
+"Plugin 'jalvesaq/Nvim-R'
 Plugin 'nvie/vim-flake8'
 
 " end plugin includes
@@ -80,6 +80,7 @@ autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rr :!clear && stack run<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rt :!clear && stack test<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rb :!clear && stack build<cr>
+autocmd FileType haskell nnoremap <buffer><leader>rs :!clear && stack %<cr>
 autocmd FileType rust nnoremap <buffer><leader>rr :!clear && cargo run<cr>
 autocmd FileType rust nnoremap <buffer><leader>rb :!clear && cargo build<cr>
 autocmd FileType rust nnoremap <buffer><leader>rt :!clear && cargo test<cr>
