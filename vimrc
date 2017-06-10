@@ -7,6 +7,7 @@ set rtp+=~/.vim/bundle/Vundle.vim
 set rtp+=~/.local/bin
 set rtp+=~/.cargo/bin
 set rtp+=~/.cargo/bin/rustc
+set rtp+=~/.multirust/toolchains/nightly-x86_64-apple-darwin/lib/rustlib/src/rust/src
 
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
@@ -34,8 +35,9 @@ Plugin 'pangloss/vim-javascript'
 Plugin 'mxw/vim-jsx'
 Plugin 'lervag/vimtex'
 Plugin 'rust-lang/rust.vim'
+Plugin 'racer-rust/vim-racer'
 Plugin 'cespare/vim-toml'
-"Plugin 'jalvesaq/Nvim-R'
+Plugin 'jalvesaq/Nvim-R'
 Plugin 'nvie/vim-flake8'
 
 " end plugin includes
@@ -87,6 +89,11 @@ autocmd FileType rust nnoremap <buffer><leader>rt :!clear && cargo test<cr>
 autocmd FileType rust nnoremap <buffer><leader>rf :RustFmt<cr><cr>
 autocmd FileType python nnoremap <buffer><leader>rr :!clear && python %<cr>
 autocmd FileType python nnoremap <buffer><leader>rt :!clear && pytest<cr>
+"autocmd FileType r nnoremap <buffer><leader>rr :call SendMBlockToR("silent", "down")<cr>
+autocmd FileType r nnoremap <buffer><leader>rr :call SendParagraphToR("silent", "down")<cr>
+autocmd FileType r nnoremap <buffer><leader>rs :call StartR("R")<cr>
+autocmd FileType r nnoremap <buffer><leader>rq :call RQuit("nosave")<cr>
+autocmd FileType r nnoremap <buffer><leader>ra :call SendFileToR("%")<cr>
 
 set ruler
 set number
@@ -142,8 +149,9 @@ let g:haskell_tabular=1
 au FileType haskell setl sw=2 sts=2 et
 
 " rust
-let g:ycm_rust_src_path='/usr/local/rust/src'
+let g:ycm_rust_src_path='~/.multirust/toolchains/nightly-x86_64-apple-darwin/lib/rustlib/src/rust/src'
 let g:rustfmt_autosave=0
+let g:racer_experimental_completer=1
 autocmd FileType rust let g:syntastic_rust_checkers=['rustc']
 set hidden
 
