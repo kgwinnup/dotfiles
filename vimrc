@@ -3,11 +3,9 @@ set nocompatible              " be iMproved, required
 filetype off                  " required
 
 " init vundle
-set rtp+=~/.vim/bundle/Vundle.vim
+set rtp+=~/reno/.vim/bundle/Vundle.vim
 set rtp+=~/.local/bin
-set rtp+=~/.cargo/bin
-set rtp+=~/.cargo/bin/rustc
-set rtp+=~/.multirust/toolchains/nightly-x86_64-apple-darwin/lib/rustlib/src/rust/src
+set shell=bash\ -i
 
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
@@ -24,9 +22,7 @@ Plugin 'vim-scripts/gitignore'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'rdnetto/YCM-Generator'
 Plugin 'rhysd/vim-clang-format'
-Plugin 'vim-scripts/haskell.vim'
 Plugin 'Shougo/vimproc'
-Plugin 'vim-scripts/cabal.vim'
 Plugin 'ervandew/supertab'
 Plugin 'elzr/vim-json'
 Plugin 'godlygeek/tabular'
@@ -34,11 +30,8 @@ Plugin 'plasticboy/vim-markdown'
 Plugin 'pangloss/vim-javascript'
 Plugin 'mxw/vim-jsx'
 Plugin 'lervag/vimtex'
-Plugin 'rust-lang/rust.vim'
-Plugin 'racer-rust/vim-racer'
-Plugin 'cespare/vim-toml'
-Plugin 'jalvesaq/Nvim-R'
 Plugin 'nvie/vim-flake8'
+Plugin 'let-def/ocp-indent-vim'
 
 " end plugin includes
 call vundle#end()            " required
@@ -79,21 +72,9 @@ autocmd FileType c,cpp nnoremap <buffer><leader>rr :!clear && make run<cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>rt :!clear && make test<cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>rb :!clear && make<cr>
 autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
-autocmd FileType haskell nnoremap <buffer><leader>rr :!clear && stack run<cr>
-autocmd FileType haskell nnoremap <buffer><leader>rt :!clear && stack test<cr>
-autocmd FileType haskell nnoremap <buffer><leader>rb :!clear && stack build<cr>
-autocmd FileType haskell nnoremap <buffer><leader>rs :!clear && stack %<cr>
-autocmd FileType rust nnoremap <buffer><leader>rr :!clear && cargo run<cr>
-autocmd FileType rust nnoremap <buffer><leader>rb :!clear && cargo build<cr>
-autocmd FileType rust nnoremap <buffer><leader>rt :!clear && cargo test<cr>
-autocmd FileType rust nnoremap <buffer><leader>rf :RustFmt<cr><cr>
 autocmd FileType python nnoremap <buffer><leader>rr :!clear && python %<cr>
-autocmd FileType python nnoremap <buffer><leader>rt :!clear && pytest<cr>
-"autocmd FileType r nnoremap <buffer><leader>rr :call SendMBlockToR("silent", "down")<cr>
-autocmd FileType r nnoremap <buffer><leader>rr :call SendParagraphToR("silent", "down")<cr>
-autocmd FileType r nnoremap <buffer><leader>rs :call StartR("R")<cr>
-autocmd FileType r nnoremap <buffer><leader>rq :call RQuit("nosave")<cr>
-autocmd FileType r nnoremap <buffer><leader>ra :call SendFileToR("%")<cr>
+autocmd FileType python nnoremap <buffer><leader>rt :!clear && pytest -s -v<cr>
+autocmd FileType ocaml nnoremap <buffer><leader>t :MerlinTypeOf<cr>
 
 set ruler
 set number
@@ -130,7 +111,8 @@ set statusline+=%*
 
 let g:syntastic_always_populate_loc_list=1
 let g:syntastic_auto_loc_list=1
-let g:syntastic_check_on_open=1
+let g:syntastic_check_on_open=0
+let g:syntastic_check_on_w=0
 let g:syntastic_check_on_wq=0
 
 " clang format
@@ -139,21 +121,6 @@ let g:clang_format#style_options = {
             \ "AllowShortIfStatementsOnASingleLine" : "true",
             \ "AlwaysBreakTemplateDeclarations" : "true",
             \ "Standard" : "C++11"}
-
-" haskell
-let g:no_haskell_conceal=1
-let g:haskell_conceal=0
-let g:haskell_conceal_wide=0
-let g:haskell_conceal_enumerations=0
-let g:haskell_tabular=1
-au FileType haskell setl sw=2 sts=2 et
-
-" rust
-let g:ycm_rust_src_path='~/.multirust/toolchains/nightly-x86_64-apple-darwin/lib/rustlib/src/rust/src'
-let g:rustfmt_autosave=0
-let g:racer_experimental_completer=1
-autocmd FileType rust let g:syntastic_rust_checkers=['rustc']
-set hidden
 
 " python
 let g:ycm_python_binary_path = 'python'
@@ -166,3 +133,10 @@ let g:jsx_ext_required = 0
 
 " markdown
 let g:vim_markdown_folding_disabled = 1
+
+" yaml
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+
+" ocaml
+let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
+execute "set rtp+=" . g:opamshare . "/merlin/vim"
