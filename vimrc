@@ -32,6 +32,12 @@ Plugin 'mxw/vim-jsx'
 Plugin 'lervag/vimtex'
 Plugin 'nvie/vim-flake8'
 Plugin 'let-def/ocp-indent-vim'
+Plugin 'vim-scripts/cabal.vim'
+Plugin 'vim-scripts/haskell.vim'
+Plugin 'eagletmt/ghcmod-vim'
+Plugin 'eagletmt/neco-ghc'
+Plugin 'Shougo/vimproc.vim'
+Plugin 'Shougo/neocomplete.vim'
 
 " end plugin includes
 call vundle#end()            " required
@@ -57,6 +63,8 @@ let g:mapleader=" "
 set timeoutlen=2000
 
 " keybinds
+"inoremap <Nul> <c-r>=SuperTabAlternateCompletion("\<lt>c-x>\<lt>c-o>")<cr>
+
 nnoremap <leader>np :bprevious<cr>
 nnoremap <leader>nn :bnext<cr>
 nnoremap <leader>nd :bdelete<cr>
@@ -74,7 +82,16 @@ autocmd FileType c,cpp nnoremap <buffer><leader>rb :!clear && make<cr>
 autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
 autocmd FileType python nnoremap <buffer><leader>rr :!clear && python %<cr>
 autocmd FileType python nnoremap <buffer><leader>rt :!clear && pytest -s -v<cr>
+autocmd FileType haskell nnoremap <buffer><leader>rr :!clear && stack run<cr>
+autocmd FileType haskell nnoremap <buffer><leader>rt :!clear && stack test<cr>
+autocmd FileType haskell nnoremap <buffer><leader>rb :!clear && stack build<cr>
+autocmd FileType haskell nnoremap <buffer><leader>rs :!clear && stack %<cr>
+autocmd FileType haskell nnoremap <buffer><leader>t :GhcModType<cr>
+autocmd FileType haskell nnoremap <buffer><leader>i :GhcModInfo<cr>
 autocmd FileType ocaml nnoremap <buffer><leader>t :MerlinTypeOf<cr>
+autocmd FileType ocaml nnoremap <buffer><leader>l :Locate<cr>
+autocmd FileType ocaml nnoremap <buffer><leader>rr :!clear && make run<cr>
+autocmd FileType ocaml nnoremap <buffer><leader>rb :!clear && make<cr>
 
 set ruler
 set number
@@ -94,6 +111,8 @@ set cursorline
 set colorcolumn=110
 set mouse=a
 set backspace=indent,eol,start
+
+set completeopt=menuone,menu,longest
 
 " nerdtree settings
 let g:NERDTreeQuitOnOpen=1
@@ -140,3 +159,11 @@ autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 " ocaml
 let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
 execute "set rtp+=" . g:opamshare . "/merlin/vim"
+
+" haskell
+"let g:SuperTabDefaultCompletionType = '<tab>'
+let g:ycm_semantic_triggers = {'haskell' : ['.', ' ']}
+
+let g:haskellmode_completion_ghc = 1
+autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
+
