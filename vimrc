@@ -34,10 +34,14 @@ Plugin 'nvie/vim-flake8'
 Plugin 'let-def/ocp-indent-vim'
 Plugin 'vim-scripts/cabal.vim'
 Plugin 'vim-scripts/haskell.vim'
+"Plugin 'alx741/vim-hindent'
 Plugin 'eagletmt/ghcmod-vim'
+"Plugin 'bitc/vim-hdevtools'
 Plugin 'eagletmt/neco-ghc'
 Plugin 'Shougo/vimproc.vim'
 Plugin 'Shougo/neocomplete.vim'
+Plugin 'Twinside/vim-hoogle'
+Plugin 'majutsushi/tagbar'
 
 " end plugin includes
 call vundle#end()            " required
@@ -70,6 +74,7 @@ nnoremap <leader>nn :bnext<cr>
 nnoremap <leader>nd :bdelete<cr>
 nnoremap <leader>no :only<cr>
 nnoremap <leader>ns <C-W><C-W>
+nnoremap <leader>nb :TagbarOpenAutoClose<cr>
 nnoremap <leader>+ :exe "resize " . (winheight(0) + 5)<cr>
 nnoremap <leader>- :exe "resize " . (winheight(0) - 5)<cr>
 nnoremap <leader>nt :NERDTreeToggle<cr>
@@ -83,9 +88,9 @@ autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
 autocmd FileType python nnoremap <buffer><leader>rr :!clear && python %<cr>
 autocmd FileType python nnoremap <buffer><leader>rt :!clear && pytest -s -v<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rr :!clear && stack run<cr>
+autocmd FileType haskell nnoremap <buffer><leader>re :!clear && stack %<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rt :!clear && stack test<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rb :!clear && stack build<cr>
-autocmd FileType haskell nnoremap <buffer><leader>rs :!clear && stack %<cr>
 autocmd FileType haskell nnoremap <buffer><leader>t :GhcModType<cr>
 autocmd FileType haskell nnoremap <buffer><leader>i :GhcModInfo<cr>
 autocmd FileType ocaml nnoremap <buffer><leader>t :MerlinTypeOf<cr>
@@ -161,9 +166,40 @@ let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
 execute "set rtp+=" . g:opamshare . "/merlin/vim"
 
 " haskell
-"let g:SuperTabDefaultCompletionType = '<tab>'
 let g:ycm_semantic_triggers = {'haskell' : ['.', ' ']}
-
 let g:haskellmode_completion_ghc = 1
 autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
+autocmd FileType haskell setlocal formatprg=hindent
+
+let g:tagbar_type_haskell = {
+    \ 'ctagsbin'  : 'hasktags',
+    \ 'ctagsargs' : '-x -c -o-',
+    \ 'kinds'     : [
+        \  'm:modules:0:1',
+        \  'd:data: 0:1',
+        \  'd_gadt: data gadt:0:1',
+        \  't:type names:0:1',
+        \  'nt:new types:0:1',
+        \  'c:classes:0:1',
+        \  'cons:constructors:1:1',
+        \  'c_gadt:constructor gadt:1:1',
+        \  'c_a:constructor accessors:1:1',
+        \  'ft:function types:1:1',
+        \  'fi:function implementations:0:1',
+        \  'o:others:0:1'
+    \ ],
+    \ 'sro'        : '.',
+    \ 'kind2scope' : {
+        \ 'm' : 'module',
+        \ 'c' : 'class',
+        \ 'd' : 'data',
+        \ 't' : 'type'
+    \ },
+    \ 'scope2kind' : {
+        \ 'module' : 'm',
+        \ 'class'  : 'c',
+        \ 'data'   : 'd',
+        \ 'type'   : 't'
+    \ }
+\ }
 
