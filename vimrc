@@ -91,6 +91,7 @@ autocmd FileType haskell nnoremap <buffer><leader>rr :!clear && stack run<cr>
 autocmd FileType haskell nnoremap <buffer><leader>re :!clear && stack %<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rt :!clear && stack test<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rb :!clear && stack build<cr>
+autocmd FileType haskell nnoremap <buffer><leader>rc :GhcModCheckAndLintAsync<cr>
 autocmd FileType haskell nnoremap <buffer><leader>t :GhcModType<cr>
 autocmd FileType haskell nnoremap <buffer><leader>i :GhcModInfo<cr>
 autocmd FileType ocaml nnoremap <buffer><leader>t :MerlinTypeOf<cr>
@@ -132,6 +133,8 @@ set laststatus=2
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
+let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
+
 
 let g:syntastic_always_populate_loc_list=1
 let g:syntastic_auto_loc_list=1
@@ -166,10 +169,14 @@ let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
 execute "set rtp+=" . g:opamshare . "/merlin/vim"
 
 " haskell
-let g:ycm_semantic_triggers = {'haskell' : ['.', ' ']}
+let g:ycm_semantic_triggers = {'haskell' : ['.']}
 let g:haskellmode_completion_ghc = 1
 autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
 autocmd FileType haskell setlocal formatprg=hindent
+autocmd FileType haskell setlocal shiftwidth=2
+autocmd FileType haskell setlocal tabstop=2
+"autocmd BufWritePost *.hs GhcModCheckAndLintAsync
+let g:ghcmod_hlint_options = ['--ignore=Redundant $', '--ignore=Use camelCase']
 
 let g:tagbar_type_haskell = {
     \ 'ctagsbin'  : 'hasktags',
