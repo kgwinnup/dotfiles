@@ -5,6 +5,7 @@ filetype off                  " required
 " init vundle
 set rtp+=~/reno/.vim/bundle/Vundle.vim
 set rtp+=~/.local/bin
+set rtp+=~/.vim/bundle/ocp-indent-vim
 set shell=bash\ -i
 
 call vundle#begin()
@@ -41,6 +42,7 @@ Plugin 'eagletmt/neco-ghc'
 Plugin 'Shougo/vimproc.vim'
 Plugin 'Shougo/neocomplete.vim'
 Plugin 'Twinside/vim-hoogle'
+Plugin 'nbouscal/vim-stylish-haskell'
 Plugin 'majutsushi/tagbar'
 
 " end plugin includes
@@ -96,8 +98,8 @@ autocmd FileType haskell nnoremap <buffer><leader>t :GhcModType<cr>
 autocmd FileType haskell nnoremap <buffer><leader>i :GhcModInfo<cr>
 autocmd FileType ocaml nnoremap <buffer><leader>t :MerlinTypeOf<cr>
 autocmd FileType ocaml nnoremap <buffer><leader>l :Locate<cr>
-autocmd FileType ocaml nnoremap <buffer><leader>rr :!clear && make run<cr>
-autocmd FileType ocaml nnoremap <buffer><leader>rb :!clear && make<cr>
+autocmd FileType ocaml nnoremap <buffer><leader>rr :!clear && jbuilder build main.exe && ./main.exe<cr>
+autocmd FileType ocaml nnoremap <buffer><leader>rb :!clear && jbuilder build main.exe<cr>
 
 set ruler
 set number
@@ -168,7 +170,9 @@ autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
 execute "set rtp+=" . g:opamshare . "/merlin/vim"
 
+
 " haskell
+" install hlint, hoogle, ghcmod
 let g:ycm_semantic_triggers = {'haskell' : ['.']}
 let g:haskellmode_completion_ghc = 1
 autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
@@ -177,7 +181,6 @@ autocmd FileType haskell setlocal shiftwidth=2
 autocmd FileType haskell setlocal tabstop=2
 "autocmd BufWritePost *.hs GhcModCheckAndLintAsync
 let g:ghcmod_hlint_options = ['--ignore=Redundant $', '--ignore=Use camelCase']
-
 let g:tagbar_type_haskell = {
     \ 'ctagsbin'  : 'hasktags',
     \ 'ctagsargs' : '-x -c -o-',
