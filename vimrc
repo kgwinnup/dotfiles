@@ -1,12 +1,9 @@
-
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
 " init vundle
-set rtp+=~/reno/.vim/bundle/Vundle.vim
+set rtp+=~/.vim/bundle/Vundle.vim
 set rtp+=~/.local/bin
-set rtp+=~/.vim/bundle/ocp-indent-vim
-set shell=bash\ -i
 
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
@@ -23,7 +20,11 @@ Plugin 'vim-scripts/gitignore'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'rdnetto/YCM-Generator'
 Plugin 'rhysd/vim-clang-format'
+Plugin 'vim-scripts/haskell.vim'
+Plugin 'nbouscal/vim-stylish-haskell'
+Plugin 'eagletmt/ghcmod-vim'
 Plugin 'Shougo/vimproc'
+Plugin 'vim-scripts/cabal.vim'
 Plugin 'ervandew/supertab'
 Plugin 'elzr/vim-json'
 Plugin 'godlygeek/tabular'
@@ -31,19 +32,10 @@ Plugin 'plasticboy/vim-markdown'
 Plugin 'pangloss/vim-javascript'
 Plugin 'mxw/vim-jsx'
 Plugin 'lervag/vimtex'
+Plugin 'cespare/vim-toml'
 Plugin 'nvie/vim-flake8'
+Plugin 'ocaml/merlin'
 Plugin 'let-def/ocp-indent-vim'
-Plugin 'vim-scripts/cabal.vim'
-Plugin 'vim-scripts/haskell.vim'
-"Plugin 'alx741/vim-hindent'
-Plugin 'eagletmt/ghcmod-vim'
-"Plugin 'bitc/vim-hdevtools'
-Plugin 'eagletmt/neco-ghc'
-Plugin 'Shougo/vimproc.vim'
-Plugin 'Shougo/neocomplete.vim'
-Plugin 'Twinside/vim-hoogle'
-Plugin 'nbouscal/vim-stylish-haskell'
-Plugin 'majutsushi/tagbar'
 
 " end plugin includes
 call vundle#end()            " required
@@ -69,37 +61,31 @@ let g:mapleader=" "
 set timeoutlen=2000
 
 " keybinds
-"inoremap <Nul> <c-r>=SuperTabAlternateCompletion("\<lt>c-x>\<lt>c-o>")<cr>
-
 nnoremap <leader>np :bprevious<cr>
 nnoremap <leader>nn :bnext<cr>
 nnoremap <leader>nd :bdelete<cr>
 nnoremap <leader>no :only<cr>
 nnoremap <leader>ns <C-W><C-W>
-nnoremap <leader>nb :TagbarOpenAutoClose<cr>
 nnoremap <leader>+ :exe "resize " . (winheight(0) + 5)<cr>
 nnoremap <leader>- :exe "resize " . (winheight(0) - 5)<cr>
 nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>st :SyntasticToggleMode<cr>
 nnoremap <leader>ym :YcmGenerateConfig<cr>
+nnoremap <leader>ss :setlocal spell spelllang=en_us<cr>
+nnoremap <leader>sf :setlocal nospell<cr>
 inoremap jj <esc>
-autocmd FileType c,cpp nnoremap <buffer><leader>rr :!clear && make run<cr>
-autocmd FileType c,cpp nnoremap <buffer><leader>rt :!clear && make test<cr>
-autocmd FileType c,cpp nnoremap <buffer><leader>rb :!clear && make<cr>
+autocmd FileType c,cpp,ocaml nnoremap <buffer><leader>rr :!clear && make run<cr>
+autocmd FileType c,cpp,ocaml nnoremap <buffer><leader>rt :!clear && make test<cr>
+autocmd FileType c,cpp,ocaml nnoremap <buffer><leader>rb :!clear && make<cr>
 autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
-autocmd FileType python nnoremap <buffer><leader>rr :!clear && python %<cr>
-autocmd FileType python nnoremap <buffer><leader>rt :!clear && pytest -s -v<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rr :!clear && stack run<cr>
-autocmd FileType haskell nnoremap <buffer><leader>re :!clear && stack %<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rt :!clear && stack test<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rb :!clear && stack build<cr>
-autocmd FileType haskell nnoremap <buffer><leader>rc :GhcModCheckAndLintAsync<cr>
+autocmd FileType haskell nnoremap <buffer><leader>rs :!clear && stack %<cr>
 autocmd FileType haskell nnoremap <buffer><leader>t :GhcModType<cr>
-autocmd FileType haskell nnoremap <buffer><leader>i :GhcModInfo<cr>
+autocmd FileType python nnoremap <buffer><leader>rr :!clear && python %<cr>
+autocmd FileType python nnoremap <buffer><leader>rt :!clear && pytest<cr>
 autocmd FileType ocaml nnoremap <buffer><leader>t :MerlinTypeOf<cr>
-autocmd FileType ocaml nnoremap <buffer><leader>l :Locate<cr>
-autocmd FileType ocaml nnoremap <buffer><leader>rr :!clear && jbuilder build main.exe && ./main.exe<cr>
-autocmd FileType ocaml nnoremap <buffer><leader>rb :!clear && jbuilder build main.exe<cr>
 
 set ruler
 set number
@@ -120,8 +106,6 @@ set colorcolumn=110
 set mouse=a
 set backspace=indent,eol,start
 
-set completeopt=menuone,menu,longest
-
 " nerdtree settings
 let g:NERDTreeQuitOnOpen=1
 
@@ -135,13 +119,10 @@ set laststatus=2
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
-let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
-
 
 let g:syntastic_always_populate_loc_list=1
 let g:syntastic_auto_loc_list=1
 let g:syntastic_check_on_open=0
-let g:syntastic_check_on_w=0
 let g:syntastic_check_on_wq=0
 
 " clang format
@@ -151,11 +132,21 @@ let g:clang_format#style_options = {
             \ "AlwaysBreakTemplateDeclarations" : "true",
             \ "Standard" : "C++11"}
 
+" haskell
+" stack install ghc-mod hlint
+let g:no_haskell_conceal=1
+let g:haskell_conceal=0
+let g:haskell_conceal_wide=0
+let g:haskell_conceal_enumerations=0
+let g:haskell_tabular=1
+au FileType haskell setl sw=2 sts=2 et
+
 " python
 let g:ycm_python_binary_path = 'python'
 
 " ycm
 let g:ycm_global_ycm_extra_conf="~/.vim/.ycm_extra_conf.py"
+let g:ycm_server_python_interpreter="/usr/bin/python2"
 
 " javascript/jsx
 let g:jsx_ext_required = 0
@@ -163,53 +154,40 @@ let g:jsx_ext_required = 0
 " markdown
 let g:vim_markdown_folding_disabled = 1
 
-" yaml
-autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
-
 " ocaml
-let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
-execute "set rtp+=" . g:opamshare . "/merlin/vim"
+let g:opamshare = substitute(system('opam config var share'), '\n$','','''')
+set rtp+=/home/switchport/.opam/system/share/ocp-indent/vim
+autocmd FileType ocaml setlocal ts=2 sts=2 sw=2 expandtab
 
+" ## added by OPAM user-setup for vim / base ## 93ee63e278bdfc07d1139a748ed3fff2 ## you can edit, but keep this line
+let s:opam_share_dir = system("opam config var share")
+let s:opam_share_dir = substitute(s:opam_share_dir, '[\r\n]*$', '', '')
 
-" haskell
-" install hlint, hoogle, ghcmod
-let g:ycm_semantic_triggers = {'haskell' : ['.']}
-let g:haskellmode_completion_ghc = 1
-autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
-autocmd FileType haskell setlocal formatprg=hindent
-autocmd FileType haskell setlocal shiftwidth=2
-autocmd FileType haskell setlocal tabstop=2
-"autocmd BufWritePost *.hs GhcModCheckAndLintAsync
-let g:ghcmod_hlint_options = ['--ignore=Redundant $', '--ignore=Use camelCase']
-let g:tagbar_type_haskell = {
-    \ 'ctagsbin'  : 'hasktags',
-    \ 'ctagsargs' : '-x -c -o-',
-    \ 'kinds'     : [
-        \  'm:modules:0:1',
-        \  'd:data: 0:1',
-        \  'd_gadt: data gadt:0:1',
-        \  't:type names:0:1',
-        \  'nt:new types:0:1',
-        \  'c:classes:0:1',
-        \  'cons:constructors:1:1',
-        \  'c_gadt:constructor gadt:1:1',
-        \  'c_a:constructor accessors:1:1',
-        \  'ft:function types:1:1',
-        \  'fi:function implementations:0:1',
-        \  'o:others:0:1'
-    \ ],
-    \ 'sro'        : '.',
-    \ 'kind2scope' : {
-        \ 'm' : 'module',
-        \ 'c' : 'class',
-        \ 'd' : 'data',
-        \ 't' : 'type'
-    \ },
-    \ 'scope2kind' : {
-        \ 'module' : 'm',
-        \ 'class'  : 'c',
-        \ 'data'   : 'd',
-        \ 'type'   : 't'
-    \ }
-\ }
+let s:opam_configuration = {}
 
+function! OpamConfOcpIndent()
+  execute "set rtp^=" . s:opam_share_dir . "/ocp-indent/vim"
+endfunction
+let s:opam_configuration['ocp-indent'] = function('OpamConfOcpIndent')
+
+function! OpamConfOcpIndex()
+  execute "set rtp+=" . s:opam_share_dir . "/ocp-index/vim"
+endfunction
+let s:opam_configuration['ocp-index'] = function('OpamConfOcpIndex')
+
+function! OpamConfMerlin()
+  let l:dir = s:opam_share_dir . "/merlin/vim"
+  execute "set rtp+=" . l:dir
+endfunction
+let s:opam_configuration['merlin'] = function('OpamConfMerlin')
+
+let s:opam_packages = ["ocp-indent", "ocp-index", "merlin"]
+let s:opam_check_cmdline = ["opam list --installed --short --safe --color=never"] + s:opam_packages
+let s:opam_available_tools = split(system(join(s:opam_check_cmdline)))
+for tool in s:opam_packages
+  " Respect package order (merlin should be after ocp-index)
+  if count(s:opam_available_tools, tool) > 0
+    call s:opam_configuration[tool]()
+  endif
+endfor
+" ## end of OPAM user-setup addition for vim / base ## keep this line
