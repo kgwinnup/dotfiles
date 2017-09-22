@@ -76,7 +76,8 @@ autocmd FileType haskell nnoremap <buffer><leader>rr :!clear && stack run<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rt :!clear && stack test<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rb :!clear && stack build<cr>
 autocmd FileType haskell nnoremap <buffer><leader>re :!clear && stack %<cr>
-autocmd FileType haskell nnoremap <buffer><leader>t :InteroGenericType<cr>
+autocmd FileType haskell nnoremap <buffer><leader>t :InteroType<cr>
+autocmd FileType haskell nnoremap <buffer><leader>T :InteroGenericType<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rs :InteroStart<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rk :InteroKill<cr>
 autocmd FileType haskell nnoremap <buffer><leader>ro :InteroOpen<cr>
