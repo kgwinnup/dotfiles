@@ -9,7 +9,7 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 " start plugin includes
 
-Plugin 'vim-syntastic/syntastic'
+Plugin 'w0rp/ale' " asynchronous lint engine
 Plugin 'jonathanfilip/vim-lucius'
 Plugin 'morhetz/gruvbox'
 Plugin 'jordwalke/flatlandia'
@@ -20,7 +20,6 @@ Plugin 'vim-scripts/gitignore'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'rdnetto/YCM-Generator'
 Plugin 'rhysd/vim-clang-format'
-"Plugin 'vim-scripts/haskell.vim'
 Plugin 'neovimhaskell/haskell-vim'
 Plugin 'eagletmt/neco-ghc'
 Plugin 'nbouscal/vim-stylish-haskell'
@@ -34,10 +33,7 @@ Plugin 'plasticboy/vim-markdown'
 Plugin 'pangloss/vim-javascript'
 Plugin 'mxw/vim-jsx'
 Plugin 'lervag/vimtex'
-Plugin 'cespare/vim-toml'
 Plugin 'nvie/vim-flake8'
-Plugin 'ocaml/merlin'
-Plugin 'let-def/ocp-indent-vim'
 
 " end plugin includes
 call vundle#end()            " required
@@ -71,7 +67,7 @@ nnoremap <leader>ns <C-W><C-W>
 nnoremap <leader>+ :exe "resize " . (winheight(0) + 5)<cr>
 nnoremap <leader>- :exe "resize " . (winheight(0) - 5)<cr>
 nnoremap <leader>nt :NERDTreeToggle<cr>
-nnoremap <leader>st :SyntasticToggleMode<cr>
+nnoremap <leader>st :ALEToggle<cr>
 nnoremap <leader>ym :YcmGenerateConfig<cr>
 nnoremap <leader>ss :setlocal spell spelllang=en_us<cr>
 nnoremap <leader>sf :setlocal nospell<cr>
@@ -117,15 +113,10 @@ let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#show_buffers=1
 set laststatus=2
 
-" syntastic
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-
-let g:syntastic_always_populate_loc_list=1
-let g:syntastic_auto_loc_list=1
-let g:syntastic_check_on_open=0
-let g:syntastic_check_on_wq=0
+" ALE
+let g:ale_sign_error = '>>'
+let g:ale_sign_warning = '>>'
+let g:ale_sign_column_always = 1
 
 " clang format
 let g:clang_format#style_options = {
@@ -148,7 +139,7 @@ let g:ycm_python_binary_path = 'python'
 
 " ycm
 let g:ycm_global_ycm_extra_conf="~/.vim/.ycm_extra_conf.py"
-let g:ycm_server_python_interpreter="/usr/bin/python2"
+let g:ycm_server_python_interpreter="/Users/kgwinnup/reno/anaconda3/bin/python"
 
 " javascript/jsx
 let g:jsx_ext_required = 0
@@ -156,40 +147,3 @@ let g:jsx_ext_required = 0
 " markdown
 let g:vim_markdown_folding_disabled = 1
 
-" ocaml
-let g:opamshare = substitute(system('opam config var share'), '\n$','','''')
-set rtp+=/home/switchport/.opam/system/share/ocp-indent/vim
-autocmd FileType ocaml setlocal ts=2 sts=2 sw=2 expandtab
-
-" ## added by OPAM user-setup for vim / base ## 93ee63e278bdfc07d1139a748ed3fff2 ## you can edit, but keep this line
-let s:opam_share_dir = system("opam config var share")
-let s:opam_share_dir = substitute(s:opam_share_dir, '[\r\n]*$', '', '')
-
-let s:opam_configuration = {}
-
-function! OpamConfOcpIndent()
-  execute "set rtp^=" . s:opam_share_dir . "/ocp-indent/vim"
-endfunction
-let s:opam_configuration['ocp-indent'] = function('OpamConfOcpIndent')
-
-function! OpamConfOcpIndex()
-  execute "set rtp+=" . s:opam_share_dir . "/ocp-index/vim"
-endfunction
-let s:opam_configuration['ocp-index'] = function('OpamConfOcpIndex')
-
-function! OpamConfMerlin()
-  let l:dir = s:opam_share_dir . "/merlin/vim"
-  execute "set rtp+=" . l:dir
-endfunction
-let s:opam_configuration['merlin'] = function('OpamConfMerlin')
-
-let s:opam_packages = ["ocp-indent", "ocp-index", "merlin"]
-let s:opam_check_cmdline = ["opam list --installed --short --safe --color=never"] + s:opam_packages
-let s:opam_available_tools = split(system(join(s:opam_check_cmdline)))
-for tool in s:opam_packages
-  " Respect package order (merlin should be after ocp-index)
-  if count(s:opam_available_tools, tool) > 0
-    call s:opam_configuration[tool]()
-  endif
-endfor
-" ## end of OPAM user-setup addition for vim / base ## keep this line
