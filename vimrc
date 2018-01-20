@@ -9,7 +9,7 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 " start plugin includes
 
-Plugin 'jordwalke/flatlandia'
+Plugin 'jonathanfilip/vim-lucius'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'scrooloose/nerdtree'
@@ -44,8 +44,11 @@ endif
 " set omnifunc=syntaxcomplete#Complete
 " custom config below
 
+set t_Co=256
 syntax enable
-colorscheme flatlandia
+set background=dark
+colorscheme lucius
+LuciusDarkLowContrast
 
 let mapleader=" "
 let g:mapleader=" "
