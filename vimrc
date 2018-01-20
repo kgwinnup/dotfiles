@@ -9,9 +9,6 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 " start plugin includes
 
-Plugin 'w0rp/ale' " asynchronous lint engine
-Plugin 'jonathanfilip/vim-lucius'
-Plugin 'morhetz/gruvbox'
 Plugin 'jordwalke/flatlandia'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
@@ -39,20 +36,16 @@ Plugin 'nvie/vim-flake8'
 call vundle#end()            " required
 filetype plugin indent on    " required
 
+if has("gui_macvim")
+    set macligatures
+    set guifont=mononoki:h13
+endif
+
 " set omnifunc=syntaxcomplete#Complete
 " custom config below
 
-if has("gui_macvim")
-    set macligatures
-    set guifont=Meslo\ LG\ M\ DZ\ Regular\ for\ Powerline:h13
-endif
-
 syntax enable
-"set background=light
-"colorscheme gruvbox
-colorscheme lucius
-LuciusDarkLowContrast
-"colorscheme flatlandia
+colorscheme flatlandia
 
 let mapleader=" "
 let g:mapleader=" "
@@ -83,10 +76,10 @@ autocmd FileType haskell nnoremap <buffer><leader>rs :!clear && stack %<cr>
 autocmd FileType haskell nnoremap <buffer><leader>t :GhcModType<cr>
 autocmd FileType python nnoremap <buffer><leader>rr :!clear && python %<cr>
 autocmd FileType python nnoremap <buffer><leader>rt :!clear && pytest<cr>
-autocmd FileType ocaml nnoremap <buffer><leader>t :MerlinTypeOf<cr>
 
 set ruler
-set number
+"set number
+set foldcolumn=2
 set autoindent              	" Copy indent from current line
 set tabstop=4
 set shiftwidth=4
@@ -111,12 +104,8 @@ let g:NERDTreeQuitOnOpen=1
 let g:airline_powerline_fonts=1
 let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#show_buffers=1
+let g:airline_theme='minimalist'
 set laststatus=2
-
-" ALE
-let g:ale_sign_error = '>>'
-let g:ale_sign_warning = '>>'
-let g:ale_sign_column_always = 1
 
 " clang format
 let g:clang_format#style_options = {
@@ -139,7 +128,7 @@ let g:ycm_python_binary_path = 'python'
 
 " ycm
 let g:ycm_global_ycm_extra_conf="~/.vim/.ycm_extra_conf.py"
-let g:ycm_server_python_interpreter="/Users/kgwinnup/reno/anaconda3/bin/python"
+let g:ycm_server_python_interpreter="/Users/kgwinnup/reno/anaconda2/bin/python"
 
 " javascript/jsx
 let g:jsx_ext_required = 0
