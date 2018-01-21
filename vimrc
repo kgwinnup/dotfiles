@@ -4,6 +4,7 @@ filetype off                  " required
 " init vundle
 set rtp+=~/.vim/bundle/Vundle.vim
 set rtp+=~/.local/bin
+set rtp+=~/.cargo/bin
 
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
@@ -31,6 +32,9 @@ Plugin 'pangloss/vim-javascript'
 Plugin 'mxw/vim-jsx'
 Plugin 'lervag/vimtex'
 Plugin 'nvie/vim-flake8'
+Plugin 'rust-lang/rust.vim'
+Plugin 'racer-rust/vim-racer'
+Plugin 'cespare/vim-toml'
 
 " end plugin includes
 call vundle#end()            " required
@@ -79,10 +83,13 @@ autocmd FileType haskell nnoremap <buffer><leader>re :!clear && stack %<cr>
 autocmd FileType haskell nnoremap <buffer><leader>t :GhcModType<cr>
 autocmd FileType python nnoremap <buffer><leader>rr :!clear && python %<cr>
 autocmd FileType python nnoremap <buffer><leader>rt :!clear && pytest<cr>
+autocmd FileType rust nnoremap <buffer><leader>rr :!clear && cargo run<cr>
+autocmd FileType rust nnoremap <buffer><leader>rt :!clear && cargo test<cr>
+autocmd FileType rust nnoremap <buffer><leader>rb :!clear && cargo build<cr>
 
 set ruler
-"set number
-set foldcolumn=2
+set number
+"set foldcolumn=2
 set autoindent              	" Copy indent from current line
 set tabstop=4
 set shiftwidth=4
@@ -102,12 +109,12 @@ set backspace=indent,eol,start
 
 " nerdtree settings
 let g:NERDTreeQuitOnOpen=1
+let NERDTreeIgnore = ['\.pyc$', '^node_modules']
 
 " airline settings
 let g:airline_powerline_fonts=1
 let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#show_buffers=1
-let g:airline_theme='minimalist'
 set laststatus=2
 
 " clang format
@@ -130,12 +137,18 @@ au FileType haskell setl sw=2 sts=2 et
 let g:ycm_python_binary_path = 'python'
 
 " ycm
-let g:ycm_global_ycm_extra_conf="~/.vim/.ycm_extra_conf.py"
-let g:ycm_server_python_interpreter="/Users/kgwinnup/reno/anaconda2/bin/python"
+let g:ycm_global_ycm_extra_conf = expand("~/.vim/.ycm_extra_conf.py")
+let g:ycm_server_python_interpreter = expand("~/reno/anaconda2/bin/python")
 
 " javascript/jsx
 let g:jsx_ext_required = 0
 
 " markdown
 let g:vim_markdown_folding_disabled = 1
+
+" rust
+set hidden
+let g:racer_cmd = expand("~/.cargo/bin/racer")
+let g:racer_experimental_completer = 1
+let g:rustfmt_autosave = 1
 
