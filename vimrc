@@ -75,6 +75,8 @@ inoremap jj <esc>
 autocmd FileType c,cpp,ocaml nnoremap <buffer><leader>rr :!clear && make run<cr>
 autocmd FileType c,cpp,ocaml nnoremap <buffer><leader>rt :!clear && make test<cr>
 autocmd FileType c,cpp,ocaml nnoremap <buffer><leader>rb :!clear && make<cr>
+autocmd FileType ocaml nnoremap <buffer><leader>t :MerlinTypeOf<cr>
+autocmd FileType ocaml nnoremap <buffer><leader>d :execute "helptags " . g:opamshare . "/merlin/vim/doc"<cr>
 autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rr :!clear && stack run<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rt :!clear && stack test<cr>
@@ -152,3 +154,7 @@ let g:racer_cmd = expand("~/.cargo/bin/racer")
 let g:racer_experimental_completer = 1
 let g:rustfmt_autosave = 1
 
+" ocaml
+let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
+execute "set rtp+=" . g:opamshare . "/merlin/vim"
+set rtp^=/Users/kgwinnup/.opam/4.05.0/share/ocp-indent/vim
