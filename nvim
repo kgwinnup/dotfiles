@@ -9,8 +9,6 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 " start plugin includes
 
-Plugin 'vim-syntastic/syntastic'
-Plugin 'Valloric/YouCompleteMe'
 Plugin 'jonathanfilip/vim-lucius'
 Plugin 'morhetz/gruvbox'
 Plugin 'jordwalke/flatlandia'
@@ -23,7 +21,6 @@ Plugin 'vim-scripts/haskell.vim'
 Plugin 'parsonsmatt/intero-neovim'
 Plugin 'nbouscal/vim-stylish-haskell'
 Plugin 'vim-scripts/cabal.vim'
-"Plugin 'ervandew/supertab'
 Plugin 'elzr/vim-json'
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
@@ -31,7 +28,6 @@ Plugin 'pangloss/vim-javascript'
 Plugin 'mxw/vim-jsx'
 Plugin 'lervag/vimtex'
 Plugin 'nvie/vim-flake8'
-Plugin 'rust-lang/rust.vim'
 
 " end plugin includes
 call vundle#end()            " required
@@ -151,3 +147,13 @@ let g:jsx_ext_required = 0
 
 " markdown
 let g:vim_markdown_folding_disabled = 1
+
+" rust
+let g:autofmt_autosave = 1
+set hidden
+let g:racer_cmd = "/Users/kgwinnup/.cargo/bin/racer"
+let g:deoplete#sources#rust#racer_binary='/Users/kgwinnup/.cargo/bin/racer'
+let g:deoplete#sources#rust#racer_binary='/Users/kgwinnup/.cargo/bin/racer'
+let g:deoplete#sources#rust#rust_source_path='/Users/kgwinnup/.cargo/src/rust/src'
+let g:racer_experimental_completer = 1
+

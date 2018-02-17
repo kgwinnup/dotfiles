@@ -111,7 +111,7 @@ set backspace=indent,eol,start
 
 " nerdtree settings
 let g:NERDTreeQuitOnOpen=1
-let NERDTreeIgnore = ['\.pyc$', '^node_modules']
+let NERDTreeIgnore = ['\.pyc$', '^__pycache__$', '^node_modules']
 
 " airline settings
 let g:airline_powerline_fonts=1
