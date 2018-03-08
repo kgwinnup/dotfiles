@@ -13,6 +13,7 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'jonathanfilip/vim-lucius'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
+Plugin 'flazz/vim-colorschemes'
 Plugin 'scrooloose/nerdtree'
 Plugin 'vim-scripts/gitignore'
 Plugin 'Valloric/YouCompleteMe'
@@ -35,6 +36,7 @@ Plugin 'nvie/vim-flake8'
 Plugin 'rust-lang/rust.vim'
 Plugin 'racer-rust/vim-racer'
 Plugin 'cespare/vim-toml'
+Plugin 'artur-shaik/vim-javacomplete2'
 
 " end plugin includes
 call vundle#end()            " required
@@ -51,8 +53,8 @@ endif
 set t_Co=256
 syntax enable
 set background=dark
-colorscheme lucius
-LuciusDarkLowContrast
+colorscheme gruvbox
+"LuciusDarkLowContrast
 
 let mapleader=" "
 let g:mapleader=" "
@@ -158,3 +160,6 @@ let g:rustfmt_autosave = 1
 let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
 execute "set rtp+=" . g:opamshare . "/merlin/vim"
 set rtp^=/Users/kgwinnup/.opam/4.05.0/share/ocp-indent/vim
+
+" java
+autocmd FileType java setlocal omnifunc=javacomplete#Complete
