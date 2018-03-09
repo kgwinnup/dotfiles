@@ -4,7 +4,6 @@ filetype off                  " required
 " init vundle
 set rtp+=~/.vim/bundle/Vundle.vim
 set rtp+=~/.local/bin
-set rtp+=~/.cargo/bin
 
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
@@ -35,8 +34,10 @@ Plugin 'lervag/vimtex'
 Plugin 'nvie/vim-flake8'
 Plugin 'rust-lang/rust.vim'
 Plugin 'racer-rust/vim-racer'
-Plugin 'cespare/vim-toml'
 Plugin 'artur-shaik/vim-javacomplete2'
+Plugin 'roxma/vim-hug-neovim-rpc'
+Plugin 'gaalcaras/ncm-R'
+Plugin 'jalvesaq/Nvim-R'
 
 " end plugin includes
 call vundle#end()            " required
@@ -66,8 +67,7 @@ nnoremap <leader>nn :bnext<cr>
 nnoremap <leader>nd :bdelete<cr>
 nnoremap <leader>no :only<cr>
 nnoremap <leader>ns <C-W><C-W>
-nnoremap <leader>+ :exe "resize " . (winheight(0) + 5)<cr>
-nnoremap <leader>- :exe "resize " . (winheight(0) - 5)<cr>
+nnoremap <leader>= <C-w>=
 nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>st :ALEToggle<cr>
 nnoremap <leader>ym :YcmGenerateConfig<cr>
@@ -77,8 +77,6 @@ inoremap jj <esc>
 autocmd FileType c,cpp,ocaml nnoremap <buffer><leader>rr :!clear && make run<cr>
 autocmd FileType c,cpp,ocaml nnoremap <buffer><leader>rt :!clear && make test<cr>
 autocmd FileType c,cpp,ocaml nnoremap <buffer><leader>rb :!clear && make<cr>
-autocmd FileType ocaml nnoremap <buffer><leader>t :MerlinTypeOf<cr>
-autocmd FileType ocaml nnoremap <buffer><leader>d :execute "helptags " . g:opamshare . "/merlin/vim/doc"<cr>
 autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rr :!clear && stack run<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rt :!clear && stack test<cr>
@@ -87,9 +85,10 @@ autocmd FileType haskell nnoremap <buffer><leader>re :!clear && stack %<cr>
 autocmd FileType haskell nnoremap <buffer><leader>t :GhcModType<cr>
 autocmd FileType python nnoremap <buffer><leader>rr :!clear && python %<cr>
 autocmd FileType python nnoremap <buffer><leader>rt :!clear && pytest<cr>
-autocmd FileType rust nnoremap <buffer><leader>rr :!clear && cargo run<cr>
-autocmd FileType rust nnoremap <buffer><leader>rt :!clear && cargo test<cr>
-autocmd FileType rust nnoremap <buffer><leader>rb :!clear && cargo build<cr>
+autocmd FileType r nnoremap <buffer><leader>rr :call SendParagraphToR("silent", "down")<cr>
+autocmd FileType r nnoremap <buffer><leader>rs :call StartR("R")<cr>
+autocmd FileType r nnoremap <buffer><leader>rk :call StopR("R")<cr>
+autocmd FileType r nnoremap <buffer><leader>rf :call SendFileToR("silent")<cr>
 
 set ruler
 set number
@@ -142,7 +141,7 @@ let g:ycm_python_binary_path = 'python'
 
 " ycm
 let g:ycm_global_ycm_extra_conf = expand("~/.vim/.ycm_extra_conf.py")
-let g:ycm_server_python_interpreter = expand("~/reno/anaconda2/bin/python")
+let g:ycm_server_python_interpreter = expand("/usr/local/bin/python")
 
 " javascript/jsx
 let g:jsx_ext_required = 0
@@ -150,16 +149,7 @@ let g:jsx_ext_required = 0
 " markdown
 let g:vim_markdown_folding_disabled = 1
 
-" rust
-set hidden
-let g:racer_cmd = expand("~/.cargo/bin/racer")
-let g:racer_experimental_completer = 1
-let g:rustfmt_autosave = 1
-
-" ocaml
-let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
-execute "set rtp+=" . g:opamshare . "/merlin/vim"
-set rtp^=/Users/kgwinnup/.opam/4.05.0/share/ocp-indent/vim
-
 " java
 autocmd FileType java setlocal omnifunc=javacomplete#Complete
+
+
