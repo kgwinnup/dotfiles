@@ -83,10 +83,9 @@ autocmd FileType haskell nnoremap <buffer><leader>re :!clear && stack %<cr>
 autocmd FileType haskell nnoremap <buffer><leader>t :GhcModType<cr>
 autocmd FileType python nnoremap <buffer><leader>rr :!clear && python %<cr>
 autocmd FileType python nnoremap <buffer><leader>rt :!clear && python -m pytest -s %<cr>
-autocmd FileType r nnoremap <buffer><leader>rr :call SendParagraphToR("silent", "down")<cr>
-autocmd FileType r nnoremap <buffer><leader>rs :call StartR("R")<cr>
-autocmd FileType r nnoremap <buffer><leader>rk :call StopR("R")<cr>
-autocmd FileType r nnoremap <buffer><leader>rf :call SendFileToR("silent")<cr>
+autocmd FileType rust nnoremap <buffer><leader>rr :!clear && cargo run<cr>
+autocmd FileType rust nnoremap <buffer><leader>rt :!clear && cargo test<cr>
+autocmd FileType rust nnoremap <buffer><leader>rb :!clear && cargo build<cr>
 
 set ruler
 set number
