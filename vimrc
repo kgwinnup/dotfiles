@@ -34,11 +34,8 @@ Plugin 'lervag/vimtex'
 Plugin 'nvie/vim-flake8'
 Plugin 'rust-lang/rust.vim'
 Plugin 'racer-rust/vim-racer'
+Plugin 'cespare/vim-toml'
 Plugin 'artur-shaik/vim-javacomplete2'
-Plugin 'roxma/nvim-completion-manager'
-Plugin 'roxma/vim-hug-neovim-rpc'
-Plugin 'gaalcaras/ncm-R'
-Plugin 'jalvesaq/Nvim-R'
 
 " end plugin includes
 call vundle#end()            " required
@@ -85,7 +82,7 @@ autocmd FileType haskell nnoremap <buffer><leader>rb :!clear && stack build<cr>
 autocmd FileType haskell nnoremap <buffer><leader>re :!clear && stack %<cr>
 autocmd FileType haskell nnoremap <buffer><leader>t :GhcModType<cr>
 autocmd FileType python nnoremap <buffer><leader>rr :!clear && python %<cr>
-autocmd FileType python nnoremap <buffer><leader>rt :!clear && pytest<cr>
+autocmd FileType python nnoremap <buffer><leader>rt :!clear && python -m pytest -s %<cr>
 autocmd FileType r nnoremap <buffer><leader>rr :call SendParagraphToR("silent", "down")<cr>
 autocmd FileType r nnoremap <buffer><leader>rs :call StartR("R")<cr>
 autocmd FileType r nnoremap <buffer><leader>rk :call StopR("R")<cr>
