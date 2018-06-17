@@ -19,6 +19,7 @@ Plugin 'vim-scripts/gitignore'
 Plugin 'rhysd/vim-clang-format'
 Plugin 'vim-scripts/haskell.vim'
 Plugin 'parsonsmatt/intero-neovim'
+"Plugin 'eagletmt/neco-ghc'
 Plugin 'nbouscal/vim-stylish-haskell'
 Plugin 'vim-scripts/cabal.vim'
 Plugin 'elzr/vim-json'
@@ -28,6 +29,7 @@ Plugin 'pangloss/vim-javascript'
 Plugin 'mxw/vim-jsx'
 Plugin 'lervag/vimtex'
 Plugin 'nvie/vim-flake8'
+Plugin 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 
 " end plugin includes
 call vundle#end()            " required
@@ -37,11 +39,10 @@ filetype plugin indent on    " required
 " custom config below
 
 syntax enable
-"set background=light
-"colorscheme gruvbox
-colorscheme lucius
-LuciusDarkLowContrast
-"colorscheme flatlandia
+set background=dark
+colorscheme gruvbox
+"colorscheme lucius
+"LuciusDark
 
 let mapleader=" "
 let g:mapleader=" "
@@ -58,7 +59,6 @@ nnoremap <leader>+ :exe "resize " . (winheight(0) + 5)<cr>
 nnoremap <leader>- :exe "resize " . (winheight(0) - 5)<cr>
 nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>st :SyntasticToggleMode<cr>
-nnoremap <leader>ym :YcmGenerateConfig<cr>
 nnoremap <leader>ss :setlocal spell spelllang=en_us<cr>
 nnoremap <leader>sf :setlocal nospell<cr>
 nnoremap <leader>sd :!rm ~/.local/share/nvim/swap/*<cr>
@@ -80,10 +80,6 @@ autocmd FileType haskell nnoremap <buffer><leader>rh :InteroHide<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rl :InteroReload<cr>
 autocmd FileType python nnoremap <buffer><leader>rr :!clear && python %<cr>
 autocmd FileType python nnoremap <buffer><leader>rt :!clear && pytest<cr>
-autocmd FileType rust nnoremap <buffer><leader>rr :!clear && cargo run<cr>
-autocmd FileType rust nnoremap <buffer><leader>rb :!clear && cargo build<cr>
-autocmd FileType rust nnoremap <buffer><leader>rt :!clear && cargo test<cr>
-
 
 set ruler
 set number
@@ -114,22 +110,12 @@ let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#show_buffers=1
 set laststatus=2
 
-" syntastic
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-
-let g:syntastic_always_populate_loc_list=1
-let g:syntastic_auto_loc_list=1
-let g:syntastic_check_on_open=0
-let g:syntastic_check_on_wq=0
-
 " clang format
 let g:clang_format#style_options = {
             \ "AccessModifierOffset" : -4,
             \ "AllowShortIfStatementsOnASingleLine" : "true",
             \ "AlwaysBreakTemplateDeclarations" : "true",
-            \ "Standard" : "C++11"}
+            \ "Standard" : "C++14"}
 
 " haskell
 let g:no_haskell_conceal=1
@@ -137,6 +123,7 @@ let g:haskell_conceal=0
 let g:haskell_conceal_wide=0
 let g:haskell_conceal_enumerations=0
 let g:haskell_tabular=1
+let g:intero_type_on_hover = 1
 au FileType haskell setl sw=2 sts=2 et
 
 " python
@@ -148,12 +135,7 @@ let g:jsx_ext_required = 0
 " markdown
 let g:vim_markdown_folding_disabled = 1
 
-" rust
-let g:autofmt_autosave = 1
-set hidden
-let g:racer_cmd = "/Users/kgwinnup/.cargo/bin/racer"
-let g:deoplete#sources#rust#racer_binary='/Users/kgwinnup/.cargo/bin/racer'
-let g:deoplete#sources#rust#racer_binary='/Users/kgwinnup/.cargo/bin/racer'
-let g:deoplete#sources#rust#rust_source_path='/Users/kgwinnup/.cargo/src/rust/src'
-let g:racer_experimental_completer = 1
-
+" Use deoplete.
+let g:deoplete#enable_at_startup = 1
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
