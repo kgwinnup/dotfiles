@@ -17,6 +17,7 @@ Plugin 'vim-airline/vim-airline-themes'
 Plugin 'scrooloose/nerdtree'
 Plugin 'vim-scripts/gitignore'
 Plugin 'rhysd/vim-clang-format'
+Plugin 'Rip-Rip/clang_complete'
 Plugin 'vim-scripts/haskell.vim'
 Plugin 'parsonsmatt/intero-neovim'
 "Plugin 'eagletmt/neco-ghc'
@@ -116,6 +117,8 @@ let g:clang_format#style_options = {
             \ "AllowShortIfStatementsOnASingleLine" : "true",
             \ "AlwaysBreakTemplateDeclarations" : "true",
             \ "Standard" : "C++14"}
+let g:clang_library_path='/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib'
+
 
 " haskell
 let g:no_haskell_conceal=1
@@ -139,3 +142,4 @@ let g:vim_markdown_folding_disabled = 1
 let g:deoplete#enable_at_startup = 1
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
