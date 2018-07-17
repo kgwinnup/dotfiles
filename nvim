@@ -20,7 +20,6 @@ Plugin 'rhysd/vim-clang-format'
 Plugin 'Rip-Rip/clang_complete'
 Plugin 'vim-scripts/haskell.vim'
 Plugin 'parsonsmatt/intero-neovim'
-"Plugin 'eagletmt/neco-ghc'
 Plugin 'nbouscal/vim-stylish-haskell'
 Plugin 'vim-scripts/cabal.vim'
 Plugin 'elzr/vim-json'
@@ -72,6 +71,9 @@ autocmd FileType c,cpp nnoremap <buffer><leader>rr :!clear && make run<cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>rt :!clear && make test<cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>rb :!clear && make<cr>
 autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
+autocmd FileType ocaml nnoremap <buffer><leader>rr :!clear && ./%<cr>
+autocmd FileType ocaml nnoremap <buffer><leader>t :MerlinTypeOf<cr>
+autocmd FileType ocaml nnoremap <buffer><leader>re :!clear && ocamlscript %<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rr :!clear && stack run<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rt :!clear && stack test<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rb :!clear && stack build<cr>
@@ -187,8 +189,3 @@ for tool in s:opam_packages
   endif
 endfor
 " ## end of OPAM user-setup addition for vim / base ## keep this line
-" ## added by OPAM user-setup for vim / ocp-indent ## 85be08d9d983cb7a7aac6ee703f7991a ## you can edit, but keep this line
-if count(s:opam_available_tools,"ocp-indent") == 0
-  source "/Users/kgwinnup/.opam/4.05.0/share/vim/syntax/ocp-indent.vim"
-endif
-" ## end of OPAM user-setup addition for vim / ocp-indent ## keep this line
