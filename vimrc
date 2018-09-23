@@ -71,6 +71,9 @@ autocmd FileType go nnoremap <buffer><leader>rb :!clear && go build<cr>
 autocmd FileType go nnoremap <buffer><leader>rt :!clear && go test<cr>
 autocmd FileType go nnoremap <buffer><leader>t :GoInfo<cr>
 
+com! FormatXML :%!python3 -c "import xml.dom.minidom, sys; print(xml.dom.minidom.parse(sys.stdin).toprettyxml())"
+nnoremap = :FormatXML<Cr>
+
 set ruler
 set number
 "set foldcolumn=2
