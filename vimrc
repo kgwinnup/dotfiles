@@ -26,6 +26,7 @@ Plugin 'lervag/vimtex'
 Plugin 'nvie/vim-flake8'
 Plugin 'fatih/vim-go'
 Plugin 'mdempsky/gocode', {'rtp': 'vim/'}
+Plugin 'jalvesaq/Nvim-R'
 
 " end plugin includes
 call vundle#end()            " required
@@ -70,6 +71,10 @@ autocmd FileType python nnoremap <buffer><leader>rt :!clear && python -m pytest 
 autocmd FileType go nnoremap <buffer><leader>rb :!clear && go build<cr>
 autocmd FileType go nnoremap <buffer><leader>rt :!clear && go test<cr>
 autocmd FileType go nnoremap <buffer><leader>t :GoInfo<cr>
+autocmd FileType r nnoremap <buffer><leader>rr :call SendParagraphToR("silent", "down")<cr>
+autocmd FileType r nnoremap <buffer><leader>rs :call StartR("R")<cr>
+autocmd FileType r nnoremap <buffer><leader>rk :call StopR("R")<cr>
+autocmd FileType r nnoremap <buffer><leader>rf :call SendFileToR("silent")<cr>
 
 com! FormatXML :%!python3 -c "import xml.dom.minidom, sys; print(xml.dom.minidom.parse(sys.stdin).toprettyxml())"
 nnoremap = :FormatXML<Cr>
@@ -123,4 +128,7 @@ let g:jsx_ext_required = 0
 " markdown
 let g:vim_markdown_folding_disabled = 1
 
-
+" R
+let R_assign = 0
+let R_in_buffer = 0
+let R_applescript = 1
