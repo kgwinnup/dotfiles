@@ -27,6 +27,8 @@ Plugin 'nvie/vim-flake8'
 Plugin 'fatih/vim-go'
 Plugin 'mdempsky/gocode', {'rtp': 'vim/'}
 Plugin 'jalvesaq/Nvim-R'
+Plugin 'neovimhaskell/haskell-vim.git'
+Plugin 'nbouscal/vim-stylish-haskell'
 
 " end plugin includes
 call vundle#end()            " required
@@ -66,6 +68,9 @@ autocmd FileType c,cpp nnoremap <buffer><leader>rr :!clear && make run<cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>rt :!clear && make test<cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>rb :!clear && make<cr>
 autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
+autocmd FileType ocaml nnoremap <buffer><leader>rr :!clear && ./%<cr>
+autocmd FileType ocaml nnoremap <buffer><leader>t :MerlinTypeOf<cr>
+autocmd FileType ocaml nnoremap <buffer><leader>re :!clear && ocamlscript %<cr>
 autocmd FileType python nnoremap <buffer><leader>rr :!clear && python %<cr>
 autocmd FileType python nnoremap <buffer><leader>rt :!clear && python -m pytest -s %<cr>
 autocmd FileType go nnoremap <buffer><leader>rb :!clear && go build<cr>
@@ -75,6 +80,7 @@ autocmd FileType r nnoremap <buffer><leader>rr :call SendParagraphToR("silent", 
 autocmd FileType r nnoremap <buffer><leader>rs :call StartR("R")<cr>
 autocmd FileType r nnoremap <buffer><leader>rk :call StopR("R")<cr>
 autocmd FileType r nnoremap <buffer><leader>rf :call SendFileToR("silent")<cr>
+autocmd FileType haskell nnoremap <buffer><leader>rr :!clear && stack %<cr>
 
 com! FormatXML :%!python3 -c "import xml.dom.minidom, sys; print(xml.dom.minidom.parse(sys.stdin).toprettyxml())"
 nnoremap = :FormatXML<Cr>
@@ -132,3 +138,17 @@ let g:vim_markdown_folding_disabled = 1
 let R_assign = 0
 let R_in_buffer = 0
 let R_applescript = 1
+
+" Haskell
+au FileType haskell setl sw=2 sts=2 et
+
+" Ocaml
+au FileType ocaml setl sw=2 sts=2 et
+let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
+execute "set rtp+=" . g:opamshare . "/merlin/vim"
+"Also run the following line in vim to index the documentation:
+":execute "helptags " . g:opamshare . "/merlin/vim/doc"
+let g:deoplete#omni_patterns = {}
+let g:deoplete#omni_patterns.ocaml = '.*'
+autocmd FileType ocaml execute "set rtp+=" . substitute(system('opam config var share'), '\n$', '', '''') . "/ocp-indent/vim/indent/ocaml.vim"
+
