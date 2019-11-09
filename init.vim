@@ -31,7 +31,7 @@ Plugin 'fatih/vim-go'
 Plugin 'mdempsky/gocode', {'rtp': 'vim/'}
 Plugin 'jalvesaq/Nvim-R'
 Plugin 'neovimhaskell/haskell-vim.git'
-Plugin 'nbouscal/vim-stylish-haskell'
+Plugin 'alx741/vim-stylishask'
 
 " end plugin includes
 call vundle#end()            " required
@@ -69,6 +69,7 @@ nnoremap <leader>sf :setlocal nospell<cr>
 nnoremap <leader>tt :Nuake<cr>
 tnoremap <leader>tt <C-\><C-n>:Nuake<CR>
 inoremap jj <esc>
+
 autocmd FileType c,cpp nnoremap <buffer><leader>rr :!clear && make run<cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>rt :!clear && make test<cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>rb :!clear && make<cr>
@@ -83,7 +84,8 @@ autocmd FileType r nnoremap <buffer><leader>rs :call StartR("R")<cr>
 autocmd FileType r nnoremap <buffer><leader>rk :call StopR("R")<cr>
 autocmd FileType r nnoremap <buffer><leader>rf :call SendFileToR("silent")<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rr :!clear && stack %<cr>
-autocmd FileType haskell nnoremap <buffer><leader>rb :!clear && stack build<cr>
+"autocmd FileType haskell nnoremap <buffer><leader>rb :!clear && stack build<cr>
+autocmd FileType haskell nnoremap <buffer><leader>rb :terminal stack build<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rt :!clear && stack test<cr>
 
 com! FormatXML :%!python3 -c "import xml.dom.minidom, sys; print(xml.dom.minidom.parse(sys.stdin).toprettyxml())"
@@ -144,5 +146,6 @@ let R_applescript = 1
 
 " Haskell
 au FileType haskell setl sw=2 sts=2 et
-
+autocmd FileType haskell let b:autoformat_autoindent=0
+let g:stylishask_on_save = 1
 
