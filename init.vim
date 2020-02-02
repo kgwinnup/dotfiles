@@ -84,9 +84,8 @@ autocmd FileType r nnoremap <buffer><leader>rs :call StartR("R")<cr>
 autocmd FileType r nnoremap <buffer><leader>rk :call StopR("R")<cr>
 autocmd FileType r nnoremap <buffer><leader>rf :call SendFileToR("silent")<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rr :!clear && stack %<cr>
-"autocmd FileType haskell nnoremap <buffer><leader>rb :!clear && stack build<cr>
-autocmd FileType haskell nnoremap <buffer><leader>rb :terminal stack build<cr>
-autocmd FileType haskell nnoremap <buffer><leader>rt :!clear && stack test<cr>
+autocmd FileType haskell nnoremap <buffer><leader>rb :!clear && stack build<cr>
+autocmd FileType haskell nnoremap <buffer><leader>rt :call LanguageClient#textDocument_hover()<cr>
 
 com! FormatXML :%!python3 -c "import xml.dom.minidom, sys; print(xml.dom.minidom.parse(sys.stdin).toprettyxml())"
 com! FormatJSON :%!python3 -m json.tool
