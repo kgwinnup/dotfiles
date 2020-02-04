@@ -1,5 +1,4 @@
 set shortmess=at
-
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
@@ -22,7 +21,7 @@ Plugin 'ervandew/supertab'
 Plugin 'elzr/vim-json'
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
-Plugin 'pangloss/vim-javascript'
+Plugin 'jason0x43/vim-js-indent'
 Plugin 'mxw/vim-jsx'
 Plugin 'lervag/vimtex'
 Plugin 'nvie/vim-flake8'
@@ -48,7 +47,6 @@ set t_Co=256
 syntax enable
 set background=dark
 colorscheme gruvbox
-"LuciusDarkLowContrast
 
 let mapleader=" "
 let g:mapleader=" "
@@ -75,7 +73,8 @@ autocmd FileType python nnoremap <buffer><leader>rt :!clear && python -m pytest 
 autocmd FileType go nnoremap <buffer><leader>rb :!clear && go build<cr>
 autocmd FileType go nnoremap <buffer><leader>rt :!clear && go test<cr>
 autocmd FileType go nnoremap <buffer><leader>t :GoInfo<cr>
-autocmd FileType r nnoremap <buffer><leader>rr :call SendParagraphToR("silent", "down")<cr>
+"autocmd FileType r nnoremap <buffer><leader>rr :call SendParagraphToR("silent", "down")<cr>
+autocmd FileType r nnoremap <buffer><leader>rr :call SendToR()<cr>
 autocmd FileType r nnoremap <buffer><leader>rs :call StartR("R")<cr>
 autocmd FileType r nnoremap <buffer><leader>rk :call StopR("R")<cr>
 autocmd FileType r nnoremap <buffer><leader>rf :call SendFileToR("silent")<cr>
@@ -87,6 +86,23 @@ com! FormatXML :%!python3 -c "import xml.dom.minidom, sys; print(xml.dom.minidom
 com! FormatJSON :%!python -m json.tool
 nnoremap = :FormatXML<Cr>
 nnoremap = :FormatJSON<Cr>
+
+function SendToR ()
+    let startline = line(".")
+    let save_cursor = getpos(".")
+    let line = SanitizeRLine(getline("."))
+    let i = line(".")
+    while i > 0 && line !~ "function"
+        let i -= 1
+        let line = SanitizeRLine(getline(i))
+    endwhile
+
+    if i == 0
+        let out = SendParagraphToR("silent", "down")
+    else
+        let out = SendFunctionToR("silent", "down")
+    endif
+endfunction
 
 autocmd BufNewFile,BufRead *.rule set syntax=ocaml
 
@@ -139,11 +155,10 @@ let g:jsx_ext_required = 0
 " markdown
 let g:vim_markdown_folding_disabled = 1
 
+" Haskell
+au FileType haskell setl sw=2 sts=2 et
+
 " R
 let R_assign = 0
 let R_in_buffer = 0
 let R_applescript = 1
-
-" Haskell
-au FileType haskell setl sw=2 sts=2 et
-
