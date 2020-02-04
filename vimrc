@@ -94,11 +94,10 @@ function SendToR ()
     let i = line(".")
     while i > 0 && line !~ "function"
         let i -= 1
-        let line = SanitizeRLine(getline(i))
     endwhile
 
     if i == 0
-        let out = SendParagraphToR("silent", "down")
+        let out = SendLineToR("down")
     else
         let out = SendFunctionToR("silent", "down")
     endif
