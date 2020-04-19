@@ -1,5 +1,4 @@
 set shortmess=at
-
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
@@ -11,7 +10,6 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 " start plugin includes
 
-Plugin 'Lenovsky/nuake'
 Plugin 'jonathanfilip/vim-lucius'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
@@ -23,7 +21,7 @@ Plugin 'ervandew/supertab'
 Plugin 'elzr/vim-json'
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
-Plugin 'pangloss/vim-javascript'
+Plugin 'jason0x43/vim-js-indent'
 Plugin 'mxw/vim-jsx'
 Plugin 'lervag/vimtex'
 Plugin 'nvie/vim-flake8'
@@ -31,7 +29,7 @@ Plugin 'fatih/vim-go'
 Plugin 'mdempsky/gocode', {'rtp': 'vim/'}
 Plugin 'jalvesaq/Nvim-R'
 Plugin 'neovimhaskell/haskell-vim.git'
-Plugin 'alx741/vim-stylishask'
+Plugin 'nbouscal/vim-stylish-haskell'
 
 " end plugin includes
 call vundle#end()            " required
@@ -55,7 +53,6 @@ let g:mapleader=" "
 set timeoutlen=2000
 
 " keybinds
-tnoremap <Esc> <C-\><C-n>
 nnoremap <leader>np :bprevious<cr>
 nnoremap <leader>nn :bnext<cr>
 nnoremap <leader>nd :bdelete<cr>
@@ -66,10 +63,7 @@ nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>st :ALEToggle<cr>
 nnoremap <leader>ss :setlocal spell spelllang=en_us<cr>
 nnoremap <leader>sf :setlocal nospell<cr>
-nnoremap <leader>tt :Nuake<cr>
-tnoremap <leader>tt <C-\><C-n>:Nuake<CR>
 inoremap jj <esc>
-
 autocmd FileType c,cpp nnoremap <buffer><leader>rr :!clear && make run<cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>rt :!clear && make test<cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>rb :!clear && make<cr>
@@ -79,18 +73,37 @@ autocmd FileType python nnoremap <buffer><leader>rt :!clear && python -m pytest 
 autocmd FileType go nnoremap <buffer><leader>rb :!clear && go build<cr>
 autocmd FileType go nnoremap <buffer><leader>rt :!clear && go test<cr>
 autocmd FileType go nnoremap <buffer><leader>t :GoInfo<cr>
-autocmd FileType r nnoremap <buffer><leader>rr :call SendParagraphToR("silent", "down")<cr>
+"autocmd FileType r nnoremap <buffer><leader>rr :call SendParagraphToR("silent", "down")<cr>
+autocmd FileType r nnoremap <buffer><leader>rr :call SendToR()<cr>
 autocmd FileType r nnoremap <buffer><leader>rs :call StartR("R")<cr>
 autocmd FileType r nnoremap <buffer><leader>rk :call StopR("R")<cr>
 autocmd FileType r nnoremap <buffer><leader>rf :call SendFileToR("silent")<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rr :!clear && stack %<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rb :!clear && stack build<cr>
-autocmd FileType haskell nnoremap <buffer><leader>rt :call LanguageClient#textDocument_hover()<cr>
+autocmd FileType haskell nnoremap <buffer><leader>rt :!clear && stack test<cr>
 
 com! FormatXML :%!python3 -c "import xml.dom.minidom, sys; print(xml.dom.minidom.parse(sys.stdin).toprettyxml())"
-com! FormatJSON :%!python3 -m json.tool
+com! FormatJSON :%!python -m json.tool
 nnoremap = :FormatXML<Cr>
 nnoremap = :FormatJSON<Cr>
+
+function SendToR ()
+    let startline = line(".")
+    let save_cursor = getpos(".")
+    let line = SanitizeRLine(getline("."))
+    let i = line(".")
+    while i > 0 && line !~ "function"
+        let i -= 1
+    endwhile
+
+    if i == 0
+        let out = SendLineToR("down")
+    else
+        let out = SendFunctionToR("silent", "down")
+    endif
+endfunction
+
+autocmd BufNewFile,BufRead *.rule set syntax=ocaml
 
 set ruler
 set number
@@ -129,6 +142,9 @@ let g:clang_format#style_options = {
             \ "AlwaysBreakTemplateDeclarations" : "true",
             \ "Standard" : "C++11"}
 
+" python
+let g:ycm_python_binary_path = 'python'
+
 " supertab
 let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 
@@ -137,6 +153,9 @@ let g:jsx_ext_required = 0
 
 " markdown
 let g:vim_markdown_folding_disabled = 1
+
+" Haskell
+au FileType haskell setl sw=2 sts=2 et
 
 " R
 let R_assign = 0
