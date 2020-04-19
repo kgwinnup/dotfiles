@@ -148,3 +148,6 @@ au FileType haskell setl sw=2 sts=2 et
 autocmd FileType haskell let b:autoformat_autoindent=0
 let g:stylishask_on_save = 1
 
+" Golang
+let g:go_fmt_command = "goimports"
+
