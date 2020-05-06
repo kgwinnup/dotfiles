@@ -13,6 +13,7 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'jonathanfilip/vim-lucius'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
+Plugin 'morhetz/gruvbox'
 Plugin 'flazz/vim-colorschemes'
 Plugin 'scrooloose/nerdtree'
 Plugin 'vim-scripts/gitignore'
@@ -25,11 +26,13 @@ Plugin 'jason0x43/vim-js-indent'
 Plugin 'mxw/vim-jsx'
 Plugin 'lervag/vimtex'
 Plugin 'nvie/vim-flake8'
+Plugin 'LnL7/vim-nix'
 Plugin 'fatih/vim-go'
 Plugin 'mdempsky/gocode', {'rtp': 'vim/'}
 Plugin 'jalvesaq/Nvim-R'
 Plugin 'neovimhaskell/haskell-vim.git'
 Plugin 'nbouscal/vim-stylish-haskell'
+Plugin 'benmills/vimux'
 
 " end plugin includes
 call vundle#end()            " required
@@ -63,6 +66,8 @@ nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>st :ALEToggle<cr>
 nnoremap <leader>ss :setlocal spell spelllang=en_us<cr>
 nnoremap <leader>sf :setlocal nospell<cr>
+nnoremap <leader>vp :VimuxPromptCommand<cr>
+nnoremap <leader>vl :VimuxRunLastCommand<cr>
 inoremap jj <esc>
 autocmd FileType c,cpp nnoremap <buffer><leader>rr :!clear && make run<cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>rt :!clear && make test<cr>
@@ -77,10 +82,11 @@ autocmd FileType go nnoremap <buffer><leader>t :GoInfo<cr>
 autocmd FileType r nnoremap <buffer><leader>rr :call SendToR()<cr>
 autocmd FileType r nnoremap <buffer><leader>rs :call StartR("R")<cr>
 autocmd FileType r nnoremap <buffer><leader>rk :call StopR("R")<cr>
-autocmd FileType r nnoremap <buffer><leader>rf :call SendFileToR("silent")<cr>
+autocmd FileType r nnoremap <buffer><leader>rf :call SendParagraphToR("silent", "down")<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rr :!clear && stack %<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rb :!clear && stack build<cr>
 autocmd FileType haskell nnoremap <buffer><leader>rt :!clear && stack test<cr>
+
 
 com! FormatXML :%!python3 -c "import xml.dom.minidom, sys; print(xml.dom.minidom.parse(sys.stdin).toprettyxml())"
 com! FormatJSON :%!python -m json.tool
@@ -97,13 +103,13 @@ function SendToR ()
     endwhile
 
     if i == 0
-        let out = SendLineToR("down")
+        let out = SendParagraphToR("silent", "down")
     else
         let out = SendFunctionToR("silent", "down")
     endif
 endfunction
 
-autocmd BufNewFile,BufRead *.rule set syntax=ocaml
+autocmd BufNewFile,BufRead *.rmd set syntax=r
 
 set ruler
 set number
@@ -162,11 +168,8 @@ let R_assign = 0
 let R_in_buffer = 0
 let R_applescript = 1
 
-" Haskell
-au FileType haskell setl sw=2 sts=2 et
-autocmd FileType haskell let b:autoformat_autoindent=0
-let g:stylishask_on_save = 1
-
-" Golang
+" Go
 let g:go_fmt_command = "goimports"
 
+let g:python2_host_prog = $HOME + '/anaconda3/bin/python'
+let g:python3_host_prog = $HOME + '/anaconda3/bin/python3'
