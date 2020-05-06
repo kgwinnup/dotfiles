@@ -31,7 +31,7 @@ Plugin 'fatih/vim-go'
 Plugin 'mdempsky/gocode', {'rtp': 'vim/'}
 Plugin 'jalvesaq/Nvim-R'
 Plugin 'neovimhaskell/haskell-vim.git'
-Plugin 'nbouscal/vim-stylish-haskell'
+Plugin 'alx741/vim-stylishask'
 Plugin 'benmills/vimux'
 
 " end plugin includes
@@ -43,74 +43,8 @@ if has("gui_macvim")
     set guifont=mononoki:h13
 endif
 
-" set omnifunc=syntaxcomplete#Complete
 " custom config below
-
-set t_Co=256
-syntax enable
-set background=dark
-colorscheme gruvbox
-
-let mapleader=" "
-let g:mapleader=" "
-set timeoutlen=2000
-
-" keybinds
-nnoremap <leader>np :bprevious<cr>
-nnoremap <leader>nn :bnext<cr>
-nnoremap <leader>nd :bdelete<cr>
-nnoremap <leader>no :only<cr>
-nnoremap <leader>ns <C-W><C-W>
-nnoremap <leader>= <C-w>=
-nnoremap <leader>nt :NERDTreeToggle<cr>
-nnoremap <leader>st :ALEToggle<cr>
-nnoremap <leader>ss :setlocal spell spelllang=en_us<cr>
-nnoremap <leader>sf :setlocal nospell<cr>
-nnoremap <leader>vp :VimuxPromptCommand<cr>
-nnoremap <leader>vl :VimuxRunLastCommand<cr>
-inoremap jj <esc>
-autocmd FileType c,cpp nnoremap <buffer><leader>rr :!clear && make run<cr>
-autocmd FileType c,cpp nnoremap <buffer><leader>rt :!clear && make test<cr>
-autocmd FileType c,cpp nnoremap <buffer><leader>rb :!clear && make<cr>
-autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
-autocmd FileType python nnoremap <buffer><leader>rr :!clear && python %<cr>
-autocmd FileType python nnoremap <buffer><leader>rt :!clear && python -m pytest -s %<cr>
-autocmd FileType go nnoremap <buffer><leader>rb :!clear && go build<cr>
-autocmd FileType go nnoremap <buffer><leader>rt :!clear && go test<cr>
-autocmd FileType go nnoremap <buffer><leader>t :GoInfo<cr>
-"autocmd FileType r nnoremap <buffer><leader>rr :call SendParagraphToR("silent", "down")<cr>
-autocmd FileType r nnoremap <buffer><leader>rr :call SendToR()<cr>
-autocmd FileType r nnoremap <buffer><leader>rs :call StartR("R")<cr>
-autocmd FileType r nnoremap <buffer><leader>rk :call StopR("R")<cr>
-autocmd FileType r nnoremap <buffer><leader>rf :call SendParagraphToR("silent", "down")<cr>
-autocmd FileType haskell nnoremap <buffer><leader>rr :!clear && stack %<cr>
-autocmd FileType haskell nnoremap <buffer><leader>rb :!clear && stack build<cr>
-autocmd FileType haskell nnoremap <buffer><leader>rt :!clear && stack test<cr>
-
-
-com! FormatXML :%!python3 -c "import xml.dom.minidom, sys; print(xml.dom.minidom.parse(sys.stdin).toprettyxml())"
-com! FormatJSON :%!python -m json.tool
-nnoremap = :FormatXML<Cr>
-nnoremap = :FormatJSON<Cr>
-
-function SendToR ()
-    let startline = line(".")
-    let save_cursor = getpos(".")
-    let line = SanitizeRLine(getline("."))
-    let i = line(".")
-    while i > 0 && line !~ "function"
-        let i -= 1
-    endwhile
-
-    if i == 0
-        let out = SendParagraphToR("silent", "down")
-    else
-        let out = SendFunctionToR("silent", "down")
-    endif
-endfunction
-
-autocmd BufNewFile,BufRead *.rmd set syntax=r
-
+"
 set ruler
 set number
 "set foldcolumn=2
@@ -141,32 +75,87 @@ let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#show_buffers=1
 set laststatus=2
 
+set t_Co=256
+syntax enable
+set background=dark
+colorscheme gruvbox
+
+let mapleader=" "
+let g:mapleader=" "
+set timeoutlen=2000
+
+let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
+let g:jsx_ext_required = 0
+let g:vim_markdown_folding_disabled = 1
+
+
+" keybinds
+nnoremap <leader>np :bprevious<cr>
+nnoremap <leader>nn :bnext<cr>
+nnoremap <leader>nd :bdelete<cr>
+nnoremap <leader>no :only<cr>
+nnoremap <leader>ns <C-W><C-W>
+nnoremap <leader>= <C-w>=
+nnoremap <leader>nt :NERDTreeToggle<cr>
+nnoremap <leader>st :ALEToggle<cr>
+nnoremap <leader>ss :setlocal spell spelllang=en_us<cr>
+nnoremap <leader>sf :setlocal nospell<cr>
+nnoremap <leader>vp :VimuxPromptCommand<cr>
+nnoremap <leader>vl :VimuxRunLastCommand<cr>
+autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
+autocmd FileType go nnoremap <buffer><leader>t :GoInfo<cr>
+autocmd BufNewFile,BufRead *.rmd set syntax=r
+
+com! FormatXML :%!python3 -c "import xml.dom.minidom, sys; print(xml.dom.minidom.parse(sys.stdin).toprettyxml())"
+com! FormatJSON :%!python -m json.tool
+nnoremap = :FormatXML<Cr>
+nnoremap = :FormatJSON<Cr>
+
+
+"
+" R 
+"
+augroup ft_r
+
+function SendToR ()
+    let startline = line(".")
+    let save_cursor = getpos(".")
+    let line = SanitizeRLine(getline("."))
+    let i = line(".")
+    while i > 0 && line !~ "function"
+        let i -= 1
+    endwhile
+
+    if i == 0
+        let out = SendParagraphToR("silent", "down")
+    else
+        let out = SendFunctionToR("silent", "down")
+    endif
+endfunction
+
+let R_assign = 0
+let R_in_buffer = 0
+let R_applescript = 1
+
+autocmd FileType r nnoremap <buffer><leader>rr :call SendToR()<cr>
+autocmd FileType r nnoremap <buffer><leader>rs :call StartR("R")<cr>
+autocmd FileType r nnoremap <buffer><leader>rk :call StopR("R")<cr>
+autocmd FileType r nnoremap <buffer><leader>rf :call SendParagraphToR("silent", "down")<cr>
+augroup END
+
+"
+" Haskell
+"
+augroup ft_haskell
+au FileType haskell setl sw=2 sts=2 et
+augroup END
+
 " clang format
 let g:clang_format#style_options = {
             \ "AccessModifierOffset" : -4,
             \ "AllowShortIfStatementsOnASingleLine" : "true",
             \ "AlwaysBreakTemplateDeclarations" : "true",
             \ "Standard" : "C++11"}
-
-" python
-let g:ycm_python_binary_path = 'python'
-
-" supertab
-let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
-
-" javascript/jsx
-let g:jsx_ext_required = 0
-
-" markdown
-let g:vim_markdown_folding_disabled = 1
-
-" Haskell
-au FileType haskell setl sw=2 sts=2 et
-
-" R
-let R_assign = 0
-let R_in_buffer = 0
-let R_applescript = 1
 
 " Go
 let g:go_fmt_command = "goimports"
