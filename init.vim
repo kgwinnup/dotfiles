@@ -10,7 +10,6 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 " start plugin includes
 
-Plugin 'jonathanfilip/vim-lucius'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'morhetz/gruvbox'
@@ -20,13 +19,9 @@ Plugin 'vim-scripts/gitignore'
 Plugin 'rhysd/vim-clang-format'
 Plugin 'ervandew/supertab'
 Plugin 'elzr/vim-json'
-Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'jason0x43/vim-js-indent'
 Plugin 'mxw/vim-jsx'
-Plugin 'lervag/vimtex'
-Plugin 'nvie/vim-flake8'
-Plugin 'LnL7/vim-nix'
 Plugin 'fatih/vim-go'
 Plugin 'mdempsky/gocode', {'rtp': 'vim/'}
 Plugin 'jalvesaq/Nvim-R'
