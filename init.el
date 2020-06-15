@@ -1,4 +1,6 @@
-;; Packages
+;;
+;; Packages and General stuff
+;;
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
@@ -53,18 +55,6 @@
   (interactive)
   (load-file "~/.emacs.d/init.el"))
 
-(defun set-solarized-dark ()
-  (interactive)
-  (load-theme 'solarized-dark))
-
-(defun set-solarized-light ()
-  (interactive)
-  (load-theme 'solarized-light))
-
-(defun set-gruvbox ()
-  (interactive)
-  (load-theme 'gruvbox-dark-soft))
-
 (use-package neotree
   :ensure t
   :init
@@ -79,9 +69,11 @@
   :config
   (add-hook 'go-mode-hook
 			(lambda ()
-			  (flycheck-mode)
-			  (setq gofmt-command "goimports")
 			  (setq exec-path (append exec-path '("~/go/bin/")))
+			  ;;(use-package go-errcheck
+			  ;;	:ensure t)
+			  ;;(flycheck-mode)
+			  (setq gofmt-command "goimports")
 			  (add-hook 'before-save-hook 'gofmt-before-save)
 			  (use-package company-go
 				:ensure t
@@ -114,9 +106,9 @@
 					   "n o" 'delete-other-windows
 					   "n d" 'kill-buffer-and-window
 					   ;; visual/theme stuff
-					   "t d" 'set-solarized-dark
-					   "t l" 'set-solarized-light
-					   "t g" 'set-gruvbox
+					   "t d" '(lambda () (interactive) (load-theme 'solarized-dark))
+					   "t l" '(lambda () (interactive) (load-theme 'solarized-light))
+					   "t g" '(lambda () (interactive) (load-theme 'gruvbox-dark-soft))
 					   "=" 'text-scale-increase
 					   "-" 'text-scale-decrease))
   (add-hook 'neotree-mode-hook
