@@ -14,7 +14,11 @@
 (require 'use-package)
 
 ;;(load-theme 'naysayer 1)
-(load-theme 'solarized-dark 1)
+(use-package solarized-theme
+  :ensure t
+  :init
+  (load-theme 'solarized-dark 1))
+
 (tool-bar-mode -1)
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -47,25 +51,26 @@
 (use-package neotree
   :ensure t)
 
-(require 'bind-map)
-(bind-map my-base-leader-map
-		  :keys ("M-m")
-		  :evil-keys ("SPC")
-		  :evil-states (normal motion visual)
-		  :bindings ("n t" 'neotree-toggle
-					 "c o" 'open-config-file
-					 "c l" 'reload-config-file
-					 ;; buffer keybindings
-					 "n n" 'next-buffer
-					 "n p" 'previous-buffer
-					 "n o" 'delete-other-windows
-					 "n d" 'kill-buffer-and-window))
-
-(add-hook 'neotree-mode-hook
+(use-package bind-map
+  :ensure t
+  :init
+  (bind-map my-base-leader-map
+			:keys ("M-m")
+			:evil-keys ("SPC")
+			:evil-states (normal motion visual)
+			:bindings ("n t" 'neotree-toggle
+					   "c o" 'open-config-file
+					   "c l" 'reload-config-file
+					   ;; buffer keybindings
+					   "n n" 'next-buffer
+					   "n p" 'previous-buffer
+					   "n o" 'delete-other-windows
+					   "n d" 'kill-buffer-and-window))
+  (add-hook 'neotree-mode-hook
 		  (lambda ()
 			(define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
 			(define-key evil-normal-state-local-map (kbd "t") 'neotree-hide)
-			(define-key evil-normal-state-local-map (kbd "r") 'neotree-refresh)))
+			(define-key evil-normal-state-local-map (kbd "r") 'neotree-refresh))))
 
 (use-package go-mode
   :ensure t
