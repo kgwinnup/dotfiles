@@ -50,6 +50,14 @@
   (interactive)
   (load-file "~/.emacs.d/init.el"))
 
+(defun set-solarized-dark ()
+  (interactive)
+  (load-theme 'solarized-dark))
+
+(defun set-solarized-light ()
+  (interactive)
+  (load-theme 'solarized-light))
+
 (use-package neotree
   :ensure t
   :init
@@ -98,6 +106,8 @@
 					   "n o" 'delete-other-windows
 					   "n d" 'kill-buffer-and-window
 					   ;; visual/theme stuff
+					   "t d" 'set-solarized-dark
+					   "t l" 'set-solarized-light
 					   "=" 'text-scale-increase
 					   "-" 'text-scale-decrease))
   (add-hook 'neotree-mode-hook
