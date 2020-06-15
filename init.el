@@ -1,9 +1,10 @@
 ;; Packages
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                         ("elpa" . "https://elpa.gnu.org/packages/")
-                         ))
+                         ("elpa" . "https://elpa.gnu.org/packages/")))
+
 (package-initialize)
+(shell-command "touch ~/.emacs.d/custom.el")
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 
@@ -13,13 +14,8 @@
   (package-install 'use-package))
 (require 'use-package)
 
-;;(load-theme 'naysayer 1)
-(use-package solarized-theme
-  :ensure t
-  :init
-  (load-theme 'solarized-dark 1))
-
 (tool-bar-mode -1)
+(scroll-bar-mode -1)
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (setq-default
@@ -32,6 +28,12 @@
  indent-tabs-mode t
  c-basic-offset 4
  tab-width 4)
+
+;;(load-theme 'naysayer 1)
+(use-package solarized-theme
+  :ensure t
+  :init
+  (load-theme 'solarized-dark 1))
 
 (use-package evil
   :ensure t
@@ -48,8 +50,33 @@
   (interactive)
   (load-file "~/.emacs.d/init.el"))
 
+(defun set-solarized-dark ()
+  (interactive)
+  (load-theme 'solarized-dark))
+
+(defun set-solarized-light ()
+  (interactive)
+  (load-theme 'solarized-light))
+
+(defun set-root-dir ()
+  (interactive)
+  (neotree-change-root (buffer-file-name)))
+
 (use-package neotree
-  :ensure t)
+  :ensure t
+  :init
+  (setq neo-theme 'arrow))
+
+(use-package go-mode
+  :ensure t
+  :init)
+
+(use-package company
+  :ensure t
+  :config
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 1)
+  (add-hook 'after-init-hook 'global-company-mode))
 
 (use-package bind-map
   :ensure t
@@ -65,20 +92,15 @@
 					   "n n" 'next-buffer
 					   "n p" 'previous-buffer
 					   "n o" 'delete-other-windows
-					   "n d" 'kill-buffer-and-window))
+					   "n d" 'kill-buffer-and-window
+					   ;; visual/theme stuff
+					   "t d" 'set-solarized-dark
+					   "t l" 'set-solarized-light
+					   "=" 'text-scale-increase
+					   "-" 'text-scale-decrease))
   (add-hook 'neotree-mode-hook
 		  (lambda ()
 			(define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
 			(define-key evil-normal-state-local-map (kbd "t") 'neotree-hide)
 			(define-key evil-normal-state-local-map (kbd "r") 'neotree-refresh))))
 
-(use-package go-mode
-  :ensure t
-  :init)
-
-(use-package company
-  :ensure t
-  :config
-  (setq company-idle-delay 0)
-  (setq company-minimum-prefix-length 1)
-  (add-hook 'after-init-hook 'global-company-mode))
