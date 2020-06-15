@@ -31,9 +31,12 @@
 
 ;;(load-theme 'naysayer 1)
 (use-package solarized-theme
+  :ensure t)
+
+(use-package gruvbox-theme
   :ensure t
   :init
-  (load-theme 'solarized-dark 1))
+  (load-theme 'gruvbox-dark-soft 1))
 
 (use-package evil
   :ensure t
@@ -57,6 +60,10 @@
 (defun set-solarized-light ()
   (interactive)
   (load-theme 'solarized-light))
+
+(defun set-gruvbox ()
+  (interactive)
+  (load-theme 'gruvbox-dark-soft))
 
 (use-package neotree
   :ensure t
@@ -102,12 +109,14 @@
 					   "c l" 'reload-config-file
 					   ;; buffer keybindings
 					   "n n" 'next-buffer
+					   "n s" 'next-multiframe-window 
 					   "n p" 'previous-buffer
 					   "n o" 'delete-other-windows
 					   "n d" 'kill-buffer-and-window
 					   ;; visual/theme stuff
 					   "t d" 'set-solarized-dark
 					   "t l" 'set-solarized-light
+					   "t g" 'set-gruvbox
 					   "=" 'text-scale-increase
 					   "-" 'text-scale-decrease))
   (add-hook 'neotree-mode-hook
@@ -115,5 +124,6 @@
 			(define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
 			(define-key evil-normal-state-local-map (kbd "SPC n t") 'neotree-hide)
 			(define-key evil-normal-state-local-map (kbd "SPC n r") 'neotree-refresh)
+			(define-key evil-normal-state-local-map (kbd "SPC n s") 'next-multiframe-window)
 			(define-key evil-normal-state-local-map (kbd "SPC n p") 'neotree-change-root))))
 
