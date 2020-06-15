@@ -55,9 +55,25 @@
   :init
   (setq neo-theme 'arrow))
 
+(use-package flycheck
+  :ensure t)
+
 (use-package go-mode
   :ensure t
-  :init)
+  :mode "\\*\\.go"
+  :config
+  (add-hook 'go-mode-hook
+			(lambda ()
+			  (flycheck-mode)
+			  (setq gofmt-command "goimports")
+			  (setq exec-path (append exec-path '("~/go/bin/")))
+			  (add-hook 'before-save-hook 'gofmt-before-save)
+			  (use-package company-go
+				:ensure t
+				:config (set (make-local-variable 'company-backends)
+							 '(company-go))
+				(company-mode)))))
+			  
 
 (use-package company
   :ensure t
@@ -87,7 +103,7 @@
   (add-hook 'neotree-mode-hook
 		  (lambda ()
 			(define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
-			(define-key evil-normal-state-local-map (kbd "t") 'neotree-hide)
-			(define-key evil-normal-state-local-map (kbd "r") 'neotree-refresh)
-			(define-key evil-normal-state-local-map (kbd "p") 'neotree-change-root))))
+			(define-key evil-normal-state-local-map (kbd "SPC n t") 'neotree-hide)
+			(define-key evil-normal-state-local-map (kbd "SPC n r") 'neotree-refresh)
+			(define-key evil-normal-state-local-map (kbd "SPC n p") 'neotree-change-root))))
 
