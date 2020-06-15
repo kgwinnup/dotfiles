@@ -45,16 +45,6 @@
   :init
   (evil-mode))
 
-(defun open-config-file ()
-  "opens the local configuration file"
-  (interactive)
-  (find-file "~/.emacs.d/init.el"))
-
-(defun reload-config-file ()
-  "reloads the init.el file"
-  (interactive)
-  (load-file "~/.emacs.d/init.el"))
-
 (use-package neotree
   :ensure t
   :init
@@ -97,8 +87,8 @@
 			:evil-keys ("SPC")
 			:evil-states (normal motion visual)
 			:bindings ("n t" 'neotree-toggle
-					   "c o" 'open-config-file
-					   "c l" 'reload-config-file
+					   "c o" '(lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
+					   "c l" '(lambda () (interactive) (load-file "~/.emacs.d/init.el"))
 					   ;; buffer keybindings
 					   "n n" 'next-buffer
 					   "n s" 'next-multiframe-window 
