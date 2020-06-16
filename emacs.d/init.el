@@ -20,19 +20,20 @@
 (scroll-bar-mode -1)
 (fset 'yes-or-no-p 'y-or-n-p)
 (set-frame-font "mononoki 14" nil t)
+(global-display-line-numbers-mode)
 
-(setq-default
- ring-bell-function 'ignore
- scroll-step 1
- scroll-conservatively  10000
- mouse-wheel-scroll-amount '(1 ((shift) . 1))
- mouse-wheel-progressive-speed nil
- mouse-wheel-follow-mouse 't
- indent-tabs-mode t
- c-basic-offset 4
- tab-width 4)
+(setq-default ring-bell-function 'ignore
+              scroll-step 1
+              scroll-conservatively  10000
+              mouse-wheel-scroll-amount '(1 ((shift) . 1))
+              mouse-wheel-progressive-speed nil
+              mouse-wheel-follow-mouse 't
+              indent-tabs-mode nil
+              c-basic-offset 4
+              tab-width 4
+              initial-scratch-message nil
+			  )
 
-;;(load-theme 'naysayer 1)
 (use-package solarized-theme
   :ensure t)
 
@@ -84,6 +85,8 @@
   (setq neo-window-fixed-size nil)
   (add-hook 'neotree-mode-hook
 			(lambda ()
+			  (neotree-hidden-file-toggle)
+			  (display-line-numbers-mode -1)
 			  (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
 			  (define-key evil-normal-state-local-map (kbd "SPC n t") 'neotree-hide)
 			  (define-key evil-normal-state-local-map (kbd "SPC n r") 'neotree-refresh)
