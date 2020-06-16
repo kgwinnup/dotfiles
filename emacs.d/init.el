@@ -9,6 +9,7 @@
 (shell-command "touch ~/.emacs.d/custom.el")
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
+(add-to-list 'exec-path "/usr/local/bin")
 
 ;; Bootstrap `use-package`
 (unless (package-installed-p 'use-package)
@@ -75,6 +76,29 @@
 				(set (make-local-variable 'company-backends) '(company-go))
 				(company-mode)))))
 
+(use-package ess
+  :ensure t
+  :mode "\\*\\.R"
+  :commands R
+  :hook (ess-mode-hook . subword-mode)
+  :init
+  (setq ess-ask-for-ess-directory nil)
+  (setq ess-local-process-name "R")
+  (defun my-ess-start-R ()
+    (interactive)
+    (if (not (member "*R*" (mapcar (function buffer-name) (buffer-list))))
+        (progn
+          (setq w1 (selected-window))
+          (setq w2 (split-window-horizontally))
+          (R)
+          (set-window-buffer w2 "*R*")
+          (select-window w1))))
+  (add-hook 'ess-mode-hook
+            (lambda ()
+			  (define-key evil-normal-state-local-map (kbd "SPC r s") 'my-ess-start-R)
+			  (define-key evil-normal-state-local-map (kbd "SPC r r") 'ess-eval-function-or-paragraph-and-step)
+              )))
+
 (use-package company
   :ensure t
   :config
@@ -110,6 +134,7 @@
 			:bindings ("n t" 'neotree-toggle
 					   "c o" '(lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
 					   "c l" '(lambda () (interactive) (load-file "~/.emacs.d/init.el"))
+                       "t t" 'shell
 					   ;; buffer keybindings
 					   "n n" 'next-buffer
 					   "n s" 'next-multiframe-window 
