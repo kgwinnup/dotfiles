@@ -19,6 +19,7 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (fset 'yes-or-no-p 'y-or-n-p)
+(set-frame-font "mononoki 14" nil t)
 
 (setq-default
  ring-bell-function 'ignore
@@ -51,8 +52,14 @@
   (setq neo-theme 'arrow)
   (setq neo-window-fixed-size nil))
 
-(use-package flycheck
-  :ensure t)
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+		 ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init
+  (setq markdown-command "multimarkdown"))
 
 (use-package go-mode
   :ensure t
@@ -61,17 +68,13 @@
   (add-hook 'go-mode-hook
 			(lambda ()
 			  (setq exec-path (append exec-path '("~/go/bin/")))
-			  ;;(use-package go-errcheck
-			  ;;	:ensure t)
-			  ;;(flycheck-mode)
 			  (setq gofmt-command "goimports")
 			  (add-hook 'before-save-hook 'gofmt-before-save)
 			  (use-package company-go
 				:ensure t
-				:config (set (make-local-variable 'company-backends)
-							 '(company-go))
+				:init
+				(set (make-local-variable 'company-backends) '(company-go))
 				(company-mode)))))
-			  
 
 (use-package company
   :ensure t
