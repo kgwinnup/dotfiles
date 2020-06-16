@@ -46,12 +46,6 @@
   :init
   (evil-mode))
 
-(use-package neotree
-  :ensure t
-  :init
-  (setq neo-theme 'arrow)
-  (setq neo-window-fixed-size nil))
-
 (use-package markdown-mode
   :ensure t
   :commands (markdown-mode gfm-mode)
@@ -83,6 +77,19 @@
   (setq company-minimum-prefix-length 1)
   (add-hook 'after-init-hook 'global-company-mode))
 
+(use-package neotree
+  :ensure t
+  :init
+  (setq neo-theme 'arrow)
+  (setq neo-window-fixed-size nil)
+  (add-hook 'neotree-mode-hook
+			(lambda ()
+			  (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
+			  (define-key evil-normal-state-local-map (kbd "SPC n t") 'neotree-hide)
+			  (define-key evil-normal-state-local-map (kbd "SPC n r") 'neotree-refresh)
+			  (define-key evil-normal-state-local-map (kbd "SPC n s") 'next-multiframe-window)
+			  (define-key evil-normal-state-local-map (kbd "SPC n p") 'neotree-change-root))))
+
 (use-package bind-map
   :ensure t
   :init
@@ -106,12 +113,4 @@
 					   "t l" '(lambda () (interactive) (load-theme 'solarized-light))
 					   "t g" '(lambda () (interactive) (load-theme 'gruvbox-dark-soft))
 					   "=" 'default-text-scale-increase
-					   "-" 'default-text-scale-decrease))
-  (add-hook 'neotree-mode-hook
-		  (lambda ()
-			(define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
-			(define-key evil-normal-state-local-map (kbd "SPC n t") 'neotree-hide)
-			(define-key evil-normal-state-local-map (kbd "SPC n r") 'neotree-refresh)
-			(define-key evil-normal-state-local-map (kbd "SPC n s") 'next-multiframe-window)
-			(define-key evil-normal-state-local-map (kbd "SPC n p") 'neotree-change-root))))
-
+					   "-" 'default-text-scale-decrease)))
