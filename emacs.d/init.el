@@ -16,6 +16,10 @@
   (package-install 'use-package))
 (require 'use-package)
 
+
+;;(setq max-specpdl-size 5)  ; default is 1000, reduce the backtrace level
+;;(setq debug-on-error t)    ; now you should get a backtrace
+
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -85,10 +89,11 @@
   (setq neo-window-fixed-size nil)
   (add-hook 'neotree-mode-hook
 			(lambda ()
-			  (neotree-hidden-file-toggle)
+			  ;;(neotree-hidden-file-toggle)
 			  (display-line-numbers-mode -1)
 			  (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
 			  (define-key evil-normal-state-local-map (kbd "SPC n t") 'neotree-hide)
+			  (define-key evil-normal-state-local-map (kbd "SPC n h") 'neotree-hidden-file-toggle)
 			  (define-key evil-normal-state-local-map (kbd "SPC n r") 'neotree-refresh)
 			  (define-key evil-normal-state-local-map (kbd "SPC n s") 'next-multiframe-window)
 			  (define-key evil-normal-state-local-map (kbd "SPC n p") 'neotree-change-root))))
