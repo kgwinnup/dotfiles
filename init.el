@@ -48,7 +48,8 @@
 (use-package neotree
   :ensure t
   :init
-  (setq neo-theme 'arrow))
+  (setq neo-theme 'arrow)
+  (setq neo-window-fixed-size nil))
 
 (use-package flycheck
   :ensure t)
@@ -82,6 +83,8 @@
 (use-package bind-map
   :ensure t
   :init
+  (use-package default-text-scale
+	:ensure t)
   (bind-map my-base-leader-map
 			:keys ("M-m")
 			:evil-keys ("SPC")
@@ -99,8 +102,8 @@
 					   "t d" '(lambda () (interactive) (load-theme 'solarized-dark))
 					   "t l" '(lambda () (interactive) (load-theme 'solarized-light))
 					   "t g" '(lambda () (interactive) (load-theme 'gruvbox-dark-soft))
-					   "=" 'text-scale-increase
-					   "-" 'text-scale-decrease))
+					   "=" 'default-text-scale-increase
+					   "-" 'default-text-scale-decrease))
   (add-hook 'neotree-mode-hook
 		  (lambda ()
 			(define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
