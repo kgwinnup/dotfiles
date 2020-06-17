@@ -24,7 +24,10 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (fset 'yes-or-no-p 'y-or-n-p)
-(set-frame-font "mononoki 14" nil t)
+(set-face-attribute 'default nil
+                    :family "mononoki"
+                    :height 110
+                    :weight 'extra-light)
 (global-display-line-numbers-mode)
 
 (setq-default ring-bell-function 'ignore
@@ -52,6 +55,12 @@
   :init
   (evil-mode))
 
+(use-package magit
+  :ensure t
+  :init
+  (use-package evil-magit
+    :ensure t))
+
 (use-package markdown-mode
   :ensure t
   :commands (markdown-mode gfm-mode)
@@ -78,12 +87,14 @@
 
 (use-package ess
   :ensure t
-  :mode "\\*\\.R"
+  :mode (("\\*\\.R" . ess-site)
+         ("\\*\\.Rmd" . ess-site))
   :commands R
   :hook (ess-mode-hook . subword-mode)
   :init
   (setq ess-ask-for-ess-directory nil)
   (setq ess-local-process-name "R")
+  (setq scroll-down-aggressively 0.01)
   (defun my-ess-start-R ()
     (interactive)
     (if (not (member "*R*" (mapcar (function buffer-name) (buffer-list))))
@@ -113,7 +124,6 @@
   (setq neo-window-fixed-size nil)
   (add-hook 'neotree-mode-hook
 			(lambda ()
-			  ;;(neotree-hidden-file-toggle)
 			  (display-line-numbers-mode -1)
 			  (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
 			  (define-key evil-normal-state-local-map (kbd "SPC n t") 'neotree-hide)
@@ -141,6 +151,8 @@
 					   "n p" 'previous-buffer
 					   "n o" 'delete-other-windows
 					   "n d" 'kill-buffer-and-window
+                       ;; magit
+                       "m s" 'magit
 					   ;; visual/theme stuff
 					   "t d" '(lambda () (interactive) (load-theme 'solarized-dark))
 					   "t l" '(lambda () (interactive) (load-theme 'solarized-light))
