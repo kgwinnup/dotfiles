@@ -55,12 +55,6 @@
   :init
   (evil-mode))
 
-(use-package magit
-  :ensure t
-  :init
-  (use-package evil-magit
-    :ensure t))
-
 (use-package markdown-mode
   :ensure t
   :commands (markdown-mode gfm-mode)
@@ -150,7 +144,8 @@
 					   "n s" 'next-multiframe-window 
 					   "n p" 'previous-buffer
 					   "n o" 'delete-other-windows
-					   "n d" 'kill-buffer-and-window
+					   "n d" 'kill-this-buffer
+                       "n k" 'kill-buffer-and-window
                        ;; magit
                        "m s" 'magit
 					   ;; visual/theme stuff
