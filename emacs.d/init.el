@@ -55,6 +55,12 @@
   :init
   (evil-mode))
 
+(use-package magit
+  :ensure t
+  :init
+  (use-package evil-magit
+    :ensure t))
+
 (use-package markdown-mode
   :ensure t
   :commands (markdown-mode gfm-mode)
