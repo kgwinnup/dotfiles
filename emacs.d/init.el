@@ -17,12 +17,11 @@
   (package-install 'use-package))
 (require 'use-package)
 
-
-;;(setq max-specpdl-size 5)  ; default is 1000, reduce the backtrace level
-;;(setq debug-on-error t)    ; now you should get a backtrace
+(if (display-graphic-p)
+    (progn
+      (scroll-bar-mode -1)))
 
 (tool-bar-mode -1)
-(scroll-bar-mode -1)
 (fset 'yes-or-no-p 'y-or-n-p)
 (set-face-attribute 'default nil
                     :family "mononoki"
@@ -150,8 +149,7 @@
 					   "n s" 'next-multiframe-window 
 					   "n p" 'previous-buffer
 					   "n o" 'delete-other-windows
-					   "n d" 'kill-this-buffer
-                       "n k" 'kill-buffer-and-window
+					   "n d" 'kill-buffer-and-window
                        ;; magit
                        "m s" 'magit
 					   ;; visual/theme stuff
