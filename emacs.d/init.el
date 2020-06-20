@@ -90,6 +90,7 @@
          ("\\*\\.Rmd" . ess-site))
   :commands R
   :hook (ess-mode-hook . subword-mode)
+  :defer t
   :init
   (setq ess-ask-for-ess-directory nil)
   (setq ess-local-process-name "R")
