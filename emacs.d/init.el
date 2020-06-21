@@ -21,7 +21,6 @@
     (progn
       (scroll-bar-mode -1)))
 
-(menu-bar-mode -1)
 (tool-bar-mode -1)
 (fset 'yes-or-no-p 'y-or-n-p)
 (set-face-attribute 'default nil
@@ -76,6 +75,7 @@
   :config
   (add-hook 'go-mode-hook
 			(lambda ()
+			  (define-key evil-normal-state-local-map (kbd "SPC t") 'godef-describe)
 			  (setq exec-path (append exec-path '("~/go/bin/")))
 			  (setq gofmt-command "goimports")
 			  (add-hook 'before-save-hook 'gofmt-before-save)
