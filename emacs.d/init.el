@@ -38,8 +38,32 @@
               indent-tabs-mode nil
               c-basic-offset 4
               tab-width 4
-              initial-scratch-message nil
-			  )
+              initial-scratch-message nil)
+
+(defun send-to-shell (cmd)
+  (interactive)
+  (let ((proc (get-process "shell"))
+        (curbuf (current-buffer)))
+    (if proc
+        nil
+        (progn
+          (shell)
+          (switch-to-buffer curbuf)
+          (setq proc (get-process "shell")))
+        nil)
+    (setq pbuff (process-buffer proc))
+    (setq command (concat cmd "\n"))
+    (process-send-string proc command)
+    (setq last-shell-cmd cmd)
+    (switch-to-buffer curbuf)))
+
+(defun send-to-shell-again ()
+  (interactive)
+  (send-to-shell last-shell-cmd))
+
+(defun send-to-shell-input ()
+  (interactive)
+  (send-to-shell (read-string "CMD:")))
 
 (use-package solarized-theme
   :ensure t)
