@@ -39,31 +39,30 @@
               c-basic-offset 4
               tab-width 4
               initial-scratch-message nil)
+(add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+R-mode))
 
 (defun send-to-shell (cmd)
+  "sends a command to the buffer containing an active shell"
   (interactive)
   (let ((proc (get-process "shell"))
         (curbuf (current-buffer)))
-    (if proc
-        nil
-        (progn
-          (shell)
-          (switch-to-buffer curbuf)
-          (setq proc (get-process "shell")))
-        nil)
-    (setq pbuff (process-buffer proc))
     (setq command (concat cmd "\n"))
     (process-send-string proc command)
     (setq last-shell-cmd cmd)
     (switch-to-buffer curbuf)))
 
 (defun send-to-shell-again ()
+  "sends the previous command to the active shell"
   (interactive)
   (send-to-shell last-shell-cmd))
 
 (defun send-to-shell-input ()
+  "gets the user command and sends to the buffer containing an active shell"
   (interactive)
-  (send-to-shell (read-string "CMD:")))
+  (send-to-shell (read-string "CMD: ")))
+
+(use-package yaml-mode
+  :ensure t)
 
 (use-package solarized-theme
   :ensure t)
@@ -109,6 +108,12 @@
 				(set (make-local-variable 'company-backends) '(company-go))
 				(company-mode)))))
 
+(use-package poly-markdown
+  :ensure t)
+
+(use-package poly-R
+  :ensure t)
+
 (use-package ess
   :ensure t
   :mode (("\\*\\.R" . ess-site)
@@ -120,6 +125,7 @@
   (setq ess-ask-for-ess-directory nil)
   (setq ess-local-process-name "R")
   (setq scroll-down-aggressively 0.01)
+  (setq ess-fancy-comments nil)
   (defun my-ess-start-R ()
     (interactive)
     (if (not (member "*R*" (mapcar (function buffer-name) (buffer-list))))
@@ -170,6 +176,8 @@
 					   "c o" '(lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
 					   "c l" '(lambda () (interactive) (load-file "~/.emacs.d/init.el"))
                        "t t" 'shell
+                       "s s" 'send-to-shell-input
+                       "s l" 'send-to-shell-again
 					   ;; buffer keybindings
 					   "n n" 'next-buffer
 					   "n s" 'next-multiframe-window 
