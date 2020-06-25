@@ -17,30 +17,6 @@
   (package-install 'use-package))
 (require 'use-package)
 
-(if (display-graphic-p)
-    (progn
-      (scroll-bar-mode -1)))
-
-(tool-bar-mode -1)
-(fset 'yes-or-no-p 'y-or-n-p)
-(set-face-attribute 'default nil
-                    :family "mononoki"
-                    :height 110
-                    :weight 'extra-light)
-(global-display-line-numbers-mode)
-
-(setq-default ring-bell-function 'ignore
-              scroll-step 1
-              scroll-conservatively  10000
-              mouse-wheel-scroll-amount '(1 ((shift) . 1))
-              mouse-wheel-progressive-speed nil
-              mouse-wheel-follow-mouse 't
-              indent-tabs-mode nil
-              c-basic-offset 4
-              tab-width 4
-              initial-scratch-message nil)
-(add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+R-mode))
-
 (defun send-to-shell (cmd)
   "sends a command to the buffer containing an active shell"
   (interactive)
@@ -114,6 +90,7 @@
 (use-package poly-R
   :ensure t)
 
+
 (use-package ess
   :ensure t
   :mode (("\\*\\.R" . ess-site)
@@ -146,7 +123,7 @@
   :config
   (setq company-idle-delay 0)
   (setq company-minimum-prefix-length 1)
-  (add-hook 'after-init-hook 'global-company-mode))
+    (add-hook 'after-init-hook 'global-company-mode))
 
 (use-package neotree
   :ensure t
@@ -192,3 +169,29 @@
 					   "t g" '(lambda () (interactive) (load-theme 'gruvbox-dark-soft))
 					   "=" 'default-text-scale-increase
 					   "-" 'default-text-scale-decrease)))
+
+(if (display-graphic-p)
+    (progn
+      (scroll-bar-mode -1)))
+
+(tool-bar-mode -1)
+(fset 'yes-or-no-p 'y-or-n-p)
+(set-face-attribute 'default nil
+                    :family "mononoki"
+                    :height 110
+                    :weight 'extra-light)
+(global-display-line-numbers-mode)
+
+(setq-default ring-bell-function 'ignore
+              scroll-step 1
+              scroll-conservatively  10000
+              mouse-wheel-scroll-amount '(1 ((shift) . 1))
+              mouse-wheel-progressive-speed nil
+              mouse-wheel-follow-mouse 't
+              indent-tabs-mode nil
+              c-basic-offset 4
+              tab-width 4
+              initial-scratch-message nil)
+
+(add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+R-mode))
+
