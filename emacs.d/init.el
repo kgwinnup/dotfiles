@@ -37,16 +37,9 @@
   (interactive)
   (send-to-shell (read-string "CMD: ")))
 
-(use-package yaml-mode
-  :ensure t)
-
-(use-package solarized-theme
-  :ensure t)
-
-(use-package gruvbox-theme
-  :ensure t
-  :init
-  (load-theme 'gruvbox-dark-soft 1))
+(use-package yaml-mode :ensure t)
+(use-package solarized-theme :ensure t)
+(use-package gruvbox-theme :ensure t)
 
 (use-package evil
   :ensure t
@@ -190,10 +183,11 @@
               mouse-wheel-scroll-amount '(1 ((shift) . 1))
               mouse-wheel-progressive-speed nil
               mouse-wheel-follow-mouse 't
+              column-number-mode t
               indent-tabs-mode nil
               c-basic-offset 4
               tab-width 4
               initial-scratch-message nil)
 
 (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+R-mode))
-
+(load-theme 'gruvbox-dark-medium 1)
