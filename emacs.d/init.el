@@ -71,6 +71,8 @@
         '((sequence "TODO" "IN-PROGRESS" "|" "DONE")))
   (add-hook 'org-mode-hook
             (lambda ()
+              (define-key evil-normal-state-local-map (kbd "SPC o f") 'org-table-toggle-coordinate-overlays)
+              (define-key evil-normal-state-local-map (kbd "SPC o e") 'org-table-recalculate-buffer-tables)
               (define-key evil-normal-state-local-map (kbd "SPC o t") 'org-todo)
               (define-key evil-normal-state-local-map (kbd "SPC o c") 'org-toggle-checkbox))))
 
