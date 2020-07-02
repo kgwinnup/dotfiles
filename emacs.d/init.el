@@ -59,17 +59,20 @@
   (use-package evil-magit
     :ensure t))
 
-(use-package org
-  :ensure t)
+(defun my-start-code-block ()
+  "starts a code block in org mode"
+  (interactive)
+  (insert "#+BEGIN_SRC\n\n#+END_SRC\n"))
 
-(use-package evil-org
+(use-package org
   :ensure t
-  :after org
-  :config
-  (add-hook 'org-mode-hook 'evil-org-mode)
-  (add-hook 'evil-org-mode-hook
+  :init
+  (setq org-todo-keywords
+        '((sequence "TODO" "IN-PROGRESS" "|" "DONE")))
+  (add-hook 'org-mode-hook
             (lambda ()
-              (evil-org-set-key-theme))))
+              (define-key evil-normal-state-local-map (kbd "SPC o t") 'org-todo)
+              (define-key evil-normal-state-local-map (kbd "SPC o c") 'org-toggle-checkbox))))
 
 (use-package markdown-mode
   :ensure t
