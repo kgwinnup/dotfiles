@@ -37,11 +37,9 @@
   (interactive)
   (send-to-shell (read-string "CMD: ")))
 
-(use-package yaml-mode
-  :ensure t)
-
-(use-package solarized-theme
-  :ensure t)
+(use-package yaml-mode :ensure t)
+(use-package poly-markdown :ensure t)
+(use-package solarized-theme :ensure t)
 
 (use-package gruvbox-theme
   :ensure t
@@ -101,12 +99,7 @@
 				(set (make-local-variable 'company-backends) '(company-go))
 				(company-mode)))))
 
-(use-package poly-markdown
-  :ensure t)
-
-(use-package poly-R
-  :ensure t)
-
+(use-package poly-R :ensure t)
 
 (use-package ess
   :ensure t
