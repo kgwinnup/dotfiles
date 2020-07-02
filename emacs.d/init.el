@@ -62,7 +62,15 @@
 (defun my-start-code-block ()
   "starts a code block in org mode"
   (interactive)
-  (insert "#+BEGIN_SRC\n\n#+END_SRC\n"))
+  (setq cur (point-to-register))
+  (insert "#+BEGIN_SRC\n\n#+END_SRC\n")
+  (jump-to-register cur))
+
+(defun my-org-refresh ()
+  "refreshes tag alignment and table contents"
+  (interactive)
+  (org-align-all-tags)
+  (org-table-recalculate-buffer-tables))
 
 (use-package org
   :ensure t
@@ -71,9 +79,11 @@
         '((sequence "TODO" "IN-PROGRESS" "|" "DONE")))
   (add-hook 'org-mode-hook
             (lambda ()
-              (define-key evil-normal-state-local-map (kbd "SPC o f") 'org-table-toggle-coordinate-overlays)
-              (define-key evil-normal-state-local-map (kbd "SPC o e") 'org-table-recalculate-buffer-tables)
-              (define-key evil-normal-state-local-map (kbd "SPC o t") 'org-todo)
+              (define-key evil-normal-state-local-map (kbd "SPC r") 'my-org-refresh)
+              (define-key evil-normal-state-local-map (kbd "SPC p") 'org-cycle)
+              (define-key evil-normal-state-local-map (kbd "SPC e") 'my-start-code-block)
+              (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
+              (define-key evil-normal-state-local-map (kbd "SPC u") 'org-todo)
               (define-key evil-normal-state-local-map (kbd "SPC o c") 'org-toggle-checkbox))))
 
 (use-package markdown-mode
@@ -170,8 +180,8 @@
 					   "c o" '(lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
 					   "c l" '(lambda () (interactive) (load-file "~/.emacs.d/init.el"))
                        "t t" 'shell
-                       "s s" 'send-to-shell-input
-                       "s l" 'send-to-shell-again
+                       "v l" 'send-to-shell-input
+                       "v p" 'send-to-shell-again
 					   ;; buffer keybindings
 					   "n n" 'next-buffer
 					   "n s" 'next-multiframe-window 
@@ -180,10 +190,7 @@
 					   "n d" 'kill-buffer-and-window
                        ;; magit
                        "m s" 'magit
-					   ;; visual/theme stuff
-					   "t d" '(lambda () (interactive) (load-theme 'solarized-dark))
-					   "t l" '(lambda () (interactive) (load-theme 'solarized-light))
-					   "t g" '(lambda () (interactive) (load-theme 'gruvbox-dark-soft))
+                       ;; view
 					   "=" 'default-text-scale-increase
 					   "-" 'default-text-scale-decrease)))
 
