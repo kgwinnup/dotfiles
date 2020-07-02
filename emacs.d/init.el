@@ -37,9 +37,11 @@
   (interactive)
   (send-to-shell (read-string "CMD: ")))
 
-(use-package yaml-mode :ensure t)
-(use-package poly-markdown :ensure t)
-(use-package solarized-theme :ensure t)
+(use-package yaml-mode
+  :ensure t)
+
+(use-package solarized-theme
+  :ensure t)
 
 (use-package gruvbox-theme
   :ensure t
@@ -73,10 +75,13 @@
 (use-package org
   :ensure t
   :init
+  (use-package ox-gfm
+    :ensure t)
   (setq org-todo-keywords
         '((sequence "TODO" "IN-PROGRESS" "|" "DONE")))
   (add-hook 'org-mode-hook
             (lambda ()
+              (define-key evil-normal-state-local-map (kbd "SPC E") 'org-gfm-export-to-markdown)
               (define-key evil-normal-state-local-map (kbd "SPC r") 'my-org-refresh)
               (define-key evil-normal-state-local-map (kbd "SPC p") 'org-cycle)
               (define-key evil-normal-state-local-map (kbd "SPC e") 'my-start-code-block)
@@ -109,7 +114,12 @@
 				(set (make-local-variable 'company-backends) '(company-go))
 				(company-mode)))))
 
-(use-package poly-R :ensure t)
+(use-package poly-markdown
+  :ensure t)
+
+(use-package poly-R
+  :ensure t)
+
 
 (use-package ess
   :ensure t
