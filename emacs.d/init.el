@@ -17,7 +17,7 @@
   (package-install 'use-package))
 (require 'use-package)
 
-(defun send-to-shell (cmd)
+(defun my-send-to-shell (cmd)
   "sends a command to the buffer containing an active shell"
   (interactive)
   (let ((proc (get-process "shell"))
@@ -27,15 +27,15 @@
     (setq last-shell-cmd cmd)
     (switch-to-buffer curbuf)))
 
-(defun send-to-shell-again ()
+(defun my-send-to-shell-again ()
   "sends the previous command to the active shell"
   (interactive)
-  (send-to-shell last-shell-cmd))
+  (my-send-to-shell last-shell-cmd))
 
-(defun send-to-shell-input ()
+(defun my-send-to-shell-input ()
   "gets the user command and sends to the buffer containing an active shell"
   (interactive)
-  (send-to-shell (read-string "CMD: ")))
+  (my-send-to-shell (read-string "CMD: ")))
 
 (use-package yaml-mode
   :ensure t)
@@ -62,9 +62,9 @@
 (defun my-start-code-block ()
   "starts a code block in org mode"
   (interactive)
-  (setq cur (point-to-register))
-  (insert "#+BEGIN_SRC\n\n#+END_SRC\n")
-  (jump-to-register cur))
+  (insert "#+BEGIN_SRC\n\n#+END_SRC")
+  (previous-line)
+  (previous-line))
 
 (defun my-org-refresh ()
   "refreshes tag alignment and table contents"
@@ -183,8 +183,8 @@
 					   "c o" '(lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
 					   "c l" '(lambda () (interactive) (load-file "~/.emacs.d/init.el"))
                        "t t" 'shell
-                       "v l" 'send-to-shell-input
-                       "v p" 'send-to-shell-again
+                       "v l" 'my-send-to-shell-input
+                       "v p" 'my-send-to-shell-again
 					   ;; buffer keybindings
 					   "n n" 'next-buffer
 					   "n s" 'next-multiframe-window 
