@@ -13,6 +13,7 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'jonathanfilip/vim-lucius'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
+Plugin 'jreybert/vimagit'
 Plugin 'morhetz/gruvbox'
 Plugin 'flazz/vim-colorschemes'
 Plugin 'scrooloose/nerdtree'
@@ -99,6 +100,7 @@ nnoremap <leader>ss :setlocal spell spelllang=en_us<cr>
 nnoremap <leader>sf :setlocal nospell<cr>
 nnoremap <leader>vp :VimuxPromptCommand<cr>
 nnoremap <leader>vl :VimuxRunLastCommand<cr>
+nnoremap <leader>mg :Magit<cr>
 nnoremap <leader>oo :so $MYVIMRC<cr>
 autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
 autocmd BufNewFile,BufRead *.rmd set syntax=r
