@@ -185,6 +185,7 @@
                        "t t" 'shell
                        "v l" 'my-send-to-shell-input
                        "v p" 'my-send-to-shell-again
+                       "s s" 'ispell
 					   ;; buffer keybindings
 					   "n n" 'next-buffer
 					   "n s" 'next-multiframe-window 
