@@ -85,9 +85,9 @@
     :ensure t)
   (setq org-todo-keywords
         '((sequence "TODO" "IN-PROGRESS" "|" "DONE")))
-  (org-indent-mode)
   (add-hook 'org-mode-hook
             (lambda ()
+              (org-indent-mode)
               (define-key evil-normal-state-local-map (kbd "SPC E") 'org-gfm-export-to-markdown)
               (define-key evil-normal-state-local-map (kbd "SPC r") 'my-org-refresh)
               (define-key evil-normal-state-local-map (kbd "SPC p") 'org-cycle)
