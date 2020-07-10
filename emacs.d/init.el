@@ -72,6 +72,12 @@
   (org-align-all-tags)
   (org-table-recalculate-buffer-tables))
 
+(defun my-org-timestamp ()
+  "sets heading timestamp field"
+  (interactive)
+  (insert ":DATE: ")
+  (org-insert-time-stamp (current-time)))
+
 (use-package org
   :ensure t
   :init
@@ -79,6 +85,7 @@
     :ensure t)
   (setq org-todo-keywords
         '((sequence "TODO" "IN-PROGRESS" "|" "DONE")))
+  (org-indent-mode)
   (add-hook 'org-mode-hook
             (lambda ()
               (define-key evil-normal-state-local-map (kbd "SPC E") 'org-gfm-export-to-markdown)
@@ -88,6 +95,7 @@
               (define-key evil-normal-state-local-map (kbd "SPC e e") 'org-edit-src-code)
               (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
               (define-key evil-normal-state-local-map (kbd "SPC u") 'org-todo)
+              (define-key evil-normal-state-local-map (kbd "SPC T") 'my-org-timestamp)
               (define-key evil-normal-state-local-map (kbd "SPC o c") 'org-toggle-checkbox))))
 
 (use-package markdown-mode
