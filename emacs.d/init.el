@@ -102,7 +102,7 @@
   :ensure t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
-		 ("\\.md\\'" . markdown-mode)
+         ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :init
   (setq markdown-command "multimarkdown"))
@@ -153,9 +153,8 @@
           (select-window w1))))
   (add-hook 'ess-mode-hook
             (lambda ()
-			  (define-key evil-normal-state-local-map (kbd "SPC r s") 'my-ess-start-R)
-			  (define-key evil-normal-state-local-map (kbd "SPC r r") 'ess-eval-function-or-paragraph-and-step)
-              )))
+              (define-key evil-normal-state-local-map (kbd "SPC r s") 'my-ess-start-R)
+              (define-key evil-normal-state-local-map (kbd "SPC r r") 'ess-eval-function-or-paragraph-and-step))))
 
 (use-package company
   :ensure t
@@ -185,27 +184,27 @@
   (use-package default-text-scale
 	:ensure t)
   (bind-map my-base-leader-map
-			:keys ("M-m")
-			:evil-keys ("SPC")
-			:evil-states (normal motion visual)
-			:bindings ("n t" 'neotree-toggle
-					   "c o" '(lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
-					   "c l" '(lambda () (interactive) (load-file "~/.emacs.d/init.el"))
-                       "t t" 'shell
-                       "v l" 'my-send-to-shell-input
-                       "v p" 'my-send-to-shell-again
-                       "s s" 'ispell
-					   ;; buffer keybindings
-					   "n n" 'next-buffer
-					   "n s" 'next-multiframe-window 
-					   "n p" 'previous-buffer
-					   "n o" 'delete-other-windows
-					   "n d" 'kill-buffer-and-window
-                       ;; magit
-                       "m s" 'magit
-                       ;; view
-					   "=" 'default-text-scale-increase
-					   "-" 'default-text-scale-decrease)))
+    :keys ("M-m")
+    :evil-keys ("SPC")
+    :evil-states (normal motion visual)
+    :bindings ("n t" 'neotree-toggle
+               "c o" '(lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
+               "c l" '(lambda () (interactive) (load-file "~/.emacs.d/init.el"))
+               "t t" 'shell
+               "v l" 'my-send-to-shell-input
+               "v p" 'my-send-to-shell-again
+               "s s" 'ispell
+               ;; buffer keybindings
+               "n n" 'next-buffer
+               "n s" 'next-multiframe-window 
+               "n p" 'previous-buffer
+               "n o" 'delete-other-windows
+               "n d" 'kill-buffer-and-window
+               ;; magit
+               "m s" 'magit
+               ;; view
+               "=" 'default-text-scale-increase
+               "-" 'default-text-scale-decrease)))
 
 (if (display-graphic-p)
     (progn
