@@ -216,7 +216,7 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 (set-face-attribute 'default nil
                     :family "mononoki"
-                    :height 110
+                    :height 160
                     :weight 'extra-light)
 (global-display-line-numbers-mode)
 (load-theme 'gruvbox-dark-soft 1)
