@@ -11,6 +11,9 @@
 (load custom-file)
 (add-to-list 'exec-path "/usr/local/bin")
 
+(if (file-exists-p "~/.emacs.d/email.el")
+    (load-file "~/.emacs.d/email.el"))
+
 ;; Bootstrap `use-package`
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -37,6 +40,7 @@
   (interactive)
   (my-send-to-shell (read-string "CMD: ")))
 
+
 (use-package yaml-mode
   :ensure t)
 
@@ -48,10 +52,17 @@
   :init
   (load-theme 'gruvbox-dark-soft 1))
 
+(setq evil-want-keybinding nil)
 (use-package evil
   :ensure t
   :init
   (evil-mode))
+
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init))
 
 (use-package magit
   :ensure t
@@ -202,6 +213,7 @@
                "n d" 'kill-buffer-and-window
                ;; magit
                "m s" 'magit
+               "m e" 'mu4e
                ;; view
                "=" 'default-text-scale-increase
                "-" 'default-text-scale-decrease)))
