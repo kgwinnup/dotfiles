@@ -10,7 +10,7 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 (add-to-list 'exec-path "/usr/local/bin")
-(add-to-list 'exec-path "/Users/kylegwinnup/.cargo/bin")
+(add-to-list 'exec-path "~/.cargo/bin")
 
 (if (file-exists-p "~/.emacs.d/email.el")
     (load-file "~/.emacs.d/email.el"))
