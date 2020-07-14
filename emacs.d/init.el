@@ -10,6 +10,7 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 (add-to-list 'exec-path "/usr/local/bin")
+(add-to-list 'exec-path "/Users/kylegwinnup/.cargo/bin")
 
 (if (file-exists-p "~/.emacs.d/email.el")
     (load-file "~/.emacs.d/email.el"))
@@ -116,7 +117,11 @@
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :init
-  (setq markdown-command "multimarkdown"))
+  (setq markdown-command "multimarkdown")
+  (add-hook 'markdown-mode-hook
+            (lambda ()
+              (turn-on-orgtbl)
+              (turn-on-orgstruct++))))
 
 (use-package go-mode
   :ensure t
@@ -140,6 +145,18 @@
 (use-package poly-R
   :ensure t)
 
+(use-package rust-mode
+  :ensure t
+  :init
+  (use-package racer
+    :ensure t)
+  (setq rust-format-on-save t)
+  (define-key rust-mode-map (kbd "C-c C-c") 'rust-run)
+  (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
+  (add-hook 'rust-mode-hook
+            (lambda ()
+              (setq indent-tabs-mode nil)
+              (racer-mode))))
 
 (use-package ess
   :ensure t
@@ -171,6 +188,7 @@
   :ensure t
   :config
   (setq company-idle-delay 0)
+  (setq company-tooltip-align-annotations t)
   (setq company-minimum-prefix-length 1)
     (add-hook 'after-init-hook 'global-company-mode))
 
@@ -228,7 +246,7 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 (set-face-attribute 'default nil
                     :family "mononoki"
-                    :height 160
+                    :height 140
                     :weight 'extra-light)
 (global-display-line-numbers-mode)
 (load-theme 'gruvbox-dark-soft 1)
