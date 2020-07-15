@@ -10,10 +10,10 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 (add-to-list 'exec-path "/usr/local/bin")
-(add-to-list 'exec-path "~/.cargo/bin")
+(add-to-list 'exec-path "/Users/kylegwinnup/.cargo/bin")
 
 (if (file-exists-p "~/.emacs.d/email.el")
-    (load-file "~/.emacs.d/email.el"))
+    (load "~/.emacs.d/email.el"))
 
 ;; Bootstrap `use-package`
 (unless (package-installed-p 'use-package)
@@ -103,6 +103,7 @@
               (define-key evil-normal-state-local-map (kbd "SPC E") 'org-gfm-export-to-markdown)
               (define-key evil-normal-state-local-map (kbd "SPC r") 'my-org-refresh)
               (define-key evil-normal-state-local-map (kbd "SPC p") 'org-cycle)
+              (define-key evil-normal-state-local-map (kbd "SPC P") 'org-global-cycle)
               (define-key evil-normal-state-local-map (kbd "SPC e r") 'my-start-code-block)
               (define-key evil-normal-state-local-map (kbd "SPC e e") 'org-edit-src-code)
               (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
