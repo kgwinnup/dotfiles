@@ -10,7 +10,7 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 (add-to-list 'exec-path "/usr/local/bin")
-(add-to-list 'exec-path "/Users/kylegwinnup/.cargo/bin")
+(add-to-list 'exec-path "~/.cargo/bin")
 
 (if (file-exists-p "~/.emacs.d/email.el")
     (load "~/.emacs.d/email.el"))
@@ -137,7 +137,7 @@
 			  (use-package company-go
 				:ensure t
 				:init
-				(set (make-local-variable 'company-backends) '(company-go))
+				;(set (make-local-variable 'company-backends) '(company-go))
 				(company-mode)))))
 
 (use-package poly-markdown
@@ -146,17 +146,25 @@
 (use-package poly-R
   :ensure t)
 
+(use-package racer
+    :ensure t
+    :init
+    (add-hook 'racer-mode-hook
+             (lambda ()
+               (eldoc-mode)
+               (company-mode))))
+
 (use-package rust-mode
+  :after racer
   :ensure t
   :init
-  (use-package racer
-    :ensure t)
   (setq rust-format-on-save t)
   (define-key rust-mode-map (kbd "C-c C-c") 'rust-run)
-  (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
+  (define-key rust-mode-map (kbd "TAB") 'company-indent-or-complete-common)
   (add-hook 'rust-mode-hook
             (lambda ()
               (setq indent-tabs-mode nil)
+              (setq company-tooltip-align-annotations t)
               (racer-mode))))
 
 (use-package ess
