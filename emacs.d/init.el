@@ -87,7 +87,7 @@
 (defun my-org-timestamp ()
   "sets heading timestamp field"
   (interactive)
-  (insert ":DATE: ")
+  (insert " ")
   (org-insert-time-stamp (current-time)))
 
 (use-package org
@@ -96,13 +96,14 @@
   (use-package ox-gfm
     :ensure t)
   (setq org-todo-keywords
-        '((sequence "TODO" "IN-PROGRESS" "|" "DONE")))
+        '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "DONE")))
   (add-hook 'org-mode-hook
             (lambda ()
               (org-indent-mode)
               (define-key evil-normal-state-local-map (kbd "SPC E") 'org-gfm-export-to-markdown)
               (define-key evil-normal-state-local-map (kbd "SPC r") 'my-org-refresh)
               (define-key evil-normal-state-local-map (kbd "SPC p") 'org-cycle)
+              (define-key evil-normal-state-local-map (kbd "SPC P") 'org-global-cycle)
               (define-key evil-normal-state-local-map (kbd "SPC e r") 'my-start-code-block)
               (define-key evil-normal-state-local-map (kbd "SPC e e") 'org-edit-src-code)
               (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
@@ -136,7 +137,7 @@
 			  (use-package company-go
 				:ensure t
 				:init
-				(set (make-local-variable 'company-backends) '(company-go))
+				;(set (make-local-variable 'company-backends) '(company-go))
 				(company-mode)))))
 
 (use-package poly-markdown
@@ -149,10 +150,16 @@
   :ensure t
   :init
   (use-package racer
-    :ensure t)
+    :ensure t
+    :init
+    (add-hook 'racer-mode-hook
+              (lambda ()
+                (eldoc-mode)
+                (company-mode))))
   (setq rust-format-on-save t)
   (define-key rust-mode-map (kbd "C-c C-c") 'rust-run)
-  (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
+  (define-key rust-mode-map (kbd "TAB") 'company-indent-or-complete-common)
+  (setq company-tooltip-align-annotations t)
   (add-hook 'rust-mode-hook
             (lambda ()
               (setq indent-tabs-mode nil)
