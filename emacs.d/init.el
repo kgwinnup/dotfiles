@@ -146,26 +146,26 @@
 (use-package poly-R
   :ensure t)
 
-(use-package racer
-    :ensure t
-    :init
-    (add-hook 'racer-mode-hook
-             (lambda ()
-               (eldoc-mode)
-               (company-mode))))
+;(use-package racer
+;  :ensure t
+;  :init
+;  (add-hook 'racer-mode-hook
+;            (lambda ()
+;              (eldoc-mode)
+;              (company-mode))))
 
-(use-package rust-mode
-  :after racer
-  :ensure t
-  :init
-  (setq rust-format-on-save t)
-  (define-key rust-mode-map (kbd "C-c C-c") 'rust-run)
-  (define-key rust-mode-map (kbd "TAB") 'company-indent-or-complete-common)
-  (add-hook 'rust-mode-hook
-            (lambda ()
-              (setq indent-tabs-mode nil)
-              (setq company-tooltip-align-annotations t)
-              (racer-mode))))
+;(use-package rust-mode
+;  :after racer
+;  :ensure t
+;  :init
+;  (setq rust-format-on-save t)
+;  (define-key rust-mode-map (kbd "C-c C-c") 'rust-run)
+;  (define-key rust-mode-map (kbd "TAB") 'company-indent-or-complete-common)
+;  (add-hook 'rust-mode-hook
+;            (lambda ()
+;              (setq indent-tabs-mode nil)
+;              (setq company-tooltip-align-annotations t)
+;              (racer-mode))))
 
 (use-package ess
   :ensure t
