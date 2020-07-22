@@ -95,8 +95,26 @@
   :init
   (use-package ox-gfm
     :ensure t)
+  (use-package org-present
+    :ensure t)
   (setq org-todo-keywords
         '((sequence "TODO" "IN-PROGRESS" "|" "DONE")))
+  (eval-after-load "org-present"
+    '(progn
+       (add-hook 'org-present-mode-hook
+                 (lambda ()
+                   (turn-off-evil-mode)
+                   (org-present-big)
+                   (org-display-inline-images)
+                   (org-present-hide-cursor)
+                   (org-present-read-only)))
+       (add-hook 'org-present-mode-quit-hook
+                 (lambda ()
+                   (turn-on-evil-mode)
+                   (org-present-small)
+                   (org-remove-inline-images)
+                   (org-present-show-cursor)
+                   (org-present-read-write)))))
   (add-hook 'org-mode-hook
             (lambda ()
               (org-indent-mode)
@@ -146,26 +164,26 @@
 (use-package poly-R
   :ensure t)
 
-;(use-package racer
-;  :ensure t
-;  :init
-;  (add-hook 'racer-mode-hook
-;            (lambda ()
-;              (eldoc-mode)
-;              (company-mode))))
+(use-package racer
+    :ensure t
+    :init
+    (add-hook 'racer-mode-hook
+             (lambda ()
+               (eldoc-mode)
+               (company-mode))))
 
-;(use-package rust-mode
-;  :after racer
-;  :ensure t
-;  :init
-;  (setq rust-format-on-save t)
-;  (define-key rust-mode-map (kbd "C-c C-c") 'rust-run)
-;  (define-key rust-mode-map (kbd "TAB") 'company-indent-or-complete-common)
-;  (add-hook 'rust-mode-hook
-;            (lambda ()
-;              (setq indent-tabs-mode nil)
-;              (setq company-tooltip-align-annotations t)
-;              (racer-mode))))
+(use-package rust-mode
+  :after racer
+  :ensure t
+  :init
+  (setq rust-format-on-save t)
+  (define-key rust-mode-map (kbd "C-c C-c") 'rust-run)
+  (define-key rust-mode-map (kbd "TAB") 'company-indent-or-complete-common)
+  (add-hook 'rust-mode-hook
+            (lambda ()
+              (setq indent-tabs-mode nil)
+              (setq company-tooltip-align-annotations t)
+              (racer-mode))))
 
 (use-package ess
   :ensure t
