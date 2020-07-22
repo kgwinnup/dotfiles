@@ -127,6 +127,7 @@
               (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
               (define-key evil-normal-state-local-map (kbd "SPC u") 'org-todo)
               (define-key evil-normal-state-local-map (kbd "SPC T") 'my-org-timestamp)
+              (define-key evil-normal-state-local-map (kbd "SPC o p") 'org-present)
               (define-key evil-normal-state-local-map (kbd "SPC o c") 'org-toggle-checkbox))))
 
 (use-package markdown-mode
