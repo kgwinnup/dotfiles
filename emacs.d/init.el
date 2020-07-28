@@ -8,9 +8,10 @@
 (package-initialize)
 (shell-command "touch ~/.emacs.d/custom.el")
 (setq custom-file "~/.emacs.d/custom.el")
-(load custom-file)
 (add-to-list 'exec-path "/usr/local/bin")
-(add-to-list 'exec-path "~/.cargo/bin")
+(setenv "PATH" (concat "/usr/local/go/bin:" (getenv "PATH")))
+(add-to-list 'exec-path "/usr/local/go/bin")
+(load custom-file)
 
 (if (file-exists-p "~/.emacs.d/email.el")
     (load "~/.emacs.d/email.el"))
@@ -143,20 +144,42 @@
               (turn-on-orgtbl)
               (turn-on-orgstruct++))))
 
+
+
+
+(use-package lsp-mode
+  :ensure t
+  :commands (lsp lsp-deferred)
+  :hook (go-mode . lsp-deferred))
+
+(defun lsp-go-install-save-hooks ()
+  (add-hook 'before-save-hook 'lsp-format-buffer t t)
+  (add-hook 'before-save-hook 'lsp-organize-imports t t))
+
+(add-hook 'go-mode-hook 'lsp-go-install-save-hooks)
+
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode
+  :init)
+
+
+
+
+
+
 (use-package go-mode
   :ensure t
   :mode "\\*\\.go"
   :config
   (add-hook 'go-mode-hook
 			(lambda ()
-			  (define-key evil-normal-state-local-map (kbd "SPC t") 'godef-describe)
 			  (setq exec-path (append exec-path '("~/go/bin/")))
 			  (setq gofmt-command "goimports")
 			  (add-hook 'before-save-hook 'gofmt-before-save)
 			  (use-package company-go
 				:ensure t
 				:init
-				;(set (make-local-variable 'company-backends) '(company-go))
 				(company-mode)))))
 
 (use-package poly-markdown
