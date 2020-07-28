@@ -10,12 +10,9 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 " start plugin includes
 
-Plugin 'jonathanfilip/vim-lucius'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
-Plugin 'jreybert/vimagit'
 Plugin 'morhetz/gruvbox'
-Plugin 'flazz/vim-colorschemes'
 Plugin 'scrooloose/nerdtree'
 Plugin 'vim-scripts/gitignore'
 Plugin 'rhysd/vim-clang-format'
@@ -74,6 +71,10 @@ let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#show_buffers=1
 set laststatus=2
 
+" system python
+let g:python2_host_prog = $HOME + '/anaconda3/bin/python'
+let g:python3_host_prog = $HOME + '/anaconda3/bin/python3'
+
 set t_Co=256
 syntax enable
 set background=dark
@@ -100,8 +101,6 @@ nnoremap <leader>ss :setlocal spell spelllang=en_us<cr>
 nnoremap <leader>sf :setlocal nospell<cr>
 nnoremap <leader>vp :VimuxPromptCommand<cr>
 nnoremap <leader>vl :VimuxRunLastCommand<cr>
-nnoremap <leader>mg :Magit<cr>
-nnoremap <leader>oo :so $MYVIMRC<cr>
 autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
 autocmd BufNewFile,BufRead *.rmd set syntax=r
 
@@ -126,8 +125,6 @@ let g:clang_format#style_options = {
 augroup ft_go
 autocmd FileType go nnoremap <buffer><leader>t :GoInfo<cr>
 let g:go_fmt_command = "goimports"
-let g:python2_host_prog = $HOME + '/anaconda3/bin/python'
-let g:python3_host_prog = $HOME + '/anaconda3/bin/python3'
 augroup END
 
 
