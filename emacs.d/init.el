@@ -152,7 +152,6 @@
 (defun lsp-go-install-save-hooks ()
   (add-hook 'before-save-hook 'lsp-format-buffer t t)
   (add-hook 'before-save-hook 'lsp-organize-imports t t))
-
 (add-hook 'go-mode-hook 'lsp-go-install-save-hooks)
 
 (use-package lsp-ui
@@ -168,12 +167,7 @@
 			(lambda ()
 			  (setq exec-path (append exec-path '("~/go/bin/")))
 			  (setq gofmt-command "goimports")
-			  (add-hook 'before-save-hook 'gofmt-before-save)
-			  ;(use-package company-go
-				;:ensure t
-				;:init
-                                        ;(company-mode)))))
-              )))
+			  (add-hook 'before-save-hook 'gofmt-before-save))))
 
 (use-package poly-markdown
   :ensure t)
@@ -213,7 +207,7 @@
   (setq company-idle-delay 0)
   (setq company-tooltip-align-annotations t)
   (setq company-minimum-prefix-length 1)
-    (add-hook 'after-init-hook 'global-company-mode))
+  (add-hook 'after-init-hook 'global-company-mode))
 
 (use-package neotree
   :ensure t
