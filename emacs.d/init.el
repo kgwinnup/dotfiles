@@ -144,9 +144,6 @@
               (turn-on-orgtbl)
               (turn-on-orgstruct++))))
 
-
-
-
 (use-package lsp-mode
   :ensure t
   :commands (lsp lsp-deferred)
@@ -163,11 +160,6 @@
   :commands lsp-ui-mode
   :init)
 
-
-
-
-
-
 (use-package go-mode
   :ensure t
   :mode "\\*\\.go"
@@ -177,10 +169,11 @@
 			  (setq exec-path (append exec-path '("~/go/bin/")))
 			  (setq gofmt-command "goimports")
 			  (add-hook 'before-save-hook 'gofmt-before-save)
-			  (use-package company-go
-				:ensure t
-				:init
-				(company-mode)))))
+			  ;(use-package company-go
+				;:ensure t
+				;:init
+                                        ;(company-mode)))))
+              )))
 
 (use-package poly-markdown
   :ensure t)
