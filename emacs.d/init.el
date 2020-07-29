@@ -242,8 +242,8 @@
                "c o" '(lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
                "c l" '(lambda () (interactive) (load-file "~/.emacs.d/init.el"))
                "t t" 'shell
-               "v l" 'my-send-to-shell-input
-               "v p" 'my-send-to-shell-again
+               "v p" 'my-send-to-shell-input
+               "v l" 'my-send-to-shell-again
                "s s" 'ispell
                ;; buffer keybindings
                "n n" 'next-buffer
