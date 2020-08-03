@@ -13,6 +13,9 @@
 (add-to-list 'exec-path "/usr/local/go/bin")
 (load custom-file)
 
+(setq inhibit-startup-screen t)
+(setq auto-save-default nil)
+(setq backup-directory-alist '(("" . "~/.emacs.d/backup")))
 
 (if (file-exists-p "~/.emacs.d/email.el")
     (load "~/.emacs.d/email.el"))
@@ -66,13 +69,13 @@
 (use-package evil
   :ensure t
   :init
-  (evil-mode))
+  (evil-mode 1))
 
 (use-package evil-collection
   :after evil
   :ensure t
   :config
-  (evil-collection-init 'dired))
+  (evil-collection-init))
 
 (use-package magit
   :ensure t
@@ -211,7 +214,7 @@
 
 (use-package company
   :ensure t
-  :config
+  :init
   (setq company-idle-delay 0)
   (setq company-tooltip-align-annotations t)
   (setq company-minimum-prefix-length 1)
@@ -288,3 +291,4 @@
               initial-scratch-message nil)
 
 (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+R-mode))
+
