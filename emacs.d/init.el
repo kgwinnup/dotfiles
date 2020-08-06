@@ -63,7 +63,7 @@
 (use-package gruvbox-theme
   :ensure t
   :init
-  (load-theme 'gruvbox-dark-soft 1))
+  (load-theme 'gruvbox-dark-medium 1))
 
 (setq evil-want-keybinding nil)
 (use-package evil
@@ -277,7 +277,7 @@
                     :height 140
                     :weight 'extra-light)
 (global-display-line-numbers-mode)
-(load-theme 'gruvbox-dark-soft 1)
+(load-theme 'gruvbox-dark-medium 1)
 
 (setq-default ring-bell-function 'ignore
               scroll-step 1
