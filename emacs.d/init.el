@@ -186,6 +186,14 @@
 (use-package poly-R
   :ensure t)
 
+(use-package rjsx-mode
+  :ensure t
+  :init
+  (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode)))
+
+(use-package js2-mode
+  :ensure t)
+
 (use-package ess
   :ensure t
   :mode (("\\*\\.R" . ess-site)
