@@ -18,9 +18,6 @@
 (setq auto-save-default nil)
 (setq backup-directory-alist '(("" . "~/.emacs.d/backup")))
 
-(if (file-exists-p "~/.emacs.d/email.el")
-    (load "~/.emacs.d/email.el"))
-
 ;; Bootstrap `use-package`
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -315,6 +312,3 @@
 
 (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+R-mode))
 
-;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
-(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
-;; ## end of OPAM user-setup addition for emacs / base ## keep this line
