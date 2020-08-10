@@ -10,6 +10,7 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (add-to-list 'exec-path "/usr/local/bin")
 (setenv "PATH" (concat "/usr/local/go/bin:" (getenv "PATH")))
+(setenv "PATH" (concat "/home/kyle/.opam/default/bin:" (getenv "PATH")))
 (add-to-list 'exec-path "/usr/local/go/bin")
 (load custom-file)
 
@@ -220,6 +221,20 @@
               (define-key evil-normal-state-local-map (kbd "SPC r s") 'my-ess-start-R)
               (define-key evil-normal-state-local-map (kbd "SPC r r") 'ess-eval-function-or-paragraph-and-step))))
 
+(use-package merlin
+    :ensure t
+    :init
+    (add-hook 'caml-mode-hook 'merlin-mod))
+
+(use-package tuareg
+  :ensure t
+  :init
+  (setq tuareg-match-patterns-aligned t)
+  (add-hook 'tuareg-mode-hook
+            (lambda ()
+              (define-key evil-normal-state-local-map (kbd "SPC r r") 'tuareg-eval-phrase)
+              (define-key evil-normal-state-local-map (kbd "SPC r s") 'run-ocaml))))
+
 (use-package company
   :ensure t
   :init
@@ -300,3 +315,6 @@
 
 (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+R-mode))
 
+;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
+(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
+;; ## end of OPAM user-setup addition for emacs / base ## keep this line
