@@ -20,12 +20,9 @@ Plugin 'ervandew/supertab'
 Plugin 'elzr/vim-json'
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
-Plugin 'jason0x43/vim-js-indent'
-Plugin 'mxw/vim-jsx'
-Plugin 'lervag/vimtex'
+Plugin 'MaxMEllon/vim-jsx-pretty'
 Plugin 'nvie/vim-flake8'
 Plugin 'fatih/vim-go'
-Plugin 'mdempsky/gocode', {'rtp': 'vim/'}
 Plugin 'jalvesaq/Nvim-R'
 Plugin 'benmills/vimux'
 
@@ -96,7 +93,6 @@ nnoremap <leader>no :only<cr>
 nnoremap <leader>ns <C-W><C-W>
 nnoremap <leader>= <C-w>=
 nnoremap <leader>nt :NERDTreeToggle<cr>
-nnoremap <leader>st :ALEToggle<cr>
 nnoremap <leader>ss :setlocal spell spelllang=en_us<cr>
 nnoremap <leader>sf :setlocal nospell<cr>
 nnoremap <leader>vp :VimuxPromptCommand<cr>
@@ -157,5 +153,4 @@ autocmd FileType r nnoremap <buffer><leader>rs :call StartR("R")<cr>
 autocmd FileType r nnoremap <buffer><leader>rk :call StopR("R")<cr>
 autocmd FileType r nnoremap <buffer><leader>rf :call SendParagraphToR("silent", "down")<cr>
 augroup END
-
 
