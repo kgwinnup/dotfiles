@@ -25,6 +25,8 @@ Plugin 'nvie/vim-flake8'
 Plugin 'fatih/vim-go'
 Plugin 'jalvesaq/Nvim-R'
 Plugin 'benmills/vimux'
+Plugin 'rust-lang/rust.vim'
+Plugin 'neoclide/coc.nvim', {'branch': 'release'}
 
 " end plugin includes
 call vundle#end()            " required
@@ -154,3 +156,6 @@ autocmd FileType r nnoremap <buffer><leader>rk :call StopR("R")<cr>
 autocmd FileType r nnoremap <buffer><leader>rf :call SendParagraphToR("silent", "down")<cr>
 augroup END
 
+augroup ft_rust
+let g:rustfmt_autosave = 1
+augroup END
