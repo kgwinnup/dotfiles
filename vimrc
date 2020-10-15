@@ -28,6 +28,7 @@ Plugin 'benmills/vimux'
 Plugin 'rust-lang/rust.vim'
 Plugin 'neoclide/coc.nvim', {'branch': 'release'}
 
+
 " end plugin includes
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -118,6 +119,15 @@ let g:clang_format#style_options = {
             \ "Standard" : "C++11"}
 
 "
+" Rust
+"
+augroup ft_rust
+let g:rustfmt_autosave = 1
+autocmd FileType rust nnoremap <buffer><leader>t :call CocAction('doHover')<cr>
+augroup END
+
+
+"
 " Go
 "
 augroup ft_go
@@ -156,6 +166,3 @@ autocmd FileType r nnoremap <buffer><leader>rk :call StopR("R")<cr>
 autocmd FileType r nnoremap <buffer><leader>rf :call SendParagraphToR("silent", "down")<cr>
 augroup END
 
-augroup ft_rust
-let g:rustfmt_autosave = 1
-augroup END
