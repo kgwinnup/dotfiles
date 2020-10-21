@@ -27,7 +27,10 @@ Plugin 'jalvesaq/Nvim-R'
 Plugin 'benmills/vimux'
 Plugin 'rust-lang/rust.vim'
 Plugin 'neoclide/coc.nvim', {'branch': 'release'}
+<<<<<<< HEAD
 Plugin 'ziglang/zig.vim'
+=======
+>>>>>>> 23897e9dadd73b6440e4235be2200f09f39d7504
 
 
 " end plugin includes
@@ -127,12 +130,15 @@ let g:rustfmt_autosave = 1
 autocmd FileType rust nnoremap <buffer><leader>t :call CocAction('doHover')<cr>
 augroup END
 
+<<<<<<< HEAD
 "
 " Zig
 "
 augroup ft_zig
 autocmd FileType zig nnoremap <buffer><leader>t :call CocAction('doHover')<cr>
 augroup END
+=======
+>>>>>>> 23897e9dadd73b6440e4235be2200f09f39d7504
 
 "
 " Go
