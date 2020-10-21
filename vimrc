@@ -25,6 +25,10 @@ Plugin 'nvie/vim-flake8'
 Plugin 'fatih/vim-go'
 Plugin 'jalvesaq/Nvim-R'
 Plugin 'benmills/vimux'
+Plugin 'rust-lang/rust.vim'
+Plugin 'neoclide/coc.nvim', {'branch': 'release'}
+Plugin 'ziglang/zig.vim'
+
 
 " end plugin includes
 call vundle#end()            " required
@@ -114,6 +118,21 @@ let g:clang_format#style_options = {
             \ "AllowShortIfStatementsOnASingleLine" : "true",
             \ "AlwaysBreakTemplateDeclarations" : "true",
             \ "Standard" : "C++11"}
+
+"
+" Rust
+"
+augroup ft_rust
+let g:rustfmt_autosave = 1
+autocmd FileType rust nnoremap <buffer><leader>t :call CocAction('doHover')<cr>
+augroup END
+
+"
+" Zig
+"
+augroup ft_zig
+autocmd FileType zig nnoremap <buffer><leader>t :call CocAction('doHover')<cr>
+augroup END
 
 "
 " Go
