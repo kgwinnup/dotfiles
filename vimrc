@@ -29,6 +29,9 @@ Plugin 'rust-lang/rust.vim'
 Plugin 'neoclide/coc.nvim', {'branch': 'release'}
 
 
+set clipboard=unnamed,autoselect
+
+
 " end plugin includes
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -100,6 +103,9 @@ nnoremap <leader>ss :setlocal spell spelllang=en_us<cr>
 nnoremap <leader>sf :setlocal nospell<cr>
 nnoremap <leader>vp :VimuxPromptCommand<cr>
 nnoremap <leader>vl :VimuxRunLastCommand<cr>
+nnoremap <leader>y :y*<cr>
+vmap <leader>y :y*<cr>
+nmap <leader>y :y*<cr>
 autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
 autocmd BufNewFile,BufRead *.rmd set syntax=r
 
@@ -125,6 +131,7 @@ augroup ft_rust
 let g:rustfmt_autosave = 1
 autocmd FileType rust nnoremap <buffer><leader>t :call CocAction('doHover')<cr>
 augroup END
+
 
 "
 " Go
