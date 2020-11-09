@@ -142,6 +142,8 @@ augroup END
 "
 augroup ft_go
 autocmd FileType go nnoremap <buffer><leader>t :GoInfo<cr>
+autocmd FileType go nnoremap <buffer><leader>gg :GoDef<cr>
+autocmd FileType go nnoremap <buffer><leader>gp <C-o><cr>
 let g:go_fmt_command = "goimports"
 augroup END
 
