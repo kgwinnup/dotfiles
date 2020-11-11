@@ -10,9 +10,11 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (add-to-list 'exec-path "/usr/local/bin")
 (setenv "PATH" (concat "/usr/local/go/bin:" (getenv "PATH")))
-(setenv "PATH" (concat "/home/kyle/.opam/default/bin:" (getenv "PATH")))
+(setenv "PATH" (concat "~/go/bin:" (getenv "PATH")))
 (add-to-list 'exec-path "/usr/local/go/bin")
 (load custom-file)
+(setq default-directory "~/workspace/")
+(setq explicit-shell-file-name "/bin/bash")
 
 (setq inhibit-startup-screen t)
 (setq auto-save-default nil)
@@ -52,16 +54,19 @@
   (global-set-key (kbd "M-x") 'helm-M-x)
   (global-set-key (kbd "C-x C-f") 'helm-find-files))
 
-(use-package yaml-mode
+(use-package helm-gtags
   :ensure t)
 
-(use-package solarized-theme
+(use-package yaml-mode
   :ensure t)
 
 (use-package gruvbox-theme
   :ensure t
-  :init
-  (load-theme 'gruvbox-dark-medium 1))
+  :init)
+
+(use-package solarized-theme
+  :ensure t
+  :init)
 
 (setq evil-want-keybinding nil)
 (use-package evil
@@ -156,12 +161,9 @@
 (use-package lsp-mode
   :ensure t
   :commands (lsp lsp-deferred)
-  :hook (go-mode . lsp-deferred))
-
-(defun lsp-go-install-save-hooks ()
-  (add-hook 'before-save-hook 'lsp-format-buffer t t)
-  (add-hook 'before-save-hook 'lsp-organize-imports t t))
-(add-hook 'go-mode-hook 'lsp-go-install-save-hooks)
+  :hook (go-mode . lsp-deferred)
+  :init
+  (setq lsp-log-io nil))
 
 (use-package lsp-ui
   :ensure t
@@ -176,6 +178,9 @@
 			(lambda ()
 			  (setq exec-path (append exec-path '("~/go/bin/")))
 			  (setq gofmt-command "goimports")
+              (define-key evil-normal-state-local-map (kbd "SPC g g") 'godef-jump)
+              (define-key evil-normal-state-local-map (kbd "SPC g p") 'pop-tag-mark)
+              (define-key evil-normal-state-local-map (kbd "SPC g d") 'godoc-at-point)
 			  (add-hook 'before-save-hook 'gofmt-before-save))))
 
 (use-package poly-markdown
@@ -223,15 +228,6 @@
     :init
     (add-hook 'caml-mode-hook 'merlin-mod))
 
-(use-package tuareg
-  :ensure t
-  :init
-  (setq tuareg-match-patterns-aligned t)
-  (add-hook 'tuareg-mode-hook
-            (lambda ()
-              (define-key evil-normal-state-local-map (kbd "SPC r r") 'tuareg-eval-phrase)
-              (define-key evil-normal-state-local-map (kbd "SPC r s") 'run-ocaml))))
-
 (use-package company
   :ensure t
   :init
@@ -267,7 +263,7 @@
     :bindings ("n t" 'neotree-toggle
                "c o" '(lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
                "c l" '(lambda () (interactive) (load-file "~/.emacs.d/init.el"))
-               "t t" 'shell
+               "t t" (lambda () (interactive) (shell) (display-line-numbers-mode -1))
                "v p" 'my-send-to-shell-input
                "v l" 'my-send-to-shell-again
                "s s" 'ispell
@@ -279,7 +275,6 @@
                "n d" 'kill-buffer-and-window
                ;; magit
                "m s" 'magit
-               "m e" 'mu4e
                ;; view
                "=" 'default-text-scale-increase
                "-" 'default-text-scale-decrease)))
@@ -296,8 +291,10 @@
                     :family "mononoki"
                     :height 140
                     :weight 'extra-light)
+
 (global-display-line-numbers-mode)
-(load-theme 'gruvbox-dark-medium 1)
+(load-theme 'gruvbox-dark-hard 1)
+(setq-default mac-allow-anti-aliasing nil)
 
 (setq-default ring-bell-function 'ignore
               scroll-step 1
