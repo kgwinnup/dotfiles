@@ -28,10 +28,6 @@ Plugin 'benmills/vimux'
 Plugin 'rust-lang/rust.vim'
 Plugin 'neoclide/coc.nvim', {'branch': 'release'}
 
-
-set clipboard=unnamed,autoselect
-
-
 " end plugin includes
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -62,6 +58,7 @@ set cursorline
 set colorcolumn=110
 set mouse=a
 set backspace=indent,eol,start
+set clipboard=unnamed,autoselect
 
 " nerdtree settings
 let g:NERDTreeQuitOnOpen=1
