@@ -14,7 +14,7 @@
 (add-to-list 'exec-path "/usr/local/go/bin")
 (load custom-file)
 (setq default-directory "~/workspace/")
-(setq explicit-shell-file-name "/bin/bash")
+;;(setq explicit-shell-file-name "/bin/bash")
 
 (setq inhibit-startup-screen t)
 (setq auto-save-default nil)
@@ -25,6 +25,15 @@
   (package-refresh-contents)
   (package-install 'use-package))
 (require 'use-package)
+
+(defun my-toggle-shell ()
+  (interactive)
+    (if (and (get-buffer-window "*shell*"))
+        (delete-other-windows)
+      (progn (shell)
+             (display-line-numbers-mode -1)
+             (switch-to-buffer "*shell*")
+             (other-window -1))))
 
 (defun my-send-to-shell (cmd)
   "sends a command to the buffer containing an active shell"
@@ -162,13 +171,19 @@
   :ensure t
   :commands (lsp lsp-deferred)
   :hook (go-mode . lsp-deferred)
-  :init
+  :config
+  (setq gc-cons-threshold 100000000)
+  (setq read-process-output-max (* 1024 1024 3)) ;; 1mb
+  (setq lsp-completion-provider :capf)
+  (setq lsp-idle-delay 0.500)
   (setq lsp-log-io nil))
 
-(use-package lsp-ui
+(use-package helm-lsp
   :ensure t
-  :commands lsp-ui-mode
-  :init)
+  :commands helm-lsp-workspace-symbol)
+
+(use-package lsp-ui
+  :ensure t)
 
 (use-package go-mode
   :ensure t
@@ -230,11 +245,15 @@
 
 (use-package company
   :ensure t
-  :init
+  :config
   (setq company-idle-delay 0)
   (setq company-tooltip-align-annotations t)
   (setq company-minimum-prefix-length 1)
   (add-hook 'after-init-hook 'global-company-mode))
+
+(use-package company-lsp
+  :ensure t
+  :commands company-lsp)
 
 (use-package neotree
   :ensure t
@@ -263,7 +282,8 @@
     :bindings ("n t" 'neotree-toggle
                "c o" '(lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
                "c l" '(lambda () (interactive) (load-file "~/.emacs.d/init.el"))
-               "t t" (lambda () (interactive) (shell) (display-line-numbers-mode -1))
+               ;"t t" (lambda () (interactive) (shell) (display-line-numbers-mode -1))
+               "t t" 'my-toggle-shell
                "v p" 'my-send-to-shell-input
                "v l" 'my-send-to-shell-again
                "s s" 'ispell
@@ -273,6 +293,8 @@
                "n p" 'previous-buffer
                "n o" 'delete-other-windows
                "n d" 'kill-buffer-and-window
+               "j" 'evil-scroll-down
+               "k" 'evil-scroll-up
                ;; magit
                "m s" 'magit
                ;; view
@@ -289,10 +311,11 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 (set-face-attribute 'default nil
                     :family "mononoki"
-                    :height 140
+                    :height 160
                     :weight 'extra-light)
 
 (global-display-line-numbers-mode)
+(global-hl-line-mode)
 (load-theme 'gruvbox-dark-hard 1)
 (setq-default mac-allow-anti-aliasing nil)
 
