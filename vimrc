@@ -101,11 +101,12 @@ nnoremap <leader>= <C-w>=
 nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>ss :setlocal spell spelllang=en_us<cr>
 nnoremap <leader>sf :setlocal nospell<cr>
+nnoremap <leader>sn ]s<cr>
+nnoremap <leader>sp [s<cr>
+nnoremap <leader>sa zg<cr>
+nnoremap <leader>si z=<cr>
 nnoremap <leader>vp :VimuxPromptCommand<cr>
 nnoremap <leader>vl :VimuxRunLastCommand<cr>
-nnoremap <leader>y :y*<cr>
-vmap <leader>y :y*<cr>
-nmap <leader>y :y*<cr>
 autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
 autocmd BufNewFile,BufRead *.rmd set syntax=r
 
@@ -119,6 +120,7 @@ nnoremap = :FormatJSON<Cr>
 "
 autocmd FileType c,cpp ClangFormatAutoEnable
 let g:clang_format#style_options = {
+            \ "BasedOnStyle": "google",
             \ "AccessModifierOffset" : -4,
             \ "AllowShortIfStatementsOnASingleLine" : "true",
             \ "AlwaysBreakTemplateDeclarations" : "true",
