@@ -181,7 +181,10 @@
   (setq lsp-completion-provider :capf)
   (setq lsp-idle-delay 0.1)
   (setq lsp-enable-file-watchers nil)
+  (setq lsp-ui-doc-enable nil)
   (setq lsp-log-io nil))
+
+
 
 ;(use-package company-lsp
 ;  :ensure t
@@ -191,10 +194,6 @@
 (use-package helm-lsp
   :ensure t
   :commands helm-lsp-workspace-symbol)
-
-(use-package lsp-ui
-  :ensure t
-  :commands lsp-ui-mode)
 
 (use-package go-mode
   :ensure t
