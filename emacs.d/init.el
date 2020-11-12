@@ -5,7 +5,6 @@
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
 
-(package-initialize)
 (shell-command "touch ~/.emacs.d/custom.el")
 (setq custom-file "~/.emacs.d/custom.el")
 (add-to-list 'exec-path "/usr/local/bin")
@@ -14,19 +13,23 @@
 (add-to-list 'exec-path "/usr/local/go/bin")
 (load custom-file)
 (setq default-directory "~/workspace/")
-;;(setq explicit-shell-file-name "/bin/bash")
-
 (setq inhibit-startup-screen t)
 (setq auto-save-default nil)
 (setq backup-directory-alist '(("" . "~/.emacs.d/backup")))
 
 ;; Bootstrap `use-package`
+(package-initialize)
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
 (require 'use-package)
 
+;;
+;; custom functions
+;;
+
 (defun my-toggle-shell ()
+  "toggles the shell window"
   (interactive)
     (if (and (get-buffer-window "*shell*"))
         (delete-other-windows)
@@ -57,44 +60,6 @@
   (interactive)
   (my-send-to-shell (read-string "CMD: ")))
 
-(use-package helm
-  :ensure t
-  :init
-  (global-set-key (kbd "M-x") 'helm-M-x)
-  (global-set-key (kbd "C-x C-f") 'helm-find-files))
-
-(use-package helm-gtags
-  :ensure t)
-
-(use-package yaml-mode
-  :ensure t)
-
-(use-package gruvbox-theme
-  :ensure t
-  :init)
-
-(use-package solarized-theme
-  :ensure t
-  :init)
-
-(setq evil-want-keybinding nil)
-(use-package evil
-  :ensure t
-  :init
-  (evil-mode 1))
-
-(use-package evil-collection
-  :after evil
-  :ensure t
-  :config
-  (evil-collection-init))
-
-(use-package magit
-  :ensure t
-  :init
-  (use-package evil-magit
-    :ensure t))
-
 (defun my-start-code-block ()
   "starts a code block in org mode"
   (interactive)
@@ -113,6 +78,39 @@
   (interactive)
   (insert ":DATE: ")
   (org-insert-time-stamp (current-time)))
+
+(use-package helm
+  :ensure t
+  :init
+  (global-set-key (kbd "M-x") 'helm-M-x)
+  (global-set-key (kbd "C-x C-f") 'helm-find-files))
+
+(use-package helm-gtags
+  :ensure t)
+
+(use-package yaml-mode
+  :ensure t)
+
+(use-package gruvbox-theme
+  :ensure t
+  :init)
+
+(use-package evil
+  :ensure t
+  :init
+  (evil-mode 1))
+
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init))
+
+(use-package magit
+  :ensure t
+  :init
+  (use-package evil-magit
+    :ensure t))
 
 (use-package org
   :ensure t
@@ -249,11 +247,14 @@
   (setq company-idle-delay 0)
   (setq company-tooltip-align-annotations t)
   (setq company-minimum-prefix-length 1)
+  (setq company-lsp-cache-candidates t)
+  (setq company-lsp-async t)
   (add-hook 'after-init-hook 'global-company-mode))
 
 (use-package company-lsp
   :ensure t
-  :commands company-lsp)
+  :commands company-lsp
+  :after (lsp-mode company))
 
 (use-package neotree
   :ensure t
@@ -282,7 +283,6 @@
     :bindings ("n t" 'neotree-toggle
                "c o" '(lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
                "c l" '(lambda () (interactive) (load-file "~/.emacs.d/init.el"))
-               ;"t t" (lambda () (interactive) (shell) (display-line-numbers-mode -1))
                "t t" 'my-toggle-shell
                "v p" 'my-send-to-shell-input
                "v l" 'my-send-to-shell-again
