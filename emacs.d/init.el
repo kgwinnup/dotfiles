@@ -166,23 +166,35 @@
               (turn-on-orgtbl)
               (turn-on-orgstruct++))))
 
+(use-package projectile
+  :ensure t
+  :config
+  (projectile-mode +1))
+
 (use-package lsp-mode
   :ensure t
-  :commands (lsp lsp-deferred)
   :hook (go-mode . lsp-deferred)
+  :commands lsp-deferred
   :config
   (setq gc-cons-threshold 100000000)
   (setq read-process-output-max (* 1024 1024 3)) ;; 1mb
   (setq lsp-completion-provider :capf)
-  (setq lsp-idle-delay 0.500)
+  (setq lsp-idle-delay 0.1)
+  (setq lsp-enable-file-watchers nil)
   (setq lsp-log-io nil))
+
+;(use-package company-lsp
+;  :ensure t
+;  :commands company-lsp
+;  :after (lsp-mode company))
 
 (use-package helm-lsp
   :ensure t
   :commands helm-lsp-workspace-symbol)
 
 (use-package lsp-ui
-  :ensure t)
+  :ensure t
+  :commands lsp-ui-mode)
 
 (use-package go-mode
   :ensure t
@@ -237,11 +249,6 @@
               (define-key evil-normal-state-local-map (kbd "SPC r s") 'my-ess-start-R)
               (define-key evil-normal-state-local-map (kbd "SPC r r") 'ess-eval-function-or-paragraph-and-step))))
 
-(use-package merlin
-    :ensure t
-    :init
-    (add-hook 'caml-mode-hook 'merlin-mod))
-
 (use-package company
   :ensure t
   :config
@@ -251,11 +258,6 @@
   (setq company-lsp-cache-candidates t)
   (setq company-lsp-async t)
   (add-hook 'after-init-hook 'global-company-mode))
-
-(use-package company-lsp
-  :ensure t
-  :commands company-lsp
-  :after (lsp-mode company))
 
 
 ;;
