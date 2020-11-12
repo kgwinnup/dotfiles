@@ -95,6 +95,7 @@
   :ensure t
   :init)
 
+(setq evil-want-keybinding nil)
 (use-package evil
   :ensure t
   :init
@@ -256,6 +257,21 @@
   :commands company-lsp
   :after (lsp-mode company))
 
+
+;;
+;; neotree
+;;
+(defun neo-open-file-hide (full-path &optional arg)
+  "Open a file node and hides tree."
+  (neo-global--select-mru-window arg)
+  (find-file full-path)
+  (neotree-hide))
+
+(defun neotree-enter-hide (&optional arg)
+  "Enters file and hides neotree directly"
+  (interactive "P")
+  (neo-buffer--execute arg 'neo-open-file-hide 'neo-open-dir))
+
 (use-package neotree
   :ensure t
   :init
@@ -264,7 +280,8 @@
   (add-hook 'neotree-mode-hook
 			(lambda ()
 			  (display-line-numbers-mode -1)
-			  (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
+			  ;;(define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
+			  (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter-hide)
 			  (define-key evil-normal-state-local-map (kbd "SPC n t") 'neotree-hide)
 			  (define-key evil-normal-state-local-map (kbd "SPC n h") 'neotree-hidden-file-toggle)
 			  (define-key evil-normal-state-local-map (kbd "SPC n r") 'neotree-refresh)
