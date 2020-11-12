@@ -83,7 +83,13 @@
   :ensure t
   :init
   (global-set-key (kbd "M-x") 'helm-M-x)
-  (global-set-key (kbd "C-x C-f") 'helm-find-files))
+  (global-set-key (kbd "C-x C-f") 'helm-find-files)
+  (setq helm-boring-buffer-regexp-list
+      (quote
+       (  "\\Minibuf.+\\*"
+          "\\` "
+          "\\magit"
+          "\\*.+\\*"))))
 
 (use-package helm-gtags
   :ensure t)
@@ -311,6 +317,8 @@
                "n p" 'previous-buffer
                "n o" 'delete-other-windows
                "n d" 'kill-buffer-and-window
+               "n b" 'helm-mini
+               "n r" '(lambda () (interactive) (switch-to-buffer "*scratch*"))
                "j" 'evil-scroll-down
                "k" 'evil-scroll-up
                ;; magit
@@ -334,7 +342,7 @@
 
 (global-display-line-numbers-mode)
 (global-hl-line-mode)
-(load-theme 'gruvbox-dark-hard 1)
+(load-theme 'gruvbox-dark-medium 1)
 (setq-default mac-allow-anti-aliasing nil)
 
 (setq-default ring-bell-function 'ignore
