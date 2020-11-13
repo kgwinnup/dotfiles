@@ -79,6 +79,13 @@
   (insert ":DATE: ")
   (org-insert-time-stamp (current-time)))
 
+(setq my-font-size 160)
+(lambda my-global-font-size (size)
+  (interactive)
+  (set-face-attribute 'default nil
+                      :height (+ size (my-font-size)))
+  (setq my-font-size (+ size (my-font-size))))
+
 (use-package helm
   :ensure t
   :init
@@ -324,8 +331,8 @@
                ;; magit
                "m s" 'magit
                ;; view
-               "=" 'default-text-scale-increase
-               "-" 'default-text-scale-decrease)))
+               "=" (lambda () (interactive) (my-global-font-size 10))
+               "-" (lambda () (interactive) (my-global-font-size -10)))
 
 (if (display-graphic-p)
     (progn
@@ -337,7 +344,7 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 (set-face-attribute 'default nil
                     :family "mononoki"
-                    :height 160
+                    :height (my-font-size)
                     :weight 'extra-light)
 
 (global-display-line-numbers-mode)
