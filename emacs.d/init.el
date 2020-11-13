@@ -80,11 +80,11 @@
   (org-insert-time-stamp (current-time)))
 
 (setq my-font-size 160)
-(lambda my-global-font-size (size)
+(defun my-global-font-size (size)
   (interactive)
   (set-face-attribute 'default nil
-                      :height (+ size (my-font-size)))
-  (setq my-font-size (+ size (my-font-size))))
+                      :height (+ size my-font-size))
+  (setq my-font-size (+ size my-font-size)))
 
 (use-package helm
   :ensure t
@@ -331,8 +331,10 @@
                ;; magit
                "m s" 'magit
                ;; view
+               "d t" (lambda () (interactive) (disable-theme 'gruvbox-dark-medium))
+               "d g" (lambda () (interactive) (load-theme 'gruvbox-dark-medium))
                "=" (lambda () (interactive) (my-global-font-size 10))
-               "-" (lambda () (interactive) (my-global-font-size -10)))
+               "-" (lambda () (interactive) (my-global-font-size -10)))))
 
 (if (display-graphic-p)
     (progn
@@ -342,9 +344,10 @@
 (menu-bar-mode -1)
 (xterm-mouse-mode 1)
 (fset 'yes-or-no-p 'y-or-n-p)
+
 (set-face-attribute 'default nil
                     :family "mononoki"
-                    :height (my-font-size)
+                    :height my-font-size
                     :weight 'extra-light)
 
 (global-display-line-numbers-mode)
