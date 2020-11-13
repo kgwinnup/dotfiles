@@ -29,14 +29,16 @@
 ;;
 
 (defun my-toggle-shell ()
-  "toggles the shell window"
+  "toggles the shell window, this function also keeps the cursor in
+the editor buffer when bringing the terminal back into the visible
+frame"
   (interactive)
-    (if (and (get-buffer-window "*shell*"))
-        (delete-other-windows)
-      (progn (shell)
-             (display-line-numbers-mode -1)
-             (switch-to-buffer "*shell*")
-             (other-window -1))))
+  (if (and (get-buffer-window "*shell*"))
+      (delete-other-windows)
+    (progn (shell)
+           (display-line-numbers-mode -1)
+           (switch-to-buffer "*shell*")
+           (other-window -1))))
 
 (defun my-send-to-shell (cmd)
   "sends a command to the buffer containing an active shell"
@@ -79,7 +81,7 @@
   (insert ":DATE: ")
   (org-insert-time-stamp (current-time)))
 
-(setq my-font-size 160)
+(setq my-font-size 150)
 (defun my-global-font-size (size)
   (interactive)
   (set-face-attribute 'default nil
@@ -105,8 +107,10 @@
   :ensure t)
 
 (use-package gruvbox-theme
-  :ensure t
-  :init)
+  :ensure t)
+
+(use-package zenburn-theme
+  :ensure t)
 
 (setq evil-want-keybinding nil)
 (use-package evil
@@ -294,7 +298,6 @@
   (add-hook 'neotree-mode-hook
 			(lambda ()
 			  (display-line-numbers-mode -1)
-			  ;;(define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
 			  (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter-hide)
 			  (define-key evil-normal-state-local-map (kbd "SPC n t") 'neotree-hide)
 			  (define-key evil-normal-state-local-map (kbd "SPC n h") 'neotree-hidden-file-toggle)
@@ -331,8 +334,9 @@
                ;; magit
                "m s" 'magit
                ;; view
-               "d t" (lambda () (interactive) (disable-theme 'gruvbox-dark-medium))
+               "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (disable-theme 'zenburn)))
                "d g" (lambda () (interactive) (load-theme 'gruvbox-dark-medium))
+               "d z" (lambda () (interactive) (load-theme 'zenburn))
                "=" (lambda () (interactive) (my-global-font-size 10))
                "-" (lambda () (interactive) (my-global-font-size -10)))))
 
