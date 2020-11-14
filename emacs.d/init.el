@@ -258,8 +258,15 @@ frame"
           (setq w1 (selected-window))
           (setq w2 (split-window-horizontally))
           (R)
+          (display-line-numbers-mode -1)
           (set-window-buffer w2 "*R*")
-          (select-window w1))))
+          (select-window w1))
+      (if (and (get-buffer-window "*R*"))
+          (delete-other-windows)
+        (progn (let ((w1 (selected-window))
+                     (w2 (split-window-horizontally)))
+                 (set-window-buffer w2 "*R*")
+                 (selecte-window w1))))))
   (add-hook 'ess-mode-hook
             (lambda ()
               (define-key evil-normal-state-local-map (kbd "SPC r s") 'my-ess-start-R)
@@ -295,9 +302,9 @@ frame"
   :init
   (setq neo-theme 'arrow)
   (setq neo-window-fixed-size nil)
+  (display-line-numbers-mode -1)
   (add-hook 'neotree-mode-hook
 			(lambda ()
-			  (display-line-numbers-mode -1)
 			  (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter-hide)
 			  (define-key evil-normal-state-local-map (kbd "SPC n t") 'neotree-hide)
 			  (define-key evil-normal-state-local-map (kbd "SPC n h") 'neotree-hidden-file-toggle)
@@ -351,12 +358,12 @@ frame"
 
 (set-face-attribute 'default nil
                     :family "mononoki"
-                    :height my-font-size
-                    :weight 'extra-light)
+                    :height my-font-size)
+                    ;:weight 'extra-light)
 
 (global-display-line-numbers-mode)
 (global-hl-line-mode)
-(load-theme 'gruvbox-dark-medium 1)
+;(load-theme 'gruvbox-dark-medium 1)
 (setq-default mac-allow-anti-aliasing nil)
 
 (setq-default ring-bell-function 'ignore
