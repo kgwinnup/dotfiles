@@ -49,13 +49,12 @@ frame"
     (process-send-string proc command)
     (setq last-shell-cmd cmd)
     (switch-to-buffer "shell")
-    (end-of-buffer)
+    (goto-char (point-max))
     (switch-to-buffer curbuf)))
 
-(defun my-send-to-shell-again ()
-  "sends the previous command to the active shell"
-  (interactive)
-  (my-send-to-shell last-shell-cmd))
+(eval-after-load "comint"
+  '(progn
+      (setq comint-move-point-for-output 'others)))
 
 (defun my-send-to-shell-input ()
   "gets the user command and sends to the buffer containing an active shell"
