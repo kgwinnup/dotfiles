@@ -144,12 +144,14 @@ frame"
                  (lambda ()
                    (turn-off-evil-mode)
                    (org-present-big)
+                   (display-line-numbers-mode -1)
                    (org-display-inline-images)
                    (org-present-hide-cursor)
                    (org-present-read-only)))
        (add-hook 'org-present-mode-quit-hook
                  (lambda ()
                    (turn-on-evil-mode)
+                   (display-line-numbers-mode t)
                    (org-present-small)
                    (org-remove-inline-images)
                    (org-present-show-cursor)
@@ -158,16 +160,15 @@ frame"
             (lambda ()
               (org-indent-mode)
               (define-key evil-normal-state-local-map (kbd "SPC E") 'org-gfm-export-to-markdown)
-              (define-key evil-normal-state-local-map (kbd "SPC r") 'my-org-refresh)
-              (define-key evil-normal-state-local-map (kbd "SPC p") 'org-cycle)
-              (define-key evil-normal-state-local-map (kbd "SPC P") 'org-global-cycle)
-              (define-key evil-normal-state-local-map (kbd "SPC e r") 'my-start-code-block)
-              (define-key evil-normal-state-local-map (kbd "SPC e e") 'org-edit-src-code)
               (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
-              (define-key evil-normal-state-local-map (kbd "SPC u") 'org-todo)
+              (define-key evil-normal-state-local-map (kbd "SPC P") 'org-present)
+              (define-key evil-normal-state-local-map (kbd "SPC R") 'my-org-refresh)
               (define-key evil-normal-state-local-map (kbd "SPC T") 'my-org-timestamp)
-              (define-key evil-normal-state-local-map (kbd "SPC o p") 'org-present)
-              (define-key evil-normal-state-local-map (kbd "SPC o c") 'org-toggle-checkbox))))
+              (define-key evil-normal-state-local-map (kbd "SPC p") 'org-cycle)
+              (define-key evil-normal-state-local-map (kbd "SPC s n") 'my-start-code-block)
+              (define-key evil-normal-state-local-map (kbd "SPC s o") 'org-edit-src-code)
+              (define-key evil-normal-state-local-map (kbd "SPC u") 'org-todo)
+              (define-key evil-normal-state-local-map (kbd "SPC o") 'org-toggle-checkbox))))
 
 (use-package markdown-mode
   :ensure t
@@ -358,11 +359,10 @@ frame"
 (set-face-attribute 'default nil
                     :family "mononoki"
                     :height my-font-size)
-                    ;:weight 'extra-light)
 
 (global-display-line-numbers-mode)
 (global-hl-line-mode)
-;(load-theme 'gruvbox-dark-medium 1)
+(set-face-background 'mode-line "gold")
 (setq-default mac-allow-anti-aliasing nil)
 
 (setq-default ring-bell-function 'ignore
