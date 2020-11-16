@@ -33,12 +33,21 @@
 the editor buffer when bringing the terminal back into the visible
 frame"
   (interactive)
-  (if (and (get-buffer-window "*shell*"))
-      (delete-other-windows)
-    (progn (shell)
-           (display-line-numbers-mode -1)
-           (switch-to-buffer "*shell*")
-           (other-window -1))))
+  (if (not (member "*shell*" (mapcar (function buffer-name) (buffer-list))))
+      (progn
+        (setq w1 (selected-window))
+        (setq w2 (split-window-horizontally))
+        (shell)
+        (display-line-numbers-mode -1)
+        (set-window-buffer w2 "*shell*")
+        (select-window w1))
+    (if (and (get-buffer-window "*shell*"))
+        (delete-other-windows)
+      (progn (let ((w1 (selected-window))
+                   (w2 (split-window-horizontally)))
+               (set-window-buffer w2 "*shell*")
+               (selecte-window w1))))))
+
 
 (defun my-send-to-shell (cmd)
   "sends a command to the buffer containing an active shell"
