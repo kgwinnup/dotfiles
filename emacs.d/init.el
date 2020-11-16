@@ -56,6 +56,11 @@ frame"
   '(progn
       (setq comint-move-point-for-output 'others)))
 
+(defun my-send-to-shell-again ()
+  "sends the previous command to the active shell"
+  (interactive)
+  (my-send-to-shell last-shell-cmd))
+
 (defun my-send-to-shell-input ()
   "gets the user command and sends to the buffer containing an active shell"
   (interactive)
@@ -105,10 +110,7 @@ frame"
 (use-package yaml-mode
   :ensure t)
 
-(use-package gruvbox-theme
-  :ensure t)
-
-(use-package zenburn-theme
+(use-package helm-themes
   :ensure t)
 
 (setq evil-want-keybinding nil)
@@ -358,7 +360,8 @@ frame"
 
 (set-face-attribute 'default nil
                     :family "mononoki"
-                    :height my-font-size)
+                    :height my-font-size
+                    :weight 'medium)
 
 (global-display-line-numbers-mode)
 (global-hl-line-mode)
