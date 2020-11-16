@@ -48,6 +48,11 @@ frame"
                (set-window-buffer w2 "*shell*")
                (selecte-window w1))))))
 
+(defun my-clear-shell ()
+  "clears the shell buffer"
+  (interactive)
+  (if (get-buffer-window "*shell*")
+      (comint-clear-buffer)))
 
 (defun my-send-to-shell (cmd)
   "sends a command to the buffer containing an active shell"
@@ -336,6 +341,7 @@ frame"
                "c o" '(lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
                "c l" '(lambda () (interactive) (load-file "~/.emacs.d/init.el"))
                "t t" 'my-toggle-shell
+               "t c" 'my-clear-shell
                "v p" 'my-send-to-shell-input
                "v l" 'my-send-to-shell-again
                "s s" 'ispell
