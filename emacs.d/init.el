@@ -64,12 +64,26 @@
 the editor buffer when bringing the terminal back into the visible
 frame"
   (interactive)
-  (if (and (get-buffer-window "*shell*"))
-      (delete-other-windows)
-    (progn (shell)
-           (display-line-numbers-mode -1)
-           (switch-to-buffer "*shell*")
-           (other-window -1))))
+  (if (not (member "*shell*" (mapcar (function buffer-name) (buffer-list))))
+      (progn
+        (setq w1 (selected-window))
+        (setq w2 (split-window-horizontally))
+        (shell)
+        (display-line-numbers-mode -1)
+        (set-window-buffer w2 "*shell*")
+        (select-window w1))
+    (if (and (get-buffer-window "*shell*"))
+        (delete-other-windows)
+      (progn (let ((w1 (selected-window))
+                   (w2 (split-window-horizontally)))
+               (set-window-buffer w2 "*shell*")
+               (selecte-window w1))))))
+
+(defun my-clear-shell ()
+  "clears the shell buffer"
+  (interactive)
+  (if (get-buffer-window "*shell*")
+      (comint-clear-buffer)))
 
 (defun my-send-to-shell (cmd)
   "sends a command to the buffer containing an active shell"
@@ -86,6 +100,11 @@ frame"
 (eval-after-load "comint"
   '(progn
       (setq comint-move-point-for-output 'others)))
+
+(defun my-send-to-shell-again ()
+  "sends the previous command to the active shell"
+  (interactive)
+  (my-send-to-shell last-shell-cmd))
 
 (defun my-send-to-shell-input ()
   "gets the user command and sends to the buffer containing an active shell"
@@ -135,10 +154,7 @@ frame"
 (use-package yaml-mode
   :ensure t)
 
-(use-package gruvbox-theme
-  :ensure t)
-
-(use-package zenburn-theme
+(use-package helm-themes
   :ensure t)
 
 (setq evil-want-keybinding nil)
@@ -356,6 +372,7 @@ frame"
                "c o" '(lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
                "c l" '(lambda () (interactive) (load-file "~/.emacs.d/init.el"))
                "t t" 'my-toggle-shell
+               "t c" 'my-clear-shell
                "v p" 'my-send-to-shell-input
                "v l" 'my-send-to-shell-again
                "s s" 'ispell
