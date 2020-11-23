@@ -5,17 +5,48 @@
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
 
+(setq-default custom-file "~/.emacs.d/custom.el"
+              default-directory "~/workspace/"
+              inhibit-startup-screen t
+              auto-save-default nil
+              backup-directory-alist '(("" . "~/.emacs.d/backup"))
+              mac-allow-anti-aliasing nil
+              ring-bell-function 'ignore
+              scroll-step 1
+              scroll-conservatively  10000
+              mouse-wheel-scroll-amount '(1 ((shift) . 1))
+              mouse-wheel-progressive-speed nil
+              mouse-wheel-follow-mouse 't
+              indent-tabs-mode nil
+              c-basic-offset 4
+              tab-width 4
+              my-font-size 150
+              initial-scratch-message nil)
+
+(if (display-graphic-p)
+    (progn
+      (scroll-bar-mode -1)))
+
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(xterm-mouse-mode 1)
+(fset 'yes-or-no-p 'y-or-n-p)
+(load-theme 'tsdh-light)
+(set-face-attribute 'default nil
+                    :family "mononoki"
+                    :height my-font-size
+                    :weight 'medium)
+
+(global-display-line-numbers-mode)
+(global-hl-line-mode)
+(set-face-background 'mode-line "gold")
+
 (shell-command "touch ~/.emacs.d/custom.el")
-(setq custom-file "~/.emacs.d/custom.el")
 (add-to-list 'exec-path "/usr/local/bin")
 (setenv "PATH" (concat "/usr/local/go/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/go/bin:" (getenv "PATH")))
 (add-to-list 'exec-path "/usr/local/go/bin")
 (load custom-file)
-(setq default-directory "~/workspace/")
-(setq inhibit-startup-screen t)
-(setq auto-save-default nil)
-(setq backup-directory-alist '(("" . "~/.emacs.d/backup")))
 
 ;; Bootstrap `use-package`
 (package-initialize)
@@ -80,7 +111,6 @@ frame"
   (insert ":DATE: ")
   (org-insert-time-stamp (current-time)))
 
-(setq my-font-size 150)
 (defun my-global-font-size (size)
   (interactive)
   (set-face-attribute 'default nil
@@ -247,6 +277,7 @@ frame"
   :hook (ess-mode-hook . subword-mode)
   :defer t
   :init
+  (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+R-mode))
   (setq ess-ask-for-ess-directory nil)
   (setq ess-local-process-name "R")
   (setq scroll-down-aggressively 0.01)
@@ -347,34 +378,4 @@ frame"
                "=" (lambda () (interactive) (my-global-font-size 10))
                "-" (lambda () (interactive) (my-global-font-size -10)))))
 
-(if (display-graphic-p)
-    (progn
-      (scroll-bar-mode -1)))
-
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(xterm-mouse-mode 1)
-(fset 'yes-or-no-p 'y-or-n-p)
-
-(set-face-attribute 'default nil
-                    :family "mononoki"
-                    :height my-font-size)
-
-(global-display-line-numbers-mode)
-(global-hl-line-mode)
-(set-face-background 'mode-line "gold")
-(setq-default mac-allow-anti-aliasing nil)
-
-(setq-default ring-bell-function 'ignore
-              scroll-step 1
-              scroll-conservatively  10000
-              mouse-wheel-scroll-amount '(1 ((shift) . 1))
-              mouse-wheel-progressive-speed nil
-              mouse-wheel-follow-mouse 't
-              indent-tabs-mode nil
-              c-basic-offset 4
-              tab-width 4
-              initial-scratch-message nil)
-
-(add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+R-mode))
 
