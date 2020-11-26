@@ -139,6 +139,9 @@ frame"
 (use-package helm-themes
   :ensure t)
 
+(use-package acme-theme
+  :ensure t)
+
 (setq evil-want-keybinding nil)
 (use-package evil
   :ensure t
