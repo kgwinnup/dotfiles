@@ -5,8 +5,13 @@
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
 
-(setq-default ring-bell-function 'ignore
+(setq-default custom-file "~/.emacs.d/custom.el"
+              default-directory "~/workspace/"
+              inhibit-startup-screen t
+              auto-save-default nil
+              backup-directory-alist '(("" . "~/.emacs.d/backup"))
               mac-allow-anti-aliasing nil
+              ring-bell-function 'ignore
               scroll-step 1
               scroll-conservatively  10000
               mouse-wheel-scroll-amount '(1 ((shift) . 1))
@@ -18,9 +23,25 @@
               initial-scratch-message nil
               inhibit-startup-screen t
               auto-save-default nil
-              backup-directory-alist '(("" . "~/.emacs.d/backup"))
-              default-directory "~/workspace/"
-              custom-file "~/.emacs.d/custom.el")
+              my-font-size 150
+              initial-scratch-message nil)
+
+(if (display-graphic-p)
+    (progn
+      (scroll-bar-mode -1)))
+
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(xterm-mouse-mode 1)
+(fset 'yes-or-no-p 'y-or-n-p)
+(load-theme 'tsdh-light)
+(set-face-attribute 'default nil
+                    :family "mononoki"
+                    :height my-font-size
+                    :weight 'medium)
+
+(global-display-line-numbers-mode)
+(global-hl-line-mode)
 
 (shell-command "touch ~/.emacs.d/custom.el")
 (add-to-list 'exec-path "/usr/local/bin")
@@ -111,7 +132,6 @@ frame"
   (insert ":DATE: ")
   (org-insert-time-stamp (current-time)))
 
-(setq my-font-size 150)
 (defun my-global-font-size (size)
   (interactive)
   (set-face-attribute 'default nil
@@ -383,20 +403,4 @@ frame"
                "=" (lambda () (interactive) (my-global-font-size 10))
                "-" (lambda () (interactive) (my-global-font-size -10)))))
 
-(if (display-graphic-p)
-    (progn
-      (scroll-bar-mode -1)))
-
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(xterm-mouse-mode 1)
-(fset 'yes-or-no-p 'y-or-n-p)
-
-(set-face-attribute 'default nil
-                    :family "mononoki"
-                    :height my-font-size
-                    :weight 'medium)
-
-(global-display-line-numbers-mode)
-(global-hl-line-mode)
 
