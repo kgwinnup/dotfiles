@@ -5,17 +5,29 @@
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
 
+(setq-default ring-bell-function 'ignore
+              mac-allow-anti-aliasing nil
+              scroll-step 1
+              scroll-conservatively  10000
+              mouse-wheel-scroll-amount '(1 ((shift) . 1))
+              mouse-wheel-progressive-speed nil
+              mouse-wheel-follow-mouse 't
+              indent-tabs-mode nil
+              c-basic-offset 4
+              tab-width 4
+              initial-scratch-message nil
+              inhibit-startup-screen t
+              auto-save-default nil
+              backup-directory-alist '(("" . "~/.emacs.d/backup"))
+              default-directory "~/workspace/"
+              custom-file "~/.emacs.d/custom.el")
+
 (shell-command "touch ~/.emacs.d/custom.el")
-(setq custom-file "~/.emacs.d/custom.el")
 (add-to-list 'exec-path "/usr/local/bin")
 (setenv "PATH" (concat "/usr/local/go/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/go/bin:" (getenv "PATH")))
 (add-to-list 'exec-path "/usr/local/go/bin")
 (load custom-file)
-(setq default-directory "~/workspace/")
-(setq inhibit-startup-screen t)
-(setq auto-save-default nil)
-(setq backup-directory-alist '(("" . "~/.emacs.d/backup")))
 
 ;; Bootstrap `use-package`
 (package-initialize)
@@ -145,6 +157,9 @@ frame"
   (use-package evil-magit
     :ensure t))
 
+(defun my-cust ()
+  (interactive))
+
 (use-package org
   :ensure t
   :init
@@ -158,6 +173,8 @@ frame"
     '(progn
        (add-hook 'org-present-mode-hook
                  (lambda ()
+                   (local-set-key (kbd "C-c +") '(lambda () (interactive) (my-global-font-size 10)))
+                   (local-set-key (kbd "C-c -") '(lambda () (interactive) (my-global-font-size -10)))
                    (turn-off-evil-mode)
                    (org-present-big)
                    (display-line-numbers-mode -1)
@@ -263,6 +280,7 @@ frame"
   :hook (ess-mode-hook . subword-mode)
   :defer t
   :init
+  (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+R-mode))
   (setq ess-ask-for-ess-directory nil)
   (setq ess-local-process-name "R")
   (setq scroll-down-aggressively 0.01)
@@ -286,7 +304,7 @@ frame"
   (add-hook 'ess-mode-hook
             (lambda ()
               (define-key evil-normal-state-local-map (kbd "SPC r s") 'my-ess-start-R)
-              (define-key evil-normal-state-local-map (kbd "SPC r r") 'ess-eval-function-or-paragraph-and-step))))
+              (define-key evil-normal-state-local-map (kbd "SPC r r") (lambda () (interactive) (ess-eval-function-or-paragraph-and-step) (goto-char (point-max)))))))
 
 (use-package company
   :ensure t
@@ -358,9 +376,10 @@ frame"
                ;; magit
                "m s" 'magit
                ;; view
-               "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (disable-theme 'zenburn)))
+               "m m" 'my-cust
+               "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (disable-theme 'acme) (set-face-background 'mode-line "gold")))
                "d g" (lambda () (interactive) (load-theme 'gruvbox-dark-medium))
-               "d z" (lambda () (interactive) (load-theme 'zenburn))
+               "d a" (lambda () (interactive) (load-theme 'acme))
                "=" (lambda () (interactive) (my-global-font-size 10))
                "-" (lambda () (interactive) (my-global-font-size -10)))))
 
@@ -380,19 +399,4 @@ frame"
 
 (global-display-line-numbers-mode)
 (global-hl-line-mode)
-(set-face-background 'mode-line "gold")
-(setq-default mac-allow-anti-aliasing nil)
-
-(setq-default ring-bell-function 'ignore
-              scroll-step 1
-              scroll-conservatively  10000
-              mouse-wheel-scroll-amount '(1 ((shift) . 1))
-              mouse-wheel-progressive-speed nil
-              mouse-wheel-follow-mouse 't
-              indent-tabs-mode nil
-              c-basic-offset 4
-              tab-width 4
-              initial-scratch-message nil)
-
-(add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+R-mode))
 
