@@ -391,6 +391,8 @@ frame"
 (menu-bar-mode -1)
 (xterm-mouse-mode 1)
 (fset 'yes-or-no-p 'y-or-n-p)
+(load-theme 'tsdh-light)
+(set-face-background 'mode-line "gold")
 
 (set-face-attribute 'default nil
                     :family "mononoki"
