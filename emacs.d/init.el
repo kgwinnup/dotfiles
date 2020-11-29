@@ -201,6 +201,7 @@ frame"
               (define-key evil-normal-state-local-map (kbd "SPC R") 'my-org-refresh)
               (define-key evil-normal-state-local-map (kbd "SPC T") 'my-org-timestamp)
               (define-key evil-normal-state-local-map (kbd "SPC p") 'org-cycle)
+              (define-key evil-normal-state-local-map (kbd "SPC g p") 'org-global-cycle)
               (define-key evil-normal-state-local-map (kbd "SPC s n") 'my-start-code-block)
               (define-key evil-normal-state-local-map (kbd "SPC s o") 'org-edit-src-code)
               (define-key evil-normal-state-local-map (kbd "SPC u") 'org-todo)
