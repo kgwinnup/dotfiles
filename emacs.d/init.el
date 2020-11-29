@@ -290,7 +290,8 @@ frame"
   (setq ess-fancy-comments nil)
   (defun my-ess-start-R ()
     (interactive)
-    (if (not (member "*R*" (mapcar (function buffer-name) (buffer-list))))
+    (if (not (get-process "R"))
+    ;(if (not (member "*R*" (mapcar (function buffer-name) (buffer-list))))
         (progn
           (setq w1 (selected-window))
           (setq w2 (split-window-horizontally))
@@ -307,7 +308,7 @@ frame"
   (add-hook 'ess-mode-hook
             (lambda ()
               (define-key evil-normal-state-local-map (kbd "SPC r s") 'my-ess-start-R)
-              (define-key evil-normal-state-local-map (kbd "SPC r r") (lambda () (interactive) (ess-eval-function-or-paragraph-and-step) (goto-char (point-max)))))))
+              (define-key evil-normal-state-local-map (kbd "SPC r r") (lambda () (interactive) (ess-eval-function-or-paragraph-and-step))))))
 
 (use-package company
   :ensure t
