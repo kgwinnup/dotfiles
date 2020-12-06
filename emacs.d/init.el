@@ -385,6 +385,7 @@ frame"
                "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (disable-theme 'acme) (set-face-background 'mode-line "gold")))
                "d g" (lambda () (interactive) (load-theme 'gruvbox-dark-medium))
                "d a" (lambda () (interactive) (load-theme 'acme))
+               "d f" (lambda () (interactive) (toggle-frame-fullscreen))
                "=" (lambda () (interactive) (my-global-font-size 10))
                "-" (lambda () (interactive) (my-global-font-size -10)))))
 
