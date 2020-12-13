@@ -376,6 +376,7 @@ frame"
                "n d" 'kill-buffer-and-window
                "n b" 'helm-mini
                "n r" '(lambda () (interactive) (switch-to-buffer "*scratch*"))
+               "n a" '(lambda () (interactive) (find-file "~/workspace/notes.org"))
                "j" 'evil-scroll-down
                "k" 'evil-scroll-up
                ;; magit
