@@ -171,7 +171,7 @@ frame"
   (use-package org-present
     :ensure t)
   (setq org-todo-keywords
-        '((sequence "TODO" "IN-PROGRESS" "|" "DONE")))
+        '((sequence "PROJECT" "TODO" "IN-PROGRESS" "BACKLOG" "|" "DONE")))
   (eval-after-load "org-present"
     '(progn
        (add-hook 'org-present-mode-hook
