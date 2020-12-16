@@ -18,7 +18,7 @@
               initial-scratch-message nil
               inhibit-startup-screen t
               auto-save-default nil
-              browse-url-browser-function 'eww-browse-url
+              browse-url-browser-function 'w3m-browse-url
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
@@ -28,7 +28,11 @@
 (setenv "PATH" (concat "/usr/local/go/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/go/bin:" (getenv "PATH")))
 (add-to-list 'exec-path "/usr/local/go/bin")
+(add-to-list 'exec-path "~/bin")
 (load custom-file)
+
+(add-to-list 'load-path "~/.emacs.d/emacs-w3m/")
+(require 'w3m-load)
 
 ;; Bootstrap `use-package`
 (package-initialize)
