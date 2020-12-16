@@ -18,6 +18,7 @@
               initial-scratch-message nil
               inhibit-startup-screen t
               auto-save-default nil
+              browse-url-browser-function 'eww-browse-url
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
@@ -153,6 +154,17 @@ frame"
   :ensure t
   :config
   (evil-collection-init))
+
+(use-package elfeed
+  :ensure t
+  :config
+  (setq elfeed-feeds '(;; programming
+                       ("https://news.ycombinator.com/rss" hacker)
+                       ("https://www.lobste.rs/rss" lobsters)
+                       ("http://rss.slashdot.org/Slashdot/slashdotMain" slashdot)))
+  (setq-default elfeed-search-filter "@2-days-ago +unread")
+  (setq-default elfeed-search-title-max-width 100)
+  (setq-default elfeed-search-title-min-width 100))
 
 (use-package magit
   :ensure t
@@ -381,6 +393,7 @@ frame"
                "k" 'evil-scroll-up
                ;; magit
                "m s" 'magit
+               "m e" 'elfeed
                ;; view
                "m m" 'my-cust
                "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (disable-theme 'acme) (set-face-background 'mode-line "gold")))
