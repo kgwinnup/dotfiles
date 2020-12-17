@@ -31,8 +31,15 @@
 (add-to-list 'exec-path "~/bin")
 (load custom-file)
 
+(setq w3m-user-agent "User-Agent: Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7\n")
+(setq w3m-add-user-agent "User-Agent: Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7\n")
+(setq url-user-agent "User-Agent: Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7\n")
+
+
 (add-to-list 'load-path "~/.emacs.d/emacs-w3m/")
 (require 'w3m-load)
+(setq w3m-default-display-inline-images t)
+
 
 ;; Bootstrap `use-package`
 (package-initialize)
@@ -398,6 +405,7 @@ frame"
                ;; magit
                "m s" 'magit
                "m e" 'elfeed
+               "m w" 'w3m-browse-url
                ;; view
                "m m" 'my-cust
                "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (disable-theme 'acme) (set-face-background 'mode-line "gold")))
@@ -415,8 +423,9 @@ frame"
 (menu-bar-mode -1)
 (xterm-mouse-mode 1)
 (fset 'yes-or-no-p 'y-or-n-p)
-(load-theme 'tsdh-light)
-(set-face-background 'mode-line "gold")
+;(load-theme 'tsdh-light)
+;(set-face-background 'mode-line "gold")
+(load-theme 'gruvbox-dark-medium)
 
 (set-face-attribute 'default nil
                     :family "mononoki"
