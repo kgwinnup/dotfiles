@@ -31,15 +31,9 @@
 (add-to-list 'exec-path "~/bin")
 (load custom-file)
 
-(setq w3m-user-agent "User-Agent: Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7\n")
-(setq w3m-add-user-agent "User-Agent: Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7\n")
-(setq url-user-agent "User-Agent: Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7\n")
-
-
 (add-to-list 'load-path "~/.emacs.d/emacs-w3m/")
 (require 'w3m-load)
 (setq w3m-default-display-inline-images t)
-
 
 ;; Bootstrap `use-package`
 (package-initialize)
