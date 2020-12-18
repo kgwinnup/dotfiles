@@ -18,7 +18,7 @@
               initial-scratch-message nil
               inhibit-startup-screen t
               auto-save-default nil
-              browse-url-browser-function 'w3m-browse-url
+              ;browse-url-browser-function 'eww-browse-url
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
@@ -30,10 +30,6 @@
 (add-to-list 'exec-path "/usr/local/go/bin")
 (add-to-list 'exec-path "~/bin")
 (load custom-file)
-
-(add-to-list 'load-path "~/.emacs.d/emacs-w3m/")
-(require 'w3m-load)
-(setq w3m-default-display-inline-images t)
 
 ;; Bootstrap `use-package`
 (package-initialize)
@@ -180,6 +176,7 @@ frame"
 (defun my-cust ()
   (interactive))
 
+(require 'ox-latex)
 (use-package org
   :ensure t
   :init
@@ -189,6 +186,58 @@ frame"
     :ensure t)
   (setq org-todo-keywords
         '((sequence "PROJECT" "TODO" "IN-PROGRESS" "BACKLOG" "|" "DONE")))
+  (setq org-latex-create-formula-image-program 'dvipng)
+  (setq org-preview-latex-default-process 'dvipng)
+  '(org-preview-latex-process-alist
+    (quote
+     ((dvipng :programs ("lualatex" "dvipng")
+              :description "dvi > png"
+              :message "you need to install the programs: latex and dvipng."
+              :image-input-type "dvi"
+              :image-output-type "png"
+              :image-size-adjust (1.0 . 1.0)
+              :latex-compiler ("lualatex -output-format dvi -interaction nonstopmode -output-directory %o %f")
+              :image-converter ("dvipng -fg %F -bg %B -D %D -T tight -o %O %f"))
+      (dvisvgm :programs ("latex" "dvisvgm")
+               :description "dvi > svg"
+               :message "you need to install the programs: latex and dvisvgm."
+               :use-xcolor t
+               :image-input-type "xdv"
+               :image-output-type "svg"
+               :image-size-adjust (1.7 . 1.5)
+               :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
+               :image-converter ("dvisvgm %f -n -b min -c %S -o %O"))
+      (imagemagick :programs ("latex" "convert")
+                   :description "pdf > png"
+                   :message "you need to install the programs: latex and imagemagick."
+                   :use-xcolor t
+                   :image-input-type "pdf"
+                   :image-output-type "png"
+                   :image-size-adjust (1.0 . 1.0)
+                   :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
+                   :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))))
+  (add-to-list 'org-latex-classes
+               '("koma-article2" "\\documentclass[times,11pt,letterpaper,twopage,parskip=half-,headings=small,booktabs,longtable,DIV=15]{scrartcl}
+                   \\usepackage[utf8]{inputenc}
+                   \\usepackage[T1]{fontenc}
+                   \\usepackage[margin=1in]{geometry}
+                   \\usepackage{longtable}
+                   \\usepackage{wrapfig}
+                   \\usepackage{rotating}
+                   \\usepackage[normalem]{ulem}
+                   \\usepackage{amsmath}
+                   \\usepackage{textcomp}
+                   \\usepackage{amssymb}
+                   \\usepackage{capt-of}
+                   \\usepackage[style=authortitle-ibid,sortcites=true,sorting=nyt,backend=biber]{biblatex}
+                   \\usepackage{xurl}
+                   \\usepackage[colorlinks=true,urlcolor=blue,citecolor=blue,breaklinks=true]{hyperref}
+                   [NO-DEFAULT-PACKAGES]"
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+               ("\\paragraph{%s}" . "\\paragraph*{%s}")
+               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
   (eval-after-load "org-present"
     '(progn
        (add-hook 'org-present-mode-hook
@@ -212,6 +261,7 @@ frame"
   (add-hook 'org-mode-hook
             (lambda ()
               (org-indent-mode)
+              (add-hook 'after-save-hook 'org-preview-latex-fragment)
               (define-key evil-normal-state-local-map (kbd "SPC E") 'org-gfm-export-to-markdown)
               (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
               (define-key evil-normal-state-local-map (kbd "SPC P") 'org-present)
@@ -400,7 +450,6 @@ frame"
                ;; magit
                "m s" 'magit
                "m e" 'elfeed
-               "m w" 'w3m-browse-url
                ;; view
                "m m" 'my-cust
                "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (disable-theme 'acme) (set-face-background 'mode-line "gold")))
