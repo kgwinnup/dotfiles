@@ -361,6 +361,7 @@ frame"
   (display-line-numbers-mode -1)
   (add-hook 'neotree-mode-hook
 			(lambda ()
+              (display-line-numbers-mode -1)
 			  (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter-hide)
 			  (define-key evil-normal-state-local-map (kbd "SPC n t") 'neotree-hide)
 			  (define-key evil-normal-state-local-map (kbd "SPC n h") 'neotree-hidden-file-toggle)
