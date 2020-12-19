@@ -18,7 +18,8 @@
               initial-scratch-message nil
               inhibit-startup-screen t
               auto-save-default nil
-              ;browse-url-browser-function 'eww-browse-url
+              browse-url-browser-function '(("slashdot\\.org" . eww-browse-url)
+                                            ("." . browse-url-default-browser))
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
@@ -125,6 +126,7 @@ frame"
   :init
   (global-set-key (kbd "M-x") 'helm-M-x)
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
+  :config
   (setq helm-boring-buffer-regexp-list
       (quote
        (  "\\Minibuf.+\\*"
@@ -170,9 +172,6 @@ frame"
   :init
   (use-package evil-magit
     :ensure t))
-
-(defun my-cust ()
-  (interactive))
 
 (require 'ox-latex)
 (use-package org
