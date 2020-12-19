@@ -18,7 +18,8 @@
               initial-scratch-message nil
               inhibit-startup-screen t
               auto-save-default nil
-              browse-url-browser-function '(("slashdot\\.org" . eww-browse-url)
+              browse-url-browser-function '(("slashdot\\.org" . eww-browse-url) 
+                                            ("news\\.ycombinator\\.com/item" . eww-browse-url)
                                             ("." . browse-url-default-browser))
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
               default-directory "~/workspace/"
