@@ -158,10 +158,8 @@ frame"
 
 (use-package elfeed
   :ensure t
-  :config
-  (setq elfeed-feeds '(;; programming
-                       ("https://news.ycombinator.com/rss" hacker)
-                       ("https://www.lobste.rs/rss" lobsters)
+  :init
+  (setq elfeed-feeds '(("https://www.lobste.rs/rss" lobsters)
                        ("http://rss.slashdot.org/Slashdot/slashdotMain" slashdot)))
   (setq-default elfeed-search-filter "@2-days-ago +unread")
   (setq-default elfeed-search-title-max-width 100)
@@ -184,84 +182,11 @@ frame"
     :ensure t)
   (use-package org-present
     :ensure t)
-  (setq org-todo-keywords
-        '((sequence "PROJECT" "TODO" "IN-PROGRESS" "BACKLOG" "|" "DONE")))
-  (setq org-latex-create-formula-image-program 'dvipng)
-  (setq org-preview-latex-default-process 'dvipng)
-  '(org-preview-latex-process-alist
-    (quote
-     ((dvipng :programs ("lualatex" "dvipng")
-              :description "dvi > png"
-              :message "you need to install the programs: latex and dvipng."
-              :image-input-type "dvi"
-              :image-output-type "png"
-              :image-size-adjust (1.0 . 1.0)
-              :latex-compiler ("lualatex -output-format dvi -interaction nonstopmode -output-directory %o %f")
-              :image-converter ("dvipng -fg %F -bg %B -D %D -T tight -o %O %f"))
-      (dvisvgm :programs ("latex" "dvisvgm")
-               :description "dvi > svg"
-               :message "you need to install the programs: latex and dvisvgm."
-               :use-xcolor t
-               :image-input-type "xdv"
-               :image-output-type "svg"
-               :image-size-adjust (1.7 . 1.5)
-               :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
-               :image-converter ("dvisvgm %f -n -b min -c %S -o %O"))
-      (imagemagick :programs ("latex" "convert")
-                   :description "pdf > png"
-                   :message "you need to install the programs: latex and imagemagick."
-                   :use-xcolor t
-                   :image-input-type "pdf"
-                   :image-output-type "png"
-                   :image-size-adjust (1.0 . 1.0)
-                   :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
-                   :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))))
-  (add-to-list 'org-latex-classes
-               '("koma-article2" "\\documentclass[times,11pt,letterpaper,twopage,parskip=half-,headings=small,booktabs,longtable,DIV=15]{scrartcl}
-                   \\usepackage[utf8]{inputenc}
-                   \\usepackage[T1]{fontenc}
-                   \\usepackage[margin=1in]{geometry}
-                   \\usepackage{longtable}
-                   \\usepackage{wrapfig}
-                   \\usepackage{rotating}
-                   \\usepackage[normalem]{ulem}
-                   \\usepackage{amsmath}
-                   \\usepackage{textcomp}
-                   \\usepackage{amssymb}
-                   \\usepackage{capt-of}
-                   \\usepackage[style=authortitle-ibid,sortcites=true,sorting=nyt,backend=biber]{biblatex}
-                   \\usepackage{xurl}
-                   \\usepackage[colorlinks=true,urlcolor=blue,citecolor=blue,breaklinks=true]{hyperref}
-                   [NO-DEFAULT-PACKAGES]"
-               ("\\section{%s}" . "\\section*{%s}")
-               ("\\subsection{%s}" . "\\subsection*{%s}")
-               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-               ("\\paragraph{%s}" . "\\paragraph*{%s}")
-               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-  (eval-after-load "org-present"
-    '(progn
-       (add-hook 'org-present-mode-hook
-                 (lambda ()
-                   (local-set-key (kbd "C-c +") '(lambda () (interactive) (my-global-font-size 10)))
-                   (local-set-key (kbd "C-c -") '(lambda () (interactive) (my-global-font-size -10)))
-                   (turn-off-evil-mode)
-                   (org-present-big)
-                   (display-line-numbers-mode -1)
-                   (org-display-inline-images)
-                   (org-present-hide-cursor)
-                   (org-present-read-only)))
-       (add-hook 'org-present-mode-quit-hook
-                 (lambda ()
-                   (turn-on-evil-mode)
-                   (display-line-numbers-mode t)
-                   (org-present-small)
-                   (org-remove-inline-images)
-                   (org-present-show-cursor)
-                   (org-present-read-write)))))
-  (add-hook 'org-mode-hook
+    (add-hook 'org-mode-hook
             (lambda ()
               (org-indent-mode)
-              (add-hook 'after-save-hook 'org-preview-latex-fragment)
+              ;(add-hook 'after-save-hook 'org-preview-latex-fragment)
+              (define-key evil-normal-state-local-map (kbd "SPC r r") 'org-preview-latex-fragment)
               (define-key evil-normal-state-local-map (kbd "SPC E") 'org-gfm-export-to-markdown)
               (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
               (define-key evil-normal-state-local-map (kbd "SPC P") 'org-present)
@@ -272,7 +197,82 @@ frame"
               (define-key evil-normal-state-local-map (kbd "SPC s n") 'my-start-code-block)
               (define-key evil-normal-state-local-map (kbd "SPC s o") 'org-edit-src-code)
               (define-key evil-normal-state-local-map (kbd "SPC u") 'org-todo)
-              (define-key evil-normal-state-local-map (kbd "SPC o") 'org-toggle-checkbox))))
+              (define-key evil-normal-state-local-map (kbd "SPC o") 'org-toggle-checkbox)))
+    :config
+    (setq org-todo-keywords
+          '((sequence "PROJECT" "TODO" "IN-PROGRESS" "BACKLOG" "|" "DONE")))
+    (setq org-latex-create-formula-image-program 'dvipng)
+    (setq org-preview-latex-default-process 'dvipng)
+    (eval-after-load "org-present"
+      '(progn
+         (add-hook 'org-present-mode-hook
+                   (lambda ()
+                     (local-set-key (kbd "C-c +") '(lambda () (interactive) (my-global-font-size 10)))
+                     (local-set-key (kbd "C-c -") '(lambda () (interactive) (my-global-font-size -10)))
+                     (turn-off-evil-mode)
+                     (org-present-big)
+                     (display-line-numbers-mode -1)
+                     (org-display-inline-images)
+                     (org-present-hide-cursor)
+                     (org-present-read-only)))
+         (add-hook 'org-present-mode-quit-hook
+                   (lambda ()
+                     (turn-on-evil-mode)
+                     (display-line-numbers-mode t)
+                     (org-present-small)
+                     (org-remove-inline-images)
+                     (org-present-show-cursor)
+                     (org-present-read-write)))))
+    '(org-preview-latex-process-alist
+      (quote
+       ((dvipng :programs ("lualatex" "dvipng")
+                :description "dvi > png"
+                :message "you need to install the programs: latex and dvipng."
+                :image-input-type "dvi"
+                :image-output-type "png"
+                :image-size-adjust (1.0 . 1.0)
+                :latex-compiler ("lualatex -output-format dvi -interaction nonstopmode -output-directory %o %f")
+                :image-converter ("dvipng -fg %F -bg %B -D %D -T tight -o %O %f"))
+        (dvisvgm :programs ("latex" "dvisvgm")
+                 :description "dvi > svg"
+                 :message "you need to install the programs: latex and dvisvgm."
+                 :use-xcolor t
+                 :image-input-type "xdv"
+                 :image-output-type "svg"
+                 :image-size-adjust (1.7 . 1.5)
+                 :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
+                 :image-converter ("dvisvgm %f -n -b min -c %S -o %O"))
+        (imagemagick :programs ("latex" "convert")
+                     :description "pdf > png"
+                     :message "you need to install the programs: latex and imagemagick."
+                     :use-xcolor t
+                     :image-input-type "pdf"
+                     :image-output-type "png"
+                     :image-size-adjust (1.0 . 1.0)
+                     :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
+                     :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))))
+    (add-to-list 'org-latex-classes
+                 '("koma-article2" "\\documentclass[times,11pt,letterpaper,twopage,parskip=half-,headings=small,booktabs,longtable,DIV=15]{scrartcl}
+                    \\usepackage[utf8]{inputenc}
+                    \\usepackage[T1]{fontenc}
+                    \\usepackage[margin=1in]{geometry}
+                    \\usepackage{longtable}
+                    \\usepackage{wrapfig}
+                    \\usepackage{rotating}
+                    \\usepackage[normalem]{ulem}
+                    \\usepackage{amsmath}
+                    \\usepackage{textcomp}
+                    \\usepackage{amssymb}
+                    \\usepackage{capt-of}
+                    \\usepackage[style=authortitle-ibid,sortcites=true,sorting=nyt,backend=biber]{biblatex}
+                    \\usepackage{xurl}
+                    \\usepackage[colorlinks=true,urlcolor=blue,citecolor=blue,breaklinks=true]{hyperref}
+                    [NO-DEFAULT-PACKAGES]"
+                ("\\section{%s}" . "\\section*{%s}")
+                ("\\subsection{%s}" . "\\subsection*{%s}")
+                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
 
 (use-package markdown-mode
   :ensure t
