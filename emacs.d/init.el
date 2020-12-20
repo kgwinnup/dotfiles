@@ -18,9 +18,6 @@
               initial-scratch-message nil
               inhibit-startup-screen t
               auto-save-default nil
-              browse-url-browser-function '(("slashdot\\.org" . eww-browse-url) 
-                                            ("news\\.ycombinator\\.com/item" . eww-browse-url)
-                                            ("." . browse-url-default-browser))
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
@@ -163,6 +160,9 @@ frame"
   :ensure t
   :init
   (setq elfeed-feeds '(("https://www.lobste.rs/rss" lobsters)
+                       ("http://www.reddit.com/r/reverseengineering/.rss" reddit-re)
+                       ("http://www.reddit.com/r/economics/.rss" reddit-economics)
+                       ("http://www.reddit.com/r/history/.rss" reddit-history)
                        ("http://rss.slashdot.org/Slashdot/slashdotMain" slashdot)))
   (setq-default elfeed-search-filter "@2-days-ago +unread")
   (setq-default elfeed-search-title-max-width 100)
