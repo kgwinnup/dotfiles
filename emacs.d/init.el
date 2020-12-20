@@ -23,11 +23,12 @@
               custom-file "~/.emacs.d/custom.el")
 
 (shell-command "touch ~/.emacs.d/custom.el")
-(add-to-list 'exec-path "/usr/local/bin")
 (setenv "PATH" (concat "/usr/local/go/bin:" (getenv "PATH")))
-(setenv "PATH" (concat "~/go/bin:" (getenv "PATH")))
-(add-to-list 'exec-path "/usr/local/go/bin")
-(add-to-list 'exec-path "~/bin")
+(setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH")))
+(setenv "PATH" (concat (getenv "HOME") "/.ghcup/bin:" (getenv "PATH")))
+(setenv "PATH" (concat (getenv "HOME") "/.cabal/bin:" (getenv "PATH")))
+(setenv "PATH" (concat (getenv "HOME") "/go/bin:" (getenv "PATH")))
+(setenv "PATH" (concat (getenv "HOME") "/bin:" (getenv "PATH")))
 (load custom-file)
 
 ;; Bootstrap `use-package`
@@ -164,6 +165,7 @@ frame"
                        ("http://www.reddit.com/r/economics/.rss" reddit-economics)
                        ("http://www.reddit.com/r/history/.rss" reddit-history)
                        ("http://www.reddit.com/r/emacs/.rss" reddit-emacs)
+                       ("http://www.reddit.com/r/haskell/.rss" reddit-haskell)
                        ("http://rss.slashdot.org/Slashdot/slashdotMain" slashdot)))
   (setq-default elfeed-search-filter "@2-days-ago +unread")
   (setq-default elfeed-search-title-max-width 100)
@@ -306,6 +308,12 @@ frame"
   (setq lsp-ui-doc-enable nil)
   (setq lsp-log-io nil))
 
+
+(use-package lsp-haskell
+  :ensure t
+  :init
+  (add-hook 'haskell-mode-hook #'lsp)
+  (add-hook 'haskell-literate-mode-hook #'lsp))
 
 
 ;(use-package company-lsp
