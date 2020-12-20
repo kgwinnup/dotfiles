@@ -325,13 +325,20 @@ frame"
   :ensure t
   :commands helm-lsp-workspace-symbol)
 
+(use-package haskell-mode
+  :ensure t
+  :init
+  (custom-set-variables '(haskell-stylish-on-save t))
+  (add-hook 'haskell-mode-hook
+            (lambda ()
+              (turn-on-haskell-indent))))
+
 (use-package go-mode
   :ensure t
   :mode "\\*\\.go"
   :config
   (add-hook 'go-mode-hook
 			(lambda ()
-			  (setq exec-path (append exec-path '("~/go/bin/")))
 			  (setq gofmt-command "goimports")
               (define-key evil-normal-state-local-map (kbd "SPC g g") 'godef-jump)
               (define-key evil-normal-state-local-map (kbd "SPC g p") 'pop-tag-mark)
