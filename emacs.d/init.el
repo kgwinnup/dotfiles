@@ -5,6 +5,36 @@
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
 
+(add-to-list 'load-path "~/.emacs.d/mu/mu4e")
+(require 'mu4e)
+(setq mue4e-headers-skip-duplicates  t
+      mu4e-view-show-images t
+      mu4e-view-show-addresses t
+      mu4e-compose-format-flowed nil
+      mu4e-date-format "%y/%m/%d"
+      mu4e-headers-date-format "%Y/%m/%d"
+      mu4e-change-filenames-when-moving t
+      message-sendmail-extra-arguments '("--read-envelope-from")
+      message-sendmail-f-is-evil t
+      smtpmail-queue-mail t
+      smtpmail-queue-dir (expand-file-name "~/Maildir/queue/cur")
+      message-send-mail-function 'smtpmail-send-it
+      mu4e-update-interval 300
+      mu4e-html2text-command "/usr/bin/w3m -dump -T text/html"
+      mu4e-compose-signature-auto-include nil
+      mu4e-attachments-dir "~/Downloads"
+      ;; top-level Maildir
+      mu4e-maildir       "~/Maildir/gmail"
+      ;; note that these folders below must start with /
+      ;; the paths are relative to maildir root
+      mu4e-refile-folder "/archive"
+      mu4e-sent-folder   "/sent"
+      mu4e-drafts-folder "/drafts"
+      mu4e-trash-folder  "/trash"
+      ;; this setting allows to re-sync and re-index mail
+      ;; by pressing U
+      mu4e-get-mail-command  "mbsync -a")
+
 (setq-default ring-bell-function 'ignore
               mac-allow-anti-aliasing nil
               scroll-step 1
@@ -18,6 +48,7 @@
               initial-scratch-message nil
               inhibit-startup-screen t
               auto-save-default nil
+              make-backup-files nil
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
@@ -121,6 +152,11 @@ frame"
                       :height (+ size my-font-size))
   (setq my-font-size (+ size my-font-size)))
 
+(use-package web-mode
+  :ensure t)
+
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+
 (use-package helm
   :ensure t
   :init
@@ -163,7 +199,6 @@ frame"
   :init
   (setq elfeed-feeds '(("https://www.lobste.rs/rss" lobsters)
                        ("http://www.reddit.com/r/reverseengineering/.rss" reddit-re)
-                       ("http://www.reddit.com/r/economics/.rss" reddit-economics)
                        ("http://www.reddit.com/r/history/.rss" reddit-history)
                        ("http://www.reddit.com/r/emacs/.rss" reddit-emacs)
                        ("http://rss.slashdot.org/Slashdot/slashdotMain" slashdot)))
@@ -454,9 +489,9 @@ frame"
                ;; magit
                "m s" 'magit
                "m e" 'elfeed
+               "m m" 'mu4e
                ;; view
-               "m m" 'my-cust
-               "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (disable-theme 'acme) (set-face-background 'mode-line "gold")))
+               "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (disable-theme 'acme) (load-theme 'tsdh-light) (set-face-background 'mode-line "gold")))
                "d g" (lambda () (interactive) (load-theme 'gruvbox-dark-medium))
                "d a" (lambda () (interactive) (load-theme 'acme))
                "d f" (lambda () (interactive) (toggle-frame-fullscreen))
