@@ -5,7 +5,11 @@
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
 
+
+;; brew isntall w3m
+;; git clone mu for latest build
 (add-to-list 'load-path "~/.emacs.d/mu/mu4e")
+(load-file "~/.emacs.d/email.el")
 (require 'mu4e)
 (setq mue4e-headers-skip-duplicates  t
       mu4e-view-show-images t
@@ -18,6 +22,7 @@
       message-sendmail-f-is-evil t
       smtpmail-queue-mail t
       smtpmail-queue-dir (expand-file-name "~/Maildir/queue/cur")
+      smtpmail-smtp-server "smtp.gmail.com"
       message-send-mail-function 'smtpmail-send-it
       mu4e-update-interval 300
       mu4e-html2text-command "/usr/bin/w3m -dump -T text/html"
@@ -33,7 +38,14 @@
       mu4e-trash-folder  "/trash"
       ;; this setting allows to re-sync and re-index mail
       ;; by pressing U
-      mu4e-get-mail-command  "mbsync -a")
+      mu4e-get-mail-command  "mbsync -a"
+      mu4e-bookmarks `(("maildir:/gmail/inbox" "Inbox" ?i)
+                       ("flag:unread AND NOT flag:trashed AND NOT maildir:/queue" "Unread messages" ?u)
+                       ("maildir:/queue AND from:*@gmail.com" "Outbox" ?o)
+                       ("date:today..now" "Today's messages" ?t)
+                       ("date:7d..now" "Last 7 days" ?w)))
+(add-hook 'message-mode-hook 'turn-on-orgtbl)
+(add-hook 'message-mode-hook 'turn-on-orgstruct++)
 
 (setq-default ring-bell-function 'ignore
               mac-allow-anti-aliasing nil
