@@ -25,8 +25,6 @@ Plugin 'nvie/vim-flake8'
 Plugin 'fatih/vim-go'
 Plugin 'jalvesaq/Nvim-R'
 Plugin 'benmills/vimux'
-Plugin 'rust-lang/rust.vim'
-Plugin 'neoclide/coc.nvim', {'branch': 'release'}
 
 " end plugin includes
 call vundle#end()            " required
@@ -98,10 +96,6 @@ nnoremap <leader>= <C-w>=
 nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>ss :setlocal spell spelllang=en_us<cr>
 nnoremap <leader>sf :setlocal nospell<cr>
-nnoremap <leader>sn ]s<cr>
-nnoremap <leader>sp [s<cr>
-nnoremap <leader>sa zg<cr>
-nnoremap <leader>si z=<cr>
 nnoremap <leader>vp :VimuxPromptCommand<cr>
 nnoremap <leader>vl :VimuxRunLastCommand<cr>
 autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
@@ -115,22 +109,17 @@ nnoremap = :FormatJSON<Cr>
 "
 " C
 "
+augroup ft_c
 autocmd FileType c,cpp ClangFormatAutoEnable
 let g:clang_format#style_options = {
-            \ "BasedOnStyle": "google",
             \ "AccessModifierOffset" : -4,
             \ "AllowShortIfStatementsOnASingleLine" : "true",
             \ "AlwaysBreakTemplateDeclarations" : "true",
             \ "Standard" : "C++11"}
-
-"
-" Rust
-"
-augroup ft_rust
-let g:rustfmt_autosave = 1
-autocmd FileType rust nnoremap <buffer><leader>t :call CocAction('doHover')<cr>
+autocmd FileType c,cpp nnoremap <buffer><leader>t g]
+autocmd FileType c,cpp nnoremap <buffer><leader>gg g] 1<cr><cr>
+autocmd FileType c,cpp nnoremap <buffer><leader>gp :pop<cr>
 augroup END
-
 
 "
 " Go
