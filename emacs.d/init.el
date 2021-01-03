@@ -447,11 +447,8 @@ frame"
   (setq company-minimum-prefix-length 1)
   (setq company-lsp-cache-candidates t)
   (setq company-lsp-async t)
+  (add-to-list 'company-backends 'company-gtags)
   (add-hook 'after-init-hook 'global-company-mode))
-
-(use-package company-ctags
-  :ensure t
-  :after 'company)
 
 ;;
 ;; neotree
