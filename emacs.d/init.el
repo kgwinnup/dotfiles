@@ -45,7 +45,7 @@
                        ("date:today..now" "Today's messages" ?t)
                        ("date:7d..now" "Last 7 days" ?w)))
 (add-hook 'message-mode-hook 'turn-on-orgtbl)
-(add-hook 'message-mode-hook 'turn-on-orgstruct++)
+;(add-hook 'message-mode-hook 'turn-on-orgstruct++)
 
 (setq-default ring-bell-function 'ignore
               mac-allow-anti-aliasing nil
@@ -165,9 +165,9 @@ frame"
   (setq my-font-size (+ size my-font-size)))
 
 (use-package web-mode
-  :ensure t)
-
-(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  :ensure t
+  :init
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
 
 (use-package helm
   :ensure t
@@ -183,7 +183,17 @@ frame"
           "\\*.+\\*"))))
 
 (use-package helm-gtags
-  :ensure t)
+  :ensure t
+  :init
+  (add-hook 'c-mode-hook 'helm-gtags-mode)
+  (add-hook 'c++-mode-hook 'helm-gtags-mode)
+  (add-hook 'asm-mode-hook 'helm-gtags-mode)
+  (add-hook 'helm-gtags-mode-hook
+            (lambda ()
+              (define-key evil-normal-state-local-map (kbd "SPC g g") 'helm-gtags-find-tag-from-here)
+              (define-key evil-normal-state-local-map (kbd "SPC g p") 'helm-gtags-pop-stack)
+              (define-key evil-normal-state-local-map (kbd "SPC g f") 'helm-gtags-select)
+              (define-key evil-normal-state-local-map (kbd "SPC g u") 'helm-gtags-update-tags))))
 
 (use-package yaml-mode
   :ensure t)
@@ -223,6 +233,9 @@ frame"
   :init
   (use-package evil-magit
     :ensure t))
+
+(use-package xcscope
+  :ensure t)
 
 (require 'ox-latex)
 (use-package org
@@ -439,6 +452,9 @@ frame"
   (setq company-lsp-async t)
   (add-hook 'after-init-hook 'global-company-mode))
 
+(use-package company-ctags
+  :ensure t
+  :after 'company)
 
 ;;
 ;; neotree
