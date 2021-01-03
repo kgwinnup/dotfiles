@@ -69,10 +69,13 @@
 (setenv "PATH" (concat "/usr/local/go/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/go/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/bin:" (getenv "PATH")))
+(setenv "PATH" (concat "~/.cargo/bin:" (getenv "PATH")))
+(setenv "GTAGSLIBPATH" "~/.gtags")
 (add-to-list 'exec-path "/usr/local/go/bin")
 (add-to-list 'exec-path "/usr/local/bin")
 (add-to-list 'exec-path "~/go/bin")
 (add-to-list 'exec-path "~/bin")
+(add-to-list 'exec-path "~/.cargo/bin")
 (load custom-file)
 
 ;; Bootstrap `use-package`
@@ -168,6 +171,15 @@ frame"
   :ensure t
   :init
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
+
+(use-package rust-mode
+  :ensure t
+  :hook (rust-mode . lsp)
+  :init
+  (setq rust-format-on-save t))
+
+;(use-package cargo
+;  :hook (rust-mode . cargo-minor-mode))
 
 (use-package helm
   :ensure t
