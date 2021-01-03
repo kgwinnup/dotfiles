@@ -234,9 +234,6 @@ frame"
   (use-package evil-magit
     :ensure t))
 
-(use-package xcscope
-  :ensure t)
-
 (require 'ox-latex)
 (use-package org
   :ensure t
