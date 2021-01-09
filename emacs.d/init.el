@@ -60,6 +60,7 @@
               inhibit-startup-screen t
               auto-save-default nil
               make-backup-files nil
+              shr-width 80
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
