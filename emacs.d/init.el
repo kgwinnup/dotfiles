@@ -207,6 +207,7 @@ frame"
               (define-key evil-normal-state-local-map (kbd "SPC g g") 'helm-gtags-find-tag-from-here)
               (define-key evil-normal-state-local-map (kbd "SPC g p") 'helm-gtags-pop-stack)
               (define-key evil-normal-state-local-map (kbd "SPC g f") 'helm-gtags-select)
+              (define-key evil-normal-state-local-map (kbd "SPC g l") 'helm-gtags-parse-file)
               (define-key evil-normal-state-local-map (kbd "SPC g u") 'helm-gtags-update-tags))))
 
 (use-package yaml-mode
@@ -235,7 +236,7 @@ frame"
   :init
   (setq elfeed-feeds '(("https://www.lobste.rs/rss" lobsters)
                        ("http://www.reddit.com/r/reverseengineering/.rss" reddit-re)
-                       ("http://www.reddit.com/r/history/.rss" reddit-history)
+                       ("http://www.reddit.com/r/bsd/.rss" reddit-bsd)
                        ("http://www.reddit.com/r/emacs/.rss" reddit-emacs)
                        ("http://rss.slashdot.org/Slashdot/slashdotMain" slashdot)))
   (setq-default elfeed-search-filter "@2-days-ago +unread")
