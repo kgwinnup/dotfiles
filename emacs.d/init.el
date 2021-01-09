@@ -25,7 +25,7 @@
       smtpmail-smtp-server "smtp.gmail.com"
       message-send-mail-function 'smtpmail-send-it
       mu4e-update-interval 300
-      mu4e-html2text-command "/usr/bin/w3m -dump -T text/html"
+      ;mu4e-html2text-command "/usr/bin/w3m -dump -T text/html"
       mu4e-compose-signature-auto-include nil
       mu4e-attachments-dir "~/Downloads"
       ;; top-level Maildir
@@ -45,7 +45,6 @@
                        ("date:today..now" "Today's messages" ?t)
                        ("date:7d..now" "Last 7 days" ?w)))
 (add-hook 'message-mode-hook 'turn-on-orgtbl)
-;(add-hook 'message-mode-hook 'turn-on-orgstruct++)
 
 (setq-default ring-bell-function 'ignore
               mac-allow-anti-aliasing nil
@@ -175,11 +174,14 @@ frame"
 (use-package rust-mode
   :ensure t
   :hook (rust-mode . lsp)
+  :after lsp-mode
   :init
-  (setq rust-format-on-save t))
-
-;(use-package cargo
-;  :hook (rust-mode . cargo-minor-mode))
+  (setq rust-format-on-save t)
+  (add-hook 'rust-mode-hook
+            (lambda ()
+              (define-key evil-normal-state-local-map (kbd "SPC g f") 'lsp-ui-peek-find-definitions)
+              (define-key evil-normal-state-local-map (kbd "SPC g g") 'lsp-ui-peek-find-references)
+              (define-key evil-normal-state-local-map (kbd "SPC g i") 'lsp-ui-doc-show))))
 
 (use-package helm
   :ensure t
