@@ -44,9 +44,7 @@
                        ("maildir:/queue AND from:*@gmail.com" "Outbox" ?o)
                        ("date:today..now" "Today's messages" ?t)
                        ("date:7d..now" "Last 7 days" ?w)))
-(add-hook 'message-mode-hook (lambda ()
-                               (turn-on-orgtbl)
-                               (global-company-mode nil)))
+(add-hook 'message-mode-hook 'turn-on-orgtbl)
 
 (setq-default ring-bell-function 'ignore
               mac-allow-anti-aliasing nil
@@ -176,9 +174,15 @@ frame"
 
 (use-package rust-mode
   :ensure t
+  :hook (rust-mode . lsp)
+  :after lsp-mode
   :init
   (setq rust-format-on-save t)
-  (add-hook 'rust-mode-hook 'helm-gtags-mode))
+  (add-hook 'rust-mode-hook
+            (lambda ()
+              (define-key evil-normal-state-local-map (kbd "SPC g f") 'lsp-ui-peek-find-definitions)
+              (define-key evil-normal-state-local-map (kbd "SPC g g") 'lsp-ui-peek-find-references)
+              (define-key evil-normal-state-local-map (kbd "SPC g i") 'lsp-ui-doc-show))))
 
 (use-package helm
   :ensure t
@@ -211,6 +215,9 @@ frame"
   :ensure t)
 
 (use-package helm-themes
+  :ensure t)
+
+(use-package acme-theme
   :ensure t)
 
 (setq evil-want-keybinding nil)
@@ -378,6 +385,15 @@ frame"
   (setq lsp-ui-doc-enable nil)
   (setq lsp-log-io nil))
 
+;(use-package company-lsp
+;  :ensure t
+;  :commands company-lsp
+;  :after (lsp-mode company))
+
+(use-package helm-lsp
+  :ensure t
+  :commands helm-lsp-workspace-symbol)
+
 (use-package go-mode
   :ensure t
   :mode "\\*\\.go"
@@ -513,8 +529,9 @@ frame"
                "m e" 'elfeed
                "m m" 'mu4e
                ;; view
-               "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (load-theme 'tsdh-light) (set-face-background 'mode-line "gold")))
+               "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (disable-theme 'acme) (load-theme 'tsdh-light) (set-face-background 'mode-line "gold")))
                "d g" (lambda () (interactive) (load-theme 'gruvbox-dark-medium))
+               "d a" (lambda () (interactive) (load-theme 'acme))
                "d f" (lambda () (interactive) (toggle-frame-fullscreen))
                "=" (lambda () (interactive) (my-global-font-size 10))
                "-" (lambda () (interactive) (my-global-font-size -10)))))
