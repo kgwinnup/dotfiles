@@ -174,15 +174,8 @@ frame"
 
 (use-package rust-mode
   :ensure t
-  :hook (rust-mode . lsp)
-  :after lsp-mode
   :init
-  (setq rust-format-on-save t)
-  (add-hook 'rust-mode-hook
-            (lambda ()
-              (define-key evil-normal-state-local-map (kbd "SPC g f") 'lsp-ui-peek-find-definitions)
-              (define-key evil-normal-state-local-map (kbd "SPC g g") 'lsp-ui-peek-find-references)
-              (define-key evil-normal-state-local-map (kbd "SPC g i") 'lsp-ui-doc-show))))
+  (setq rust-format-on-save t))
 
 (use-package helm
   :ensure t
@@ -203,6 +196,7 @@ frame"
   (add-hook 'c-mode-hook 'helm-gtags-mode)
   (add-hook 'c++-mode-hook 'helm-gtags-mode)
   (add-hook 'asm-mode-hook 'helm-gtags-mode)
+  (add-hook 'rust-mode-hook 'helm-gtags-mode)
   (add-hook 'helm-gtags-mode-hook
             (lambda ()
               (define-key evil-normal-state-local-map (kbd "SPC g g") 'helm-gtags-find-tag-from-here)
@@ -522,6 +516,7 @@ frame"
                "n b" 'helm-mini
                "n r" '(lambda () (interactive) (switch-to-buffer "*scratch*"))
                "n a" '(lambda () (interactive) (find-file "~/workspace/notes.org"))
+               "n f" 'make-frame
                "j" 'evil-scroll-down
                "k" 'evil-scroll-up
                ;; magit
