@@ -521,6 +521,8 @@ frame"
                "k" 'evil-scroll-up
                ;; magit
                "m s" 'magit
+               "m b" 'magit-blame-addition
+               "m q" 'magit-blame-quit
                "m e" 'elfeed
                "m m" 'mu4e
                ;; view
