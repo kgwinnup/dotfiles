@@ -172,11 +172,6 @@ frame"
   :init
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
 
-(use-package rust-mode
-  :ensure t
-  :init
-  (setq rust-format-on-save t))
-
 (use-package helm
   :ensure t
   :init
@@ -196,7 +191,6 @@ frame"
   (add-hook 'c-mode-hook 'helm-gtags-mode)
   (add-hook 'c++-mode-hook 'helm-gtags-mode)
   (add-hook 'asm-mode-hook 'helm-gtags-mode)
-  (add-hook 'rust-mode-hook 'helm-gtags-mode)
   (add-hook 'helm-gtags-mode-hook
             (lambda ()
               (define-key evil-normal-state-local-map (kbd "SPC g g") 'helm-gtags-find-tag-from-here)
