@@ -45,6 +45,7 @@
                        ("date:today..now" "Today's messages" ?t)
                        ("date:7d..now" "Last 7 days" ?w)))
 (add-hook 'message-mode-hook 'turn-on-orgtbl)
+(add-hook 'markdown-mode-hook 'turn-on-orgtbl)
 
 (setq-default ring-bell-function 'ignore
               mac-allow-anti-aliasing nil
@@ -203,9 +204,6 @@ frame"
   :ensure t)
 
 (use-package helm-themes
-  :ensure t)
-
-(use-package acme-theme
   :ensure t)
 
 (setq evil-want-keybinding nil)
@@ -389,9 +387,9 @@ frame"
   (add-hook 'go-mode-hook
 			(lambda ()
 			  (setq gofmt-command "goimports")
-              (define-key evil-normal-state-local-map (kbd "SPC g g") 'godef-jump)
+              (define-key evil-normal-state-local-map (kbd "SPC g g") 'lsp-find-definition)
               (define-key evil-normal-state-local-map (kbd "SPC g p") 'pop-tag-mark)
-              (define-key evil-normal-state-local-map (kbd "SPC g d") 'godoc-at-point)
+              (define-key evil-normal-state-local-map (kbd "SPC g d") 'lsp-describe-thing-at-point)
 			  (add-hook 'before-save-hook 'gofmt-before-save))))
 
 (use-package poly-markdown
