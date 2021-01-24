@@ -86,7 +86,7 @@ let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 let g:jsx_ext_required = 0
 let g:vim_markdown_folding_disabled = 1
 
-" keybinds
+" global keybinds
 nnoremap <leader>np :bprevious<cr>
 nnoremap <leader>nn :bnext<cr>
 nnoremap <leader>nd :bdelete<cr>
@@ -98,6 +98,8 @@ nnoremap <leader>ss :setlocal spell spelllang=en_us<cr>
 nnoremap <leader>sf :setlocal nospell<cr>
 nnoremap <leader>vp :VimuxPromptCommand<cr>
 nnoremap <leader>vl :VimuxRunLastCommand<cr>
+nnoremap <leader>mb :VimuxRunCommand('git blame -L ' . line('.') . ',' . line('.') . ' ' . expand('%:p'))<cr>
+nnoremap <leader>ml :VimuxRunCommand('git blame -L ' . line('.') . ',' . line('.') . ' ' . expand('%:p') . "\| awk '{print $1}' \| xargs git --no-pager log -n 1 --decorate")<cr>
 autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
 autocmd BufNewFile,BufRead *.rmd set syntax=r
 
@@ -117,6 +119,7 @@ let g:clang_format#style_options = {
             \ "AlwaysBreakTemplateDeclarations" : "true",
             \ "Standard" : "C++11"}
 autocmd FileType c,cpp nnoremap <buffer><leader>t g]
+autocmd FileType c,cpp nnoremap <buffer><leader>gf :ts 
 autocmd FileType c,cpp nnoremap <buffer><leader>gg g] 1<cr><cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>gp :pop<cr>
 augroup END
