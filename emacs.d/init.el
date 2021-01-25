@@ -389,6 +389,7 @@ frame"
 			  (setq gofmt-command "goimports")
               (define-key evil-normal-state-local-map (kbd "SPC g g") 'lsp-find-definition)
               (define-key evil-normal-state-local-map (kbd "SPC g p") 'pop-tag-mark)
+              (define-key evil-normal-state-local-map (kbd "SPC g l") 'lsp-find-references)
               (define-key evil-normal-state-local-map (kbd "SPC g d") 'lsp-describe-thing-at-point)
 			  (add-hook 'before-save-hook 'gofmt-before-save))))
 
