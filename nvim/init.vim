@@ -23,6 +23,8 @@ Plugin 'plasticboy/vim-markdown'
 Plugin 'MaxMEllon/vim-jsx-pretty'
 Plugin 'nvie/vim-flake8'
 Plugin 'fatih/vim-go'
+Plugin 'rust-lang/rust.vim'
+Plugin 'racer-rust/vim-racer'
 Plugin 'jalvesaq/Nvim-R'
 Plugin 'benmills/vimux'
 
@@ -82,7 +84,6 @@ let mapleader=" "
 let g:mapleader=" "
 set timeoutlen=2000
 
-let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 let g:jsx_ext_required = 0
 let g:vim_markdown_folding_disabled = 1
 
@@ -113,21 +114,34 @@ nnoremap = :FormatJSON<Cr>
 "
 augroup ft_c
 autocmd FileType c,cpp ClangFormatAutoEnable
+let g:SuperTabDefaultCompletionType = "<c-n>"
 let g:clang_format#style_options = {
             \ "AccessModifierOffset" : -4,
             \ "AllowShortIfStatementsOnASingleLine" : "true",
             \ "AlwaysBreakTemplateDeclarations" : "true",
             \ "Standard" : "C++11"}
 autocmd FileType c,cpp nnoremap <buffer><leader>t g]
-autocmd FileType c,cpp nnoremap <buffer><leader>gf :ts 
 autocmd FileType c,cpp nnoremap <buffer><leader>gg g] 1<cr><cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>gp :pop<cr>
+autocmd FileType rust nnoremap <buffer><leader>gu :!ctags -R *<cr><cr>
+augroup END
+
+"
+" Rust
+"
+augroup ft_rust
+let g:rustfmt_autosave = 1
+autocmd FileType rust nnoremap <buffer><leader>t g]
+autocmd FileType rust nnoremap <buffer><leader>gg g] 1<cr><cr>
+autocmd FileType rust nnoremap <buffer><leader>gp :pop<cr>
+autocmd FileType rust nnoremap <buffer><leader>gu :!ctags -R *<cr><cr>
 augroup END
 
 "
 " Go
 "
 augroup ft_go
+let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 autocmd FileType go nnoremap <buffer><leader>t :GoInfo<cr>
 autocmd FileType go nnoremap <buffer><leader>gg :GoDef<cr>
 autocmd FileType go nnoremap <buffer><leader>gp <C-o><cr>
