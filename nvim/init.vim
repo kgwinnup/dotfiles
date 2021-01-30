@@ -84,7 +84,6 @@ let g:mapleader=" "
 set timeoutlen=2000
 
 let g:jsx_ext_required = 0
-let g:vim_markdown_folding_disabled = 1
 
 " global keybinds
 nnoremap <leader>np :bprevious<cr>
@@ -92,6 +91,8 @@ nnoremap <leader>nn :bnext<cr>
 nnoremap <leader>nd :bdelete<cr>
 nnoremap <leader>no :only<cr>
 nnoremap <leader>ns <C-W><C-W>
+nnoremap <leader>j <C-d>
+nnoremap <leader>k <C-u>
 nnoremap <leader>= <C-w>=
 nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>ss :setlocal spell spelllang=en_us<cr>
@@ -108,6 +109,13 @@ com! FormatXML :%!python3 -c "import xml.dom.minidom, sys; print(xml.dom.minidom
 com! FormatJSON :%!python -m json.tool
 nnoremap = :FormatXML<Cr>
 nnoremap = :FormatJSON<Cr>
+
+"
+" markdown
+"
+augroup ft_markdown
+autocmd FileType markdown nnoremap <buffer><leader>go gx<cr>
+augroup END
 
 "
 " C
