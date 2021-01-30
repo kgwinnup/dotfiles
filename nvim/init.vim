@@ -24,7 +24,6 @@ Plugin 'MaxMEllon/vim-jsx-pretty'
 Plugin 'nvie/vim-flake8'
 Plugin 'fatih/vim-go'
 Plugin 'rust-lang/rust.vim'
-Plugin 'racer-rust/vim-racer'
 Plugin 'jalvesaq/Nvim-R'
 Plugin 'benmills/vimux'
 
@@ -124,7 +123,9 @@ let g:clang_format#style_options = {
 autocmd FileType c,cpp nnoremap <buffer><leader>t g]
 autocmd FileType c,cpp nnoremap <buffer><leader>gg g] 1<cr><cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>gp :pop<cr>
-autocmd FileType rust nnoremap <buffer><leader>gu :!ctags -R *<cr><cr>
+autocmd FileType c,cpp nnoremap <buffer><leader>gu :!ctags -R *<cr><cr>
+autocmd FileType c,cpp nnoremap <buffer><leader>gl :cs find s <cword><cr>
+autocmd FileType c,cpp nnoremap <buffer><leader>gc :cs add cscope.out<cr>
 augroup END
 
 "
@@ -132,6 +133,7 @@ augroup END
 "
 augroup ft_rust
 let g:rustfmt_autosave = 1
+let g:SuperTabDefaultCompletionType = "<c-n>"
 autocmd FileType rust nnoremap <buffer><leader>t g]
 autocmd FileType rust nnoremap <buffer><leader>gg g] 1<cr><cr>
 autocmd FileType rust nnoremap <buffer><leader>gp :pop<cr>
