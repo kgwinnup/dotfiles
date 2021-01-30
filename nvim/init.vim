@@ -97,6 +97,9 @@ nnoremap <leader>= <C-w>=
 nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>ss :setlocal spell spelllang=en_us<cr>
 nnoremap <leader>sf :setlocal nospell<cr>
+nnoremap <leader>sn ]s
+nnoremap <leader>sp [s
+nnoremap <leader>sr z=
 nnoremap <leader>vp :VimuxPromptCommand<cr>
 nnoremap <leader>vl :VimuxRunLastCommand<cr>
 nnoremap <leader>mb :VimuxRunCommand('git blame -L ' . line('.') . ',' . line('.') . ' ' . expand('%:p'))<cr><cr>
