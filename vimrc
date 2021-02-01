@@ -18,7 +18,7 @@ Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 Plug 'MaxMEllon/vim-jsx-pretty'
 Plug 'nvie/vim-flake8'
-Plug 'fatih/vim-go'
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'rust-lang/rust.vim'
 Plug 'jalvesaq/Nvim-R'
 Plug 'benmills/vimux'
