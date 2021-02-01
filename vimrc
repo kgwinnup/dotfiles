@@ -106,6 +106,15 @@ com! FormatJSON :%!python -m json.tool
 nnoremap = :FormatXML<Cr>
 nnoremap = :FormatJSON<Cr>
 
+
+"
+" Global 
+"
+if !empty("./cscope.out") && filereadable("./cscope.out")
+    exe "cs add ./cscope.out"
+endif
+
+
 "
 " markdown
 "
