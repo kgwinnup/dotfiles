@@ -20,7 +20,7 @@ Plug 'MaxMEllon/vim-jsx-pretty'
 Plug 'nvie/vim-flake8'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'rust-lang/rust.vim'
-Plug 'jalvesaq/Nvim-R'
+Plug 'jalvesaq/Nvim-R', {'branch': 'stable'}
 Plug 'benmills/vimux'
 call plug#end()
 
@@ -179,6 +179,7 @@ endfunction
 let R_assign = 0
 let R_in_buffer = 0
 let R_applescript = 1
+let g:R_tmux_title = get(g:, 'R_tmux_title', 'NvimR')
 
 autocmd FileType r nnoremap <buffer><leader>rr :call SendToR()<cr>
 autocmd FileType r nnoremap <buffer><leader>rs :call StartR("R")<cr>
