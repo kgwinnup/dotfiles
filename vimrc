@@ -24,8 +24,7 @@ Plug 'jalvesaq/Nvim-R', {'branch': 'stable'}
 Plug 'benmills/vimux'
 call plug#end()
 
-" custom config below
-"
+" various settings
 filetype plugin indent on 
 set shortmess=at
 set nocompatible              " be iMproved, required
@@ -77,6 +76,10 @@ set timeoutlen=2000
 
 let g:jsx_ext_required = 0
 
+if !empty("./cscope.out") && filereadable("./cscope.out")
+    exe "cs add ./cscope.out"
+endif
+
 " global keybinds
 nnoremap <leader>np :bprevious<cr>
 nnoremap <leader>nn :bnext<cr>
@@ -106,14 +109,10 @@ com! FormatJSON :%!python -m json.tool
 nnoremap = :FormatXML<Cr>
 nnoremap = :FormatJSON<Cr>
 
-
-"
-" Global 
-"
-if !empty("./cscope.out") && filereadable("./cscope.out")
-    exe "cs add ./cscope.out"
-endif
-
+" visual keybindings
+vmap <leader>a= :Tab /=<cr>
+vmap <leader>a: :Tab /:<cr>
+vmap <leader>a, :Tab /,<cr>
 
 "
 " markdown
