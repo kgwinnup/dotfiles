@@ -128,6 +128,7 @@ augroup ft_c
 autocmd FileType c,cpp ClangFormatAutoEnable
 let g:SuperTabDefaultCompletionType = "<c-n>"
 let g:clang_format#style_options = {
+            \ "ColumnLimit" : 0,
             \ "AccessModifierOffset" : -4,
             \ "AllowShortIfStatementsOnASingleLine" : "true",
             \ "AlwaysBreakTemplateDeclarations" : "true",
@@ -159,6 +160,8 @@ augroup ft_go
 let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 autocmd FileType go nnoremap <buffer><leader>t :GoInfo<cr>
 autocmd FileType go nnoremap <buffer><leader>gg :GoDef<cr>
+autocmd FileType go nnoremap <buffer><leader>gl :GoReferrers<cr>
+autocmd FileType go nnoremap <buffer><leader>gc :GoCallees<cr>
 autocmd FileType go nnoremap <buffer><leader>gp <C-o><cr>
 let g:go_fmt_command = "goimports"
 augroup END
