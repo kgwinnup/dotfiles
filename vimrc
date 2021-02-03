@@ -159,10 +159,10 @@ augroup END
 augroup ft_rust
 let g:rustfmt_autosave = 1
 let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
-autocmd FileType rust nnoremap <buffer><leader>t g]
-autocmd FileType rust nnoremap <buffer><leader>gg g] 1<cr><cr>
+autocmd FileType rust nnoremap <buffer><leader>t :ALEHover<cr>
+autocmd FileType rust nnoremap <buffer><leader>gg :ALEGoToDefinition<cr>
+autocmd FileType rust nnoremap <buffer><leader>gf :ALEFindReferences<cr>
 autocmd FileType rust nnoremap <buffer><leader>gp :pop<cr>
-autocmd FileType rust nnoremap <buffer><leader>gu :!ctags -R *<cr><cr>
 augroup END
 
 "
