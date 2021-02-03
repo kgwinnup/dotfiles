@@ -22,6 +22,7 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'rust-lang/rust.vim'
 Plug 'jalvesaq/Nvim-R', {'branch': 'stable'}
 Plug 'benmills/vimux'
+Plug 'dense-analysis/ale'
 call plug#end()
 
 " various settings
@@ -53,6 +54,17 @@ set t_Co=256
 syntax enable
 set background=dark
 colorscheme gruvbox
+
+" ale settings
+let g:ale_linters_explicit = 1 
+let g:ale_completion_enabled = 1
+set omnifunc=ale#completion#OmniFunc
+let g:ale_fixers = {
+    \ 'rust': ['rustfmt']
+    \ }
+let g:ale_linters = {
+    \ 'rust': ['rls']
+    \ }
 
 " nerdtree settings
 let g:NERDTreeQuitOnOpen=1
@@ -146,7 +158,7 @@ augroup END
 "
 augroup ft_rust
 let g:rustfmt_autosave = 1
-let g:SuperTabDefaultCompletionType = "<c-n>"
+let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 autocmd FileType rust nnoremap <buffer><leader>t g]
 autocmd FileType rust nnoremap <buffer><leader>gg g] 1<cr><cr>
 autocmd FileType rust nnoremap <buffer><leader>gp :pop<cr>
