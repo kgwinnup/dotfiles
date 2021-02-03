@@ -20,6 +20,7 @@ Plug 'MaxMEllon/vim-jsx-pretty'
 Plug 'nvie/vim-flake8'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'rust-lang/rust.vim'
+Plug 'cespare/vim-toml'
 Plug 'jalvesaq/Nvim-R', {'branch': 'stable'}
 Plug 'benmills/vimux'
 Plug 'dense-analysis/ale'
