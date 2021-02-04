@@ -20,13 +20,15 @@ Plug 'MaxMEllon/vim-jsx-pretty'
 Plug 'nvie/vim-flake8'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'rust-lang/rust.vim'
-Plug 'cespare/vim-toml'
 Plug 'jalvesaq/Nvim-R', {'branch': 'stable'}
 Plug 'benmills/vimux'
 Plug 'dense-analysis/ale'
 call plug#end()
 
 " various settings
+call system('mkdir -p ~/.vim/backups')
+set backupdir=~/.vim/backups
+set dir=~/.vim/backups//
 filetype plugin indent on 
 set shortmess=at
 set nocompatible              " be iMproved, required
