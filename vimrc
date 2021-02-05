@@ -52,7 +52,7 @@ set cursorline
 set colorcolumn=110
 set mouse=a
 set backspace=indent,eol,start
-set clipboard+=unnamedplus
+set clipboard=unnamed,autoselect
 set t_Co=256
 syntax enable
 set background=dark
