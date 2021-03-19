@@ -25,14 +25,21 @@
               custom-file "~/.emacs.d/custom.el")
 
 (shell-command "touch ~/.emacs.d/custom.el")
+
+;; for use when running shells within emacs, this sets the path for
+;; those shells
 (setenv "PATH" (concat "/usr/local/go/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/go/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/bin:" (getenv "PATH")))
 (setenv "GTAGSLIBPATH" "~/.gtags")
+
+;; for use when emacs it self calls out to find programs needed for
+;; various plugin features
 (add-to-list 'exec-path "/usr/local/go/bin")
 (add-to-list 'exec-path "/usr/local/bin")
 (add-to-list 'exec-path "~/go/bin")
 (add-to-list 'exec-path "~/bin")
+
 (load custom-file)
 
 ;; Bootstrap `use-package`
