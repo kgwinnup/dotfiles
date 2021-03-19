@@ -5,48 +5,6 @@
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
 
-
-;; brew isntall w3m
-;; git clone mu for latest build
-(add-to-list 'load-path "~/.emacs.d/mu/mu4e")
-(load-file "~/.emacs.d/email.el")
-(require 'mu4e)
-(setq mue4e-headers-skip-duplicates  t
-      mu4e-view-show-images t
-      mu4e-view-show-addresses t
-      mu4e-compose-format-flowed nil
-      mu4e-date-format "%y/%m/%d"
-      mu4e-headers-date-format "%Y/%m/%d"
-      mu4e-change-filenames-when-moving t
-      message-sendmail-extra-arguments '("--read-envelope-from")
-      message-sendmail-f-is-evil t
-      smtpmail-queue-mail t
-      smtpmail-queue-dir (expand-file-name "~/Maildir/queue/cur")
-      smtpmail-smtp-server "smtp.gmail.com"
-      message-send-mail-function 'smtpmail-send-it
-      mu4e-update-interval 300
-      ;mu4e-html2text-command "/usr/bin/w3m -dump -T text/html"
-      mu4e-compose-signature-auto-include nil
-      mu4e-attachments-dir "~/Downloads"
-      ;; top-level Maildir
-      mu4e-maildir       "~/Maildir/gmail"
-      ;; note that these folders below must start with /
-      ;; the paths are relative to maildir root
-      mu4e-refile-folder "/archive"
-      mu4e-sent-folder   "/sent"
-      mu4e-drafts-folder "/drafts"
-      mu4e-trash-folder  "/trash"
-      ;; this setting allows to re-sync and re-index mail
-      ;; by pressing U
-      mu4e-get-mail-command  "mbsync -a"
-      mu4e-bookmarks `(("maildir:/gmail/inbox" "Inbox" ?i)
-                       ("flag:unread AND NOT flag:trashed AND NOT maildir:/queue" "Unread messages" ?u)
-                       ("maildir:/queue AND from:*@gmail.com" "Outbox" ?o)
-                       ("date:today..now" "Today's messages" ?t)
-                       ("date:7d..now" "Last 7 days" ?w)))
-(add-hook 'message-mode-hook 'turn-on-orgtbl)
-(add-hook 'markdown-mode-hook 'turn-on-orgtbl)
-
 (setq-default ring-bell-function 'ignore
               mac-allow-anti-aliasing nil
               scroll-step 1
@@ -70,13 +28,11 @@
 (setenv "PATH" (concat "/usr/local/go/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/go/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/bin:" (getenv "PATH")))
-(setenv "PATH" (concat "~/.cargo/bin:" (getenv "PATH")))
 (setenv "GTAGSLIBPATH" "~/.gtags")
 (add-to-list 'exec-path "/usr/local/go/bin")
 (add-to-list 'exec-path "/usr/local/bin")
 (add-to-list 'exec-path "~/go/bin")
 (add-to-list 'exec-path "~/bin")
-(add-to-list 'exec-path "~/.cargo/bin")
 (load custom-file)
 
 ;; Bootstrap `use-package`
@@ -217,18 +173,6 @@ frame"
   :ensure t
   :config
   (evil-collection-init))
-
-(use-package elfeed
-  :ensure t
-  :init
-  (setq elfeed-feeds '(("https://www.lobste.rs/rss" lobsters)
-                       ("http://www.reddit.com/r/reverseengineering/.rss" reddit-re)
-                       ("http://www.reddit.com/r/bsd/.rss" reddit-bsd)
-                       ("http://www.reddit.com/r/emacs/.rss" reddit-emacs)
-                       ("http://rss.slashdot.org/Slashdot/slashdotMain" slashdot)))
-  (setq-default elfeed-search-filter "@2-days-ago +unread")
-  (setq-default elfeed-search-title-max-width 100)
-  (setq-default elfeed-search-title-min-width 100))
 
 (use-package magit
   :ensure t
@@ -516,8 +460,6 @@ frame"
                "m s" 'magit
                "m b" 'magit-blame-addition
                "m q" 'magit-blame-quit
-               "m e" 'elfeed
-               "m m" 'mu4e
                ;; view
                "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (disable-theme 'acme) (load-theme 'tsdh-light) (set-face-background 'mode-line "gold")))
                "d g" (lambda () (interactive) (load-theme 'gruvbox-dark-medium))
