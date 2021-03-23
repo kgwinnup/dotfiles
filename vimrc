@@ -151,7 +151,8 @@ let g:clang_format#style_options = {
 autocmd FileType c,cpp nnoremap <buffer><leader>t g]
 autocmd FileType c,cpp nnoremap <buffer><leader>gg g] 1<cr><cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>gp :pop<cr>
-autocmd FileType c,cpp nnoremap <buffer><leader>gu :!ctags -R *<cr><cr>
+autocmd FileType c,cpp nnoremap <buffer><leader>gu :!ctags -R --extrax=+q /usr/include*<cr><cr>
+autocmd FileType c,cpp nnoremap <buffer><leader>gf :cs f t  
 autocmd FileType c,cpp nnoremap <buffer><leader>gl :cs find s <cword><cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>gc :cs add cscope.out<cr>
 augroup END

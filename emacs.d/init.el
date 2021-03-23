@@ -198,7 +198,6 @@ frame"
     (add-hook 'org-mode-hook
             (lambda ()
               (org-indent-mode)
-              ;(add-hook 'after-save-hook 'org-preview-latex-fragment)
               (define-key evil-normal-state-local-map (kbd "SPC r r") 'org-preview-latex-fragment)
               (define-key evil-normal-state-local-map (kbd "SPC E") 'org-gfm-export-to-markdown)
               (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
@@ -315,17 +314,12 @@ frame"
   :commands lsp-deferred
   :config
   (setq gc-cons-threshold 100000000)
-  (setq read-process-output-max (* 1024 1024 3)) ;; 1mb
+  (setq read-process-output-max (* 1024 1024 3))
   (setq lsp-completion-provider :capf)
   (setq lsp-idle-delay 0.1)
   (setq lsp-enable-file-watchers nil)
   (setq lsp-ui-doc-enable nil)
   (setq lsp-log-io nil))
-
-;(use-package company-lsp
-;  :ensure t
-;  :commands company-lsp
-;  :after (lsp-mode company))
 
 (use-package helm-lsp
   :ensure t
