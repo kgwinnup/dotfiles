@@ -198,6 +198,7 @@ frame"
     (add-hook 'org-mode-hook
             (lambda ()
               (org-indent-mode)
+              ;(add-hook 'after-save-hook 'org-preview-latex-fragment)
               (define-key evil-normal-state-local-map (kbd "SPC r r") 'org-preview-latex-fragment)
               (define-key evil-normal-state-local-map (kbd "SPC E") 'org-gfm-export-to-markdown)
               (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
@@ -304,17 +305,28 @@ frame"
   :config
   (projectile-mode +1))
 
+(use-package rust-mode
+  :ensure t
+  :config
+  (add-hook 'rust-mode-hook
+			(lambda ()
+              (define-key evil-normal-state-local-map (kbd "SPC g g") 'lsp-find-definition)
+              (define-key evil-normal-state-local-map (kbd "SPC g p") 'pop-tag-mark)
+              (define-key evil-normal-state-local-map (kbd "SPC g l") 'lsp-find-references)
+              (define-key evil-normal-state-local-map (kbd "SPC g d") 'lsp-describe-thing-at-point))))
+
 (use-package lsp-ui
   :ensure t
   :after lsp-mode)
 
 (use-package lsp-mode
   :ensure t
-  :hook (go-mode . lsp-deferred)
+  :hook ((go-mode . lsp-deferred)
+         (rust-mode . lsp-deferred))
   :commands lsp-deferred
   :config
   (setq gc-cons-threshold 100000000)
-  (setq read-process-output-max (* 1024 1024 3))
+  (setq read-process-output-max (* 1024 1024 3)) ;; 1mb
   (setq lsp-completion-provider :capf)
   (setq lsp-idle-delay 0.1)
   (setq lsp-enable-file-watchers nil)
