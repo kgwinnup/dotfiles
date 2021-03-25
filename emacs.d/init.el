@@ -212,8 +212,15 @@ frame"
               (define-key evil-normal-state-local-map (kbd "SPC u") 'org-todo)
               (define-key evil-normal-state-local-map (kbd "SPC o") 'org-toggle-checkbox)))
     :config
+    (setq org-todo-keyword-faces
+          '(("project" . "dodger blue")
+            ("notes" . "coral")
+            ("review" . "deep pink")
+            ("todo" . "gold")
+            ("doing" . "lime green")
+            ("backlog" . "dim gray")))
     (setq org-todo-keywords
-          '((sequence "PROJECT" "TODO" "IN-PROGRESS" "BACKLOG" "|" "DONE")))
+          '((sequence "project" "notes" "review" "todo" "doing" "backlog")))
     (setq org-latex-create-formula-image-program 'dvipng)
     (setq org-preview-latex-default-process 'dvipng)
     (eval-after-load "org-present"
