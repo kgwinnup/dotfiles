@@ -90,6 +90,7 @@
 (defun my-send-to-shell (cmd)
   (interactive)
   (with-current-buffer "*eshell*"
+    (evil-insert-state)
     (eshell-kill-input)
     (end-of-buffer)
     (insert cmd)
@@ -463,6 +464,7 @@
     :evil-states (normal motion visual)
     :bindings ("c o" '(lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
                "c l" '(lambda () (interactive) (load-file "~/.emacs.d/init.el"))
+               "c k" 'describe-function
                "s s" 'ispell
                ;; cli integrations
                "t t" 'my-toggle-shell
