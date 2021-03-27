@@ -20,6 +20,7 @@
               auto-save-default nil
               make-backup-files nil
               shr-width 80
+              shell-file-name "/bin/bash"
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
@@ -54,24 +55,22 @@
 ;;
 
 (defun my-toggle-shell ()
-  "toggles the shell window, this function also keeps the cursor in
-the editor buffer when bringing the terminal back into the visible
-frame"
+  "toggles the shells visibility to the right split window"
   (interactive)
-  (if (not (member "*shell*" (mapcar (function buffer-name) (buffer-list))))
-      (progn
-        (setq w1 (selected-window))
-        (setq w2 (split-window-horizontally))
-        (shell)
-        (display-line-numbers-mode -1)
-        (set-window-buffer w2 "*shell*")
-        (select-window w1))
-    (if (and (get-buffer-window "*shell*"))
-        (delete-other-windows)
-      (progn (let ((w1 (selected-window))
-                   (w2 (split-window-horizontally)))
-               (set-window-buffer w2 "*shell*")
-               (selecte-window w1))))))
+  (if (get-buffer "*shell*")
+      ;; if shell exists toggle view on/off
+      (if (and (get-buffer-window "*shell*"))
+          (delete-other-windows)
+        (progn (let ((w2 (split-window-horizontally)))
+                 (set-window-buffer w2 "*shell*"))))
+    ;; else split the screen and create eshell
+    (progn
+      (setq w1 (selected-window))
+      (setq w2 (split-window-horizontally))
+      (shell)
+      (display-line-numbers-mode -1)
+      (set-window-buffer w2 "*shell*")
+      (select-window w1))))
 
 (defun my-clear-shell ()
   "clears the shell buffer"
@@ -79,6 +78,7 @@ frame"
   (if (get-buffer-window "*shell*")
       (comint-clear-buffer)))
 
+(setq last-shell-cmd "")
 (defun my-send-to-shell (cmd)
   "sends a command to the buffer containing an active shell"
   (interactive)
@@ -90,10 +90,6 @@ frame"
     (switch-to-buffer "shell")
     (goto-char (point-max))
     (switch-to-buffer curbuf)))
-
-(eval-after-load "comint"
-  '(progn
-      (setq comint-move-point-for-output 'others)))
 
 (defun my-send-to-shell-again ()
   "sends the previous command to the active shell"
@@ -207,6 +203,7 @@ frame"
               (define-key evil-normal-state-local-map (kbd "SPC T") 'my-org-timestamp)
               (define-key evil-normal-state-local-map (kbd "SPC p") 'org-cycle)
               (define-key evil-normal-state-local-map (kbd "SPC g p") 'org-global-cycle)
+              (define-key evil-normal-state-local-map (kbd "SPC g t") '(lambda () (interactive) (org-insert-time-stamp (current-time))))
               (define-key evil-normal-state-local-map (kbd "SPC s n") 'my-start-code-block)
               (define-key evil-normal-state-local-map (kbd "SPC s o") 'org-edit-src-code)
               (define-key evil-normal-state-local-map (kbd "SPC u") 'org-todo)
@@ -215,12 +212,13 @@ frame"
     (setq org-todo-keyword-faces
           '(("project" . "dodger blue")
             ("notes" . "coral")
+            ("mgmt" . "magenta")
             ("review" . "deep pink")
-            ("todo" . "gold")
+            ("todo" . "plum")
             ("doing" . "lime green")
             ("backlog" . "dim gray")))
     (setq org-todo-keywords
-          '((sequence "project" "notes" "review" "todo" "doing" "backlog")))
+          '((sequence "project" "notes" "mgmt" "review" "todo" "doing" "backlog")))
     (setq org-latex-create-formula-image-program 'dvipng)
     (setq org-preview-latex-default-process 'dvipng)
     (eval-after-load "org-present"
@@ -460,7 +458,7 @@ frame"
                "c o" '(lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
                "c l" '(lambda () (interactive) (load-file "~/.emacs.d/init.el"))
                "t t" 'my-toggle-shell
-               "t c" 'my-clear-shell
+               "t c" '(lambda () (interactive) (my-send-to-shell "clear 1"))
                "v p" 'my-send-to-shell-input
                "v l" 'my-send-to-shell-again
                "s s" 'ispell
@@ -502,8 +500,8 @@ frame"
 
 (set-face-attribute 'default nil
                     :family "mononoki"
-                    :height my-font-size
-                    :weight 'medium)
+                    :height my-font-size)
+                    ;:weight 'medium)
 
 (global-display-line-numbers-mode)
 (global-hl-line-mode)
