@@ -20,7 +20,10 @@
               auto-save-default nil
               make-backup-files nil
               shr-width 80
-              shell-file-name "/bin/bash"
+              eshell-scroll-to-bottom-on-input 'all
+              eshell-scroll-to-bottom-on-output 'all
+              eshell-destroy-buffer-when-process-dies t
+              my-last-eshell-cmd ""
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
@@ -32,6 +35,7 @@
 (setenv "PATH" (concat "/usr/local/go/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/go/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/bin:" (getenv "PATH")))
+(setenv "PATH" (concat "~/.cargo/bin:" (getenv "PATH")))
 (setenv "GTAGSLIBPATH" "~/.gtags")
 
 ;; for use when emacs it self calls out to find programs needed for
@@ -40,6 +44,7 @@
 (add-to-list 'exec-path "/usr/local/bin")
 (add-to-list 'exec-path "~/go/bin")
 (add-to-list 'exec-path "~/bin")
+(add-to-list 'exec-path "~/.cargo/bin")
 
 (load custom-file)
 
@@ -57,44 +62,46 @@
 (defun my-toggle-shell ()
   "toggles the shells visibility to the right split window"
   (interactive)
-  (if (get-buffer "*shell*")
+  (if (get-buffer "*eshell*")
       ;; if shell exists toggle view on/off
-      (if (and (get-buffer-window "*shell*"))
+      (if (and (get-buffer-window "*eshell*"))
           (delete-other-windows)
-        (progn (let ((w2 (split-window-horizontally)))
-                 (set-window-buffer w2 "*shell*"))))
+          (let ((w2 (split-window-horizontally)))
+            (set-window-buffer w2 "*eshell*")))
     ;; else split the screen and create eshell
-    (progn
-      (setq w1 (selected-window))
-      (setq w2 (split-window-horizontally))
-      (shell)
+    (let ((w1 (selected-window))
+          (w2 (split-window-horizontally)))
+      (select-window w2)
+      (eshell)
       (display-line-numbers-mode -1)
-      (set-window-buffer w2 "*shell*")
-      (select-window w1))))
+      (select-window w1)
+      (set-window-buffer w2 "*eshell*"))))
 
 (defun my-clear-shell ()
-  "clears the shell buffer"
   (interactive)
-  (if (get-buffer-window "*shell*")
-      (comint-clear-buffer)))
+  (with-current-buffer "*eshell*"
+    (eshell-kill-input)
+    (end-of-buffer)
+    (insert "clear 1")
+    (eshell-send-input)
+    (end-of-buffer)
+    (eshell-bol)))
 
-(setq last-shell-cmd "")
 (defun my-send-to-shell (cmd)
-  "sends a command to the buffer containing an active shell"
   (interactive)
-  (let ((proc (get-process "shell"))
-        (curbuf (current-buffer)))
-    (setq command (concat cmd "\n"))
-    (process-send-string proc command)
-    (setq last-shell-cmd cmd)
-    (switch-to-buffer "shell")
-    (goto-char (point-max))
-    (switch-to-buffer curbuf)))
+  (with-current-buffer "*eshell*"
+    (eshell-kill-input)
+    (end-of-buffer)
+    (insert cmd)
+    (eshell-send-input)
+    (end-of-buffer)
+    (eshell-bol)
+    (setq my-last-eshell-cmd cmd)))
 
 (defun my-send-to-shell-again ()
   "sends the previous command to the active shell"
   (interactive)
-  (my-send-to-shell last-shell-cmd))
+  (my-send-to-shell my-last-eshell-cmd))
 
 (defun my-send-to-shell-input ()
   "gets the user command and sends to the buffer containing an active shell"
@@ -454,15 +461,17 @@
     :keys ("M-m")
     :evil-keys ("SPC")
     :evil-states (normal motion visual)
-    :bindings ("n t" 'neotree-toggle
-               "c o" '(lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
+    :bindings ("c o" '(lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
                "c l" '(lambda () (interactive) (load-file "~/.emacs.d/init.el"))
+               "s s" 'ispell
+               ;; cli integrations
                "t t" 'my-toggle-shell
-               "t c" '(lambda () (interactive) (my-send-to-shell "clear 1"))
+               "t T" 'eshell
+               "t c" 'my-clear-shell
                "v p" 'my-send-to-shell-input
                "v l" 'my-send-to-shell-again
-               "s s" 'ispell
                ;; buffer keybindings
+               "n t" 'neotree-toggle
                "n n" 'next-buffer
                "n s" 'next-multiframe-window 
                "n p" 'previous-buffer
@@ -472,6 +481,7 @@
                "n r" '(lambda () (interactive) (switch-to-buffer "*scratch*"))
                "n a" '(lambda () (interactive) (find-file "~/workspace/notes.org"))
                "n f" 'make-frame
+               ;; general movement
                "j" 'evil-scroll-down
                "k" 'evil-scroll-up
                ;; magit
@@ -479,9 +489,8 @@
                "m b" 'magit-blame-addition
                "m q" 'magit-blame-quit
                ;; view
-               "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (disable-theme 'acme) (load-theme 'tsdh-light) (set-face-background 'mode-line "gold")))
+               "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (load-theme 'tsdh-light) (set-face-background 'mode-line "gold")))
                "d g" (lambda () (interactive) (load-theme 'gruvbox-dark-medium))
-               "d a" (lambda () (interactive) (load-theme 'acme))
                "d f" (lambda () (interactive) (toggle-frame-fullscreen))
                "=" (lambda () (interactive) (my-global-font-size 10))
                "-" (lambda () (interactive) (my-global-font-size -10)))))
