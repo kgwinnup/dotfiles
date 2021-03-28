@@ -28,6 +28,10 @@
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
 
+(if (display-graphic-p)
+    (progn
+      (scroll-bar-mode -1)))
+
 (shell-command "touch ~/.emacs.d/custom.el")
 
 ;; for use when running shells within emacs, this sets the path for
@@ -59,35 +63,33 @@
 ;; custom functions
 ;;
 
-(defun my-toggle-shell ()
-  "toggles the shells visibility to the right split window"
+(defun my-toggle-shell (the-shell)
+  "toggles the shells visibility to the right split window,
+'the-shell' parameter should be the symbol name as a string for the
+shell, e.g. 'shell' or 'eshell'"
   (interactive)
-  (if (get-buffer "*eshell*")
-      ;; if shell exists toggle view on/off
-      (if (and (get-buffer-window "*eshell*"))
-          (delete-other-windows)
+  (let ((shell-string (concat "*" the-shell "*")))
+    (if (get-buffer shell-string)
+        ;; if shell exists toggle view on/off
+        (if (and (get-buffer-window shell-string))
+            (delete-other-windows)
           (let ((w2 (split-window-horizontally)))
-            (set-window-buffer w2 "*eshell*")))
-    ;; else split the screen and create eshell
-    (let ((w1 (selected-window))
-          (w2 (split-window-horizontally)))
-      (select-window w2)
-      (eshell)
-      (display-line-numbers-mode -1)
-      (select-window w1)
-      (set-window-buffer w2 "*eshell*"))))
+            (set-window-buffer w2 shell-string)))
+      ;; else split the screen and create eshell
+      (let ((w1 (selected-window))
+            (w2 (split-window-horizontally)))
+        (select-window w2)
+        (funcall (intern the-shell))
+        (display-line-numbers-mode -1)
+        (select-window w1)
+        (set-window-buffer w2 shell-string)))))
 
 (defun my-clear-shell ()
+  "clears the eshell buffer, does not set my-last-eshell-cmd"
   (interactive)
-  (with-current-buffer "*eshell*"
-    (eshell-kill-input)
-    (end-of-buffer)
-    (insert "clear 1")
-    (eshell-send-input)
-    (end-of-buffer)
-    (eshell-bol)))
+  (my-send-to-shell "clear 1"))
 
-(defun my-send-to-shell (cmd)
+(defun my-send-to-shell (cmd &optional set-last-cmd-p)
   (interactive)
   (with-current-buffer "*eshell*"
     (evil-insert-state)
@@ -97,17 +99,18 @@
     (eshell-send-input)
     (end-of-buffer)
     (eshell-bol)
-    (setq my-last-eshell-cmd cmd)))
+    (if set-last-cmd-p
+        (setq my-last-eshell-cmd cmd))))
 
 (defun my-send-to-shell-again ()
   "sends the previous command to the active shell"
   (interactive)
-  (my-send-to-shell my-last-eshell-cmd))
+  (my-send-to-shell my-last-eshell-cmd t))
 
 (defun my-send-to-shell-input ()
   "gets the user command and sends to the buffer containing an active shell"
   (interactive)
-  (my-send-to-shell (read-string "CMD: ")))
+  (my-send-to-shell (read-string "CMD: ") t))
 
 (defun my-start-code-block ()
   "starts a code block in org mode"
@@ -467,7 +470,7 @@
                "c k" 'describe-function
                "s s" 'ispell
                ;; cli integrations
-               "t t" 'my-toggle-shell
+               "t t" '(lambda () (interactive) (my-toggle-shell "eshell"))
                "t T" 'eshell
                "t c" 'my-clear-shell
                "v p" 'my-send-to-shell-input
@@ -496,10 +499,6 @@
                "d f" (lambda () (interactive) (toggle-frame-fullscreen))
                "=" (lambda () (interactive) (my-global-font-size 10))
                "-" (lambda () (interactive) (my-global-font-size -10)))))
-
-(if (display-graphic-p)
-    (progn
-      (scroll-bar-mode -1)))
 
 (tool-bar-mode -1)
 (menu-bar-mode -1)
