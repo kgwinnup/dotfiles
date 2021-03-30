@@ -23,7 +23,7 @@
               eshell-scroll-to-bottom-on-input 'all
               eshell-scroll-to-bottom-on-output 'all
               eshell-destroy-buffer-when-process-dies t
-              my-last-eshell-cmd ""
+              my-last-shell-cmd ""
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
@@ -84,33 +84,45 @@ shell, e.g. 'shell' or 'eshell'"
         (select-window w1)
         (set-window-buffer w2 shell-string)))))
 
-(defun my-clear-shell ()
+(defun my-clear-shell (the-shell)
   "clears the eshell buffer, does not set my-last-eshell-cmd"
   (interactive)
-  (my-send-to-shell "clear 1"))
+  ;; if it is eshell
+  (if (equal the-shell "eshell")
+      (my-send-to-shell the-shell "clear 1")
+    ;; if it is a standard shell
+    (if (get-buffer-window "*shell*")
+        (comint-clear-buffer))))
 
-(defun my-send-to-shell (cmd &optional set-last-cmd-p)
+(defun my-send-to-shell (the-shell cmd &optional set-last-cmd-p)
   (interactive)
-  (with-current-buffer "*eshell*"
-    (evil-insert-state)
-    (eshell-kill-input)
-    (end-of-buffer)
-    (insert cmd)
-    (eshell-send-input)
-    (end-of-buffer)
-    (eshell-bol)
-    (if set-last-cmd-p
-        (setq my-last-eshell-cmd cmd))))
+  (if (equal the-shell "eshell")
+      (with-current-buffer "*eshell*"
+        (evil-insert-state)
+        (eshell-kill-input)
+        (end-of-buffer)
+        (insert cmd)
+        (eshell-send-input)
+        (end-of-buffer)
+        (eshell-bol))
+    (let ((proc (get-process "shell"))
+          (curbuf (current-buffer)))
+      (process-send-string proc (concat cmd "\n"))
+      (switch-to-buffer "shell")
+      (goto-char (point-max))
+      (switch-to-buffer curbuf)))
+  (if set-last-cmd-p
+      (setq my-last-shell-cmd cmd)))
 
-(defun my-send-to-shell-again ()
+(defun my-send-to-shell-again (the-shell)
   "sends the previous command to the active shell"
   (interactive)
-  (my-send-to-shell my-last-eshell-cmd t))
+  (my-send-to-shell the-shell my-last-shell-cmd t))
 
-(defun my-send-to-shell-input ()
+(defun my-send-to-shell-input (the-shell)
   "gets the user command and sends to the buffer containing an active shell"
   (interactive)
-  (my-send-to-shell (read-string "CMD: ") t))
+  (my-send-to-shell the-shell (read-string "CMD: ") t))
 
 (defun my-start-code-block ()
   "starts a code block in org mode"
@@ -171,6 +183,9 @@ shell, e.g. 'shell' or 'eshell'"
               (define-key evil-normal-state-local-map (kbd "SPC g u") 'helm-gtags-update-tags))))
 
 (use-package yaml-mode
+  :ensure t)
+
+(use-package gruvbox-theme
   :ensure t)
 
 (use-package helm-themes
@@ -470,11 +485,11 @@ shell, e.g. 'shell' or 'eshell'"
                "c k" 'describe-function
                "s s" 'ispell
                ;; cli integrations
-               "t t" '(lambda () (interactive) (my-toggle-shell "eshell"))
-               "t T" 'eshell
-               "t c" 'my-clear-shell
-               "v p" 'my-send-to-shell-input
-               "v l" 'my-send-to-shell-again
+               "t t" '(lambda () (interactive) (my-toggle-shell "shell"))
+               "t T" 'shell
+               "t c" '(lambda () (interactive) (my-clear-shell "shell"))
+               "v p" '(lambda () (interactive) (my-send-to-shell-input "shell"))
+               "v l" '(lambda () (interactive) (my-send-to-shell-again "shell"))
                ;; buffer keybindings
                "n t" 'neotree-toggle
                "n n" 'next-buffer
