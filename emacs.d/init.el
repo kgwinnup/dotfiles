@@ -114,6 +114,10 @@ shell, e.g. 'shell' or 'eshell'"
   (if set-last-cmd-p
       (setq my-last-shell-cmd cmd)))
 
+(eval-after-load "comint"
+  '(progn
+      (setq comint-move-point-for-output 'others)))
+
 (defun my-send-to-shell-again (the-shell)
   "sends the previous command to the active shell"
   (interactive)
