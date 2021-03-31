@@ -62,7 +62,6 @@
 ;;
 ;; custom functions
 ;;
-
 (defun my-toggle-shell (the-shell)
   "toggles the shells visibility to the right split window,
 'the-shell' parameter should be the symbol name as a string for the
@@ -84,49 +83,33 @@ shell, e.g. 'shell' or 'eshell'"
         (select-window w1)
         (set-window-buffer w2 shell-string)))))
 
-(defun my-clear-shell (the-shell)
+(defun my-clear-shell ()
   "clears the eshell buffer, does not set my-last-eshell-cmd"
   (interactive)
-  ;; if it is eshell
-  (if (equal the-shell "eshell")
-      (my-send-to-shell the-shell "clear 1")
-    ;; if it is a standard shell
-    (if (get-buffer-window "*shell*")
-        (comint-clear-buffer))))
+  (my-send-to-shell "clear 1"))
 
-(defun my-send-to-shell (the-shell cmd &optional set-last-cmd-p)
+(defun my-send-to-shell (cmd &optional set-last-cmd-p)
   (interactive)
-  (if (equal the-shell "eshell")
-      (with-current-buffer "*eshell*"
-        (evil-insert-state)
-        (eshell-kill-input)
-        (end-of-buffer)
-        (insert cmd)
-        (eshell-send-input)
-        (end-of-buffer)
-        (eshell-bol))
-    (let ((proc (get-process "shell"))
-          (curbuf (current-buffer)))
-      (process-send-string proc (concat cmd "\n"))
-      (switch-to-buffer "shell")
-      (goto-char (point-max))
-      (switch-to-buffer curbuf)))
+  (with-current-buffer "*eshell*"
+    (evil-insert-state)
+    (eshell-kill-input)
+    (end-of-buffer)
+    (insert cmd)
+    (eshell-send-input)
+    (end-of-buffer)
+    (eshell-bol))
   (if set-last-cmd-p
       (setq my-last-shell-cmd cmd)))
 
-(eval-after-load "comint"
-  '(progn
-      (setq comint-move-point-for-output 'others)))
-
-(defun my-send-to-shell-again (the-shell)
+(defun my-send-to-shell-again ()
   "sends the previous command to the active shell"
   (interactive)
-  (my-send-to-shell the-shell my-last-shell-cmd t))
+  (my-send-to-shell my-last-shell-cmd t))
 
-(defun my-send-to-shell-input (the-shell)
+(defun my-send-to-shell-input ()
   "gets the user command and sends to the buffer containing an active shell"
   (interactive)
-  (my-send-to-shell the-shell (read-string "CMD: ") t))
+  (my-send-to-shell (read-string "CMD: ") t))
 
 (defun my-start-code-block ()
   "starts a code block in org mode"
@@ -489,11 +472,11 @@ shell, e.g. 'shell' or 'eshell'"
                "c k" 'describe-function
                "s s" 'ispell
                ;; cli integrations
-               "t t" '(lambda () (interactive) (my-toggle-shell "shell"))
-               "t T" 'shell
-               "t c" '(lambda () (interactive) (my-clear-shell "shell"))
-               "v p" '(lambda () (interactive) (my-send-to-shell-input "shell"))
-               "v l" '(lambda () (interactive) (my-send-to-shell-again "shell"))
+               "t t" '(lambda () (interactive) (my-toggle-shell "eshell"))
+               "t T" 'eshell
+               "t c" 'my-clear-shell
+               "v p" 'my-send-to-shell-input
+               "v l" 'my-send-to-shell-again
                ;; buffer keybindings
                "n t" 'neotree-toggle
                "n n" 'next-buffer
