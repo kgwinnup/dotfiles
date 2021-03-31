@@ -33,7 +33,7 @@
               eshell-scroll-to-bottom-on-input 'all
               eshell-scroll-to-bottom-on-output 'all
               eshell-destroy-buffer-when-process-dies t
-              my-last-eshell-cmd ""
+              my-last-shell-cmd ""
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
@@ -72,7 +72,6 @@
 ;;
 ;; custom functions
 ;;
-
 (defun my-toggle-shell (the-shell)
   "toggles the shells visibility to the right split window,
 'the-shell' parameter should be the symbol name as a string for the
@@ -108,14 +107,14 @@ shell, e.g. 'shell' or 'eshell'"
     (insert cmd)
     (eshell-send-input)
     (end-of-buffer)
-    (eshell-bol)
-    (if set-last-cmd-p
-        (setq my-last-eshell-cmd cmd))))
+    (eshell-bol))
+  (if set-last-cmd-p
+      (setq my-last-shell-cmd cmd)))
 
 (defun my-send-to-shell-again ()
   "sends the previous command to the active shell"
   (interactive)
-  (my-send-to-shell my-last-eshell-cmd t))
+  (my-send-to-shell my-last-shell-cmd t))
 
 (defun my-send-to-shell-input ()
   "gets the user command and sends to the buffer containing an active shell"
@@ -181,6 +180,9 @@ shell, e.g. 'shell' or 'eshell'"
               (define-key evil-normal-state-local-map (kbd "SPC g u") 'helm-gtags-update-tags))))
 
 (use-package yaml-mode
+  :ensure t)
+
+(use-package gruvbox-theme
   :ensure t)
 
 (use-package helm-themes
