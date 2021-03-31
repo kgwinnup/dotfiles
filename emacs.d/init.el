@@ -5,6 +5,16 @@
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
 
+(setq eshell-prompt-function
+      (lambda ()
+        (let ((new-path (if (cl-search (getenv "HOME") (eshell/pwd))
+                            (concat "~" (substring (eshell/pwd) (length (getenv "HOME")) nil))
+                          (eshell/pwd)))
+              (git-name (if (magit-get-current-branch)
+                            (concat " (" (magit-get-current-branch) ")")
+                          "")))
+          (concat new-path git-name " $ "))))
+
 (setq-default ring-bell-function 'ignore
               mac-allow-anti-aliasing nil
               scroll-step 1
@@ -69,8 +79,8 @@
 shell, e.g. 'shell' or 'eshell'"
   (interactive)
   (let ((shell-string (concat "*" the-shell "*")))
+    ;; if shell exists toggle view on/off
     (if (get-buffer shell-string)
-        ;; if shell exists toggle view on/off
         (if (and (get-buffer-window shell-string))
             (delete-other-windows)
           (let ((w2 (split-window-horizontally)))
@@ -348,6 +358,11 @@ shell, e.g. 'shell' or 'eshell'"
   (setq lsp-enable-file-watchers nil)
   (setq lsp-ui-doc-enable nil)
   (setq lsp-log-io nil))
+  ;(lsp-register-client
+  ; (make-lsp-client :new-connection (lsp-tramp-connection "gopls")
+  ;                  :major-modes '(go-mode)
+  ;                  :remote? t
+  ;                  :server-id 'gopls-remote)))
 
 (use-package helm-lsp
   :ensure t
