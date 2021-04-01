@@ -33,7 +33,7 @@
               eshell-scroll-to-bottom-on-input 'all
               eshell-scroll-to-bottom-on-output 'all
               eshell-destroy-buffer-when-process-dies t
-              my-last-shell-cmd ""
+              my-last-eshell-cmd ""
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
@@ -72,6 +72,7 @@
 ;;
 ;; custom functions
 ;;
+
 (defun my-toggle-shell (the-shell)
   "toggles the shells visibility to the right split window,
 'the-shell' parameter should be the symbol name as a string for the
@@ -107,14 +108,14 @@ shell, e.g. 'shell' or 'eshell'"
     (insert cmd)
     (eshell-send-input)
     (end-of-buffer)
-    (eshell-bol))
-  (if set-last-cmd-p
-      (setq my-last-shell-cmd cmd)))
+    (eshell-bol)
+    (if set-last-cmd-p
+        (setq my-last-eshell-cmd cmd))))
 
 (defun my-send-to-shell-again ()
   "sends the previous command to the active shell"
   (interactive)
-  (my-send-to-shell my-last-shell-cmd t))
+  (my-send-to-shell my-last-eshell-cmd t))
 
 (defun my-send-to-shell-input ()
   "gets the user command and sends to the buffer containing an active shell"
@@ -180,9 +181,6 @@ shell, e.g. 'shell' or 'eshell'"
               (define-key evil-normal-state-local-map (kbd "SPC g u") 'helm-gtags-update-tags))))
 
 (use-package yaml-mode
-  :ensure t)
-
-(use-package gruvbox-theme
   :ensure t)
 
 (use-package helm-themes
@@ -486,6 +484,7 @@ shell, e.g. 'shell' or 'eshell'"
                "c l" '(lambda () (interactive) (load-file "~/.emacs.d/init.el"))
                "c k" 'describe-function
                "s s" 'ispell
+               "s r" 'ispell-region
                ;; cli integrations
                "t t" '(lambda () (interactive) (my-toggle-shell "eshell"))
                "t T" 'eshell
@@ -509,7 +508,6 @@ shell, e.g. 'shell' or 'eshell'"
                ;; magit
                "m s" 'magit
                "m b" 'magit-blame-addition
-               "m q" 'magit-blame-quit
                ;; view
                "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (load-theme 'tsdh-light) (set-face-background 'mode-line "gold")))
                "d g" (lambda () (interactive) (load-theme 'gruvbox-dark-medium))
