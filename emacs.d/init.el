@@ -472,6 +472,18 @@ shell, e.g. 'shell' or 'eshell'"
 			  (define-key evil-normal-state-local-map (kbd "SPC n s") 'next-multiframe-window)
 			  (define-key evil-normal-state-local-map (kbd "SPC n p") 'neotree-change-root))))
 
+(use-package elfeed
+  :ensure t
+  :init
+  (setq elfeed-feeds '(("https://www.lobste.rs/rss" lobsters)
+                       ("http://www.reddit.com/r/reverseengineering/.rss" reddit-re)
+                       ("http://www.reddit.com/r/bsd/.rss" reddit-bsd)
+                       ("http://www.reddit.com/r/emacs/.rss" reddit-emacs)
+                       ("http://rss.slashdot.org/Slashdot/slashdotMain" slashdot)))
+  (setq-default elfeed-search-filter "@2-days-ago +unread")
+  (setq-default elfeed-search-title-max-width 100)
+  (setq-default elfeed-search-title-min-width 100))
+
 (use-package bind-map
   :ensure t
   :init
@@ -509,6 +521,7 @@ shell, e.g. 'shell' or 'eshell'"
                ;; magit
                "m s" 'magit
                "m b" 'magit-blame-addition
+               "m l" 'elfeed
                ;; view
                "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (load-theme 'tsdh-light) (set-face-background 'mode-line "gold")))
                "d g" (lambda () (interactive) (load-theme 'gruvbox-dark-medium))
