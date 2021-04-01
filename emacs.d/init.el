@@ -203,10 +203,7 @@ shell, e.g. 'shell' or 'eshell'"
   (evil-collection-init))
 
 (use-package magit
-  :ensure t
-  :init
-  (use-package evil-magit
-    :ensure t))
+  :ensure t)
 
 (require 'ox-latex)
 (use-package org
