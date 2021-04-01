@@ -5,15 +5,19 @@
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
 
+(defun my-eshell-git-info ()
+  (if (magit-get-current-branch)
+      (propertize (concat " (" (magit-get-current-branch) ")") 'face `(:foreground "dark gray"))
+    ""))
+
+(defun my-eshell-pwd ()
+  (if (cl-search (getenv "HOME") (eshell/pwd))
+      (concat "~" (substring (eshell/pwd) (length (getenv "HOME")) nil))
+    (eshell/pwd)))
+
 (setq eshell-prompt-function
       (lambda ()
-        (let ((new-path (if (cl-search (getenv "HOME") (eshell/pwd))
-                            (concat "~" (substring (eshell/pwd) (length (getenv "HOME")) nil))
-                          (eshell/pwd)))
-              (git-name (if (magit-get-current-branch)
-                            (concat " (" (magit-get-current-branch) ")")
-                          "")))
-          (concat new-path git-name " $ "))))
+          (concat (my-eshell-pwd) (my-eshell-git-info) " $ ")))
 
 (setq-default ring-bell-function 'ignore
               mac-allow-anti-aliasing nil
