@@ -505,6 +505,7 @@ shell, e.g. 'shell' or 'eshell'"
                "v p" 'my-send-to-shell-input
                "v l" 'my-send-to-shell-again
                ;; buffer keybindings
+               "n e" 'window-swap-states
                "n t" 'neotree-toggle
                "n n" 'next-buffer
                "n s" 'next-multiframe-window 
