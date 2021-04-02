@@ -42,6 +42,7 @@
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
 
+
 (if (display-graphic-p)
     (progn
       (scroll-bar-mode -1)))
@@ -358,12 +359,13 @@ shell, e.g. 'shell' or 'eshell'"
   (setq lsp-idle-delay 0.1)
   (setq lsp-enable-file-watchers nil)
   (setq lsp-ui-doc-enable nil)
-  (setq lsp-log-io nil))
-  ;(lsp-register-client
-  ; (make-lsp-client :new-connection (lsp-tramp-connection "gopls")
-  ;                  :major-modes '(go-mode)
-  ;                  :remote? t
-  ;                  :server-id 'gopls-remote)))
+  (setq lsp-log-io nil)
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-tramp-connection "gopls")
+                    :major-modes '(go-mode)
+                    :remote? t
+                    :server-id 'gopls-remote)))
 
 (use-package helm-lsp
   :ensure t
