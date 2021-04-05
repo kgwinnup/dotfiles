@@ -486,6 +486,9 @@ shell, e.g. 'shell' or 'eshell'"
   (setq-default elfeed-search-title-max-width 100)
   (setq-default elfeed-search-title-min-width 100))
 
+(use-package writegood-mode
+  :ensure t)
+
 (use-package bind-map
   :ensure t
   :init
@@ -500,6 +503,7 @@ shell, e.g. 'shell' or 'eshell'"
                "c k" 'describe-function
                "s s" 'ispell
                "s r" 'ispell-region
+               "s g" 'writegood-mode
                ;; cli integrations
                "t t" '(lambda () (interactive) (my-toggle-shell "eshell"))
                "t T" 'eshell
