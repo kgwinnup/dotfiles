@@ -133,6 +133,7 @@ vmap <leader>a, :Tab /,<cr>
 " markdown
 "
 augroup ft_markdown
+let g:vim_markdown_folding_disabled = 1
 autocmd FileType markdown nnoremap <buffer><leader>go gx<cr>
 augroup END
 
