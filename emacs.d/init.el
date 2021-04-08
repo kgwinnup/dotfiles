@@ -7,17 +7,26 @@
 
 (defun my-eshell-git-info ()
   (if (magit-get-current-branch)
-      (propertize (concat " (" (magit-get-current-branch) ")") 'face `(:foreground "dark gray"))
+      (propertize (concat " (" (magit-get-current-branch) ")") 'face `(:foreground "#ebdbb2"))
     ""))
 
 (defun my-eshell-pwd ()
-  (if (cl-search (getenv "HOME") (eshell/pwd))
-      (concat "~" (substring (eshell/pwd) (length (getenv "HOME")) nil))
-    (eshell/pwd)))
+  (let ((ret (if (cl-search (getenv "HOME") (eshell/pwd))
+                 (concat "~" (substring (eshell/pwd) (length (getenv "HOME")) nil))
+               (eshell/pwd))))
+    (propertize ret 'face `(:foreground "#b8bb26"))))
+
+(use-package esh-autosuggest
+  :ensure t
+  :hook (eshell-mode-hook . esh-autosuggest-mode)
+  :init 
+  (add-hook 'eshell-mode-hook #'esh-autosuggest-mode))
 
 (setq eshell-prompt-function
       (lambda ()
-          (concat (my-eshell-pwd) (my-eshell-git-info) " $ ")))
+        (concat (my-eshell-pwd)
+                (my-eshell-git-info)
+                (propertize " $ " 'face `(:foreground "#ebdbb2")))))
 
 (setq-default ring-bell-function 'ignore
               mac-allow-anti-aliasing nil
@@ -201,6 +210,7 @@ shell, e.g. 'shell' or 'eshell'"
   :after evil
   :ensure t
   :config
+  (setq evil-collection-company-use-tng nil)
   (evil-collection-init))
 
 (use-package magit
@@ -359,6 +369,7 @@ shell, e.g. 'shell' or 'eshell'"
   (setq lsp-idle-delay 0.1)
   (setq lsp-enable-file-watchers nil)
   (setq lsp-ui-doc-enable nil)
+  (setq lsp-ui-sideline-enable nil)
   (setq lsp-log-io nil)
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
   (lsp-register-client
