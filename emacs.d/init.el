@@ -16,17 +16,27 @@
                (eshell/pwd))))
     (propertize ret 'face `(:foreground "#b8bb26"))))
 
-(use-package esh-autosuggest
-  :ensure t
-  :hook (eshell-mode-hook . esh-autosuggest-mode)
-  :init 
-  (add-hook 'eshell-mode-hook #'esh-autosuggest-mode))
-
 (setq eshell-prompt-function
       (lambda ()
         (concat (my-eshell-pwd)
                 (my-eshell-git-info)
                 (propertize " $ " 'face `(:foreground "#ebdbb2")))))
+
+(use-package esh-autosuggest
+  :ensure t
+  :hook (eshell-mode-hook . esh-autosuggest-mode)
+  :init
+  (add-hook 'eshell-mode-hook #'esh-autosuggest-mode))
+
+(defun eshell/scratch (&rest args)
+  (with-current-buffer "*scratch*"
+    (goto-char (point-max))
+    (insert (concat (car args) "\n"))))
+
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            ;; adds color support to eshell stdout
+            (setenv "TERM" "xterm-256color")))
 
 (setq-default ring-bell-function 'ignore
               mac-allow-anti-aliasing nil
