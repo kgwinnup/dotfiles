@@ -5,12 +5,17 @@
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
 
+;; eshell configuration
 (defun my-eshell-git-info ()
+  "returns the current git branch name as a string wrapped in a color property"
   (if (magit-get-current-branch)
       (propertize (concat " (" (magit-get-current-branch) ")") 'face `(:foreground "#ebdbb2"))
     ""))
 
+
 (defun my-eshell-pwd ()
+  "returns the current path as a string. If the path starts with the
+users $HOME directory, trim that part of and add a tilde"
   (let ((ret (if (cl-search (getenv "HOME") (eshell/pwd))
                  (concat "~" (substring (eshell/pwd) (length (getenv "HOME")) nil))
                (eshell/pwd))))
@@ -29,9 +34,13 @@
   (add-hook 'eshell-mode-hook #'esh-autosuggest-mode))
 
 (defun eshell/scratch (&rest args)
-  (with-current-buffer "*scratch*"
-    (goto-char (point-max))
-    (insert (concat (car args) "\n"))))
+  (let ((reduce (lambda (val)
+               (if (eq (type-of val) 'cons)
+                   (concat (car val) " " (reduce (cdr val)))
+                 (format "%s" val)))))
+    (with-current-buffer "*scratch*"
+      (goto-char (point-max))
+      (insert (concat (apply reduce args) "\n")))))
 
 (add-hook 'eshell-mode-hook
           (lambda ()
@@ -56,6 +65,7 @@
               eshell-scroll-to-bottom-on-input 'all
               eshell-scroll-to-bottom-on-output 'all
               eshell-destroy-buffer-when-process-dies t
+              eshell-banner-message ""
               my-last-eshell-cmd ""
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
               default-directory "~/workspace/"
@@ -74,6 +84,7 @@
 (setenv "PATH" (concat "~/go/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/.cargo/bin:" (getenv "PATH")))
+(setenv "PATH" (concat "~/.ghcup/bin:" (getenv "PATH")))
 (setenv "GTAGSLIBPATH" "~/.gtags")
 
 ;; for use when emacs it self calls out to find programs needed for
@@ -83,6 +94,7 @@
 (add-to-list 'exec-path "~/go/bin")
 (add-to-list 'exec-path "~/bin")
 (add-to-list 'exec-path "~/.cargo/bin")
+(add-to-list 'exec-path "~/.ghcup/bin")
 
 (load custom-file)
 
@@ -495,6 +507,13 @@ shell, e.g. 'shell' or 'eshell'"
 			  (define-key evil-normal-state-local-map (kbd "SPC n s") 'next-multiframe-window)
 			  (define-key evil-normal-state-local-map (kbd "SPC n p") 'neotree-change-root))))
 
+(use-package restclient
+  :ensure t
+  :init
+  (add-hook 'restclient-mode-hook
+            (lambda ()
+              (define-key evil-normal-state-local-map (kbd "SPC r r") 'restclient-http-send-current-stay-in-window))))
+
 (use-package elfeed
   :ensure t
   :init
@@ -573,3 +592,4 @@ shell, e.g. 'shell' or 'eshell'"
 (global-display-line-numbers-mode)
 (global-hl-line-mode)
 
+(eshell)
