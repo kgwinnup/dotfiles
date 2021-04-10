@@ -84,7 +84,6 @@ users $HOME directory, trim that part of and add a tilde"
 (setenv "PATH" (concat "~/go/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/.cargo/bin:" (getenv "PATH")))
-(setenv "PATH" (concat "~/.ghcup/bin:" (getenv "PATH")))
 (setenv "GTAGSLIBPATH" "~/.gtags")
 
 ;; for use when emacs it self calls out to find programs needed for
@@ -94,7 +93,6 @@ users $HOME directory, trim that part of and add a tilde"
 (add-to-list 'exec-path "~/go/bin")
 (add-to-list 'exec-path "~/bin")
 (add-to-list 'exec-path "~/.cargo/bin")
-(add-to-list 'exec-path "~/.ghcup/bin")
 
 (load custom-file)
 
