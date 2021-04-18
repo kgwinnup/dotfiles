@@ -205,13 +205,14 @@ function SendToR ()
 endfunction
 
 let R_assign = 0
-let R_in_buffer = 0
-let R_applescript = 1
-let g:R_tmux_title = get(g:, 'R_tmux_title', 'NvimR')
+let R_in_buffer = 1
+let R_applescript = 0
+let r_indent_comment_column = 0
+"let g:R_tmux_title = get(g:, 'R_tmux_title', 'NvimR')
 
-autocmd FileType r nnoremap <buffer><leader>rr :call SendToR()<cr>
-autocmd FileType r nnoremap <buffer><leader>rs :call StartR("R")<cr>
-autocmd FileType r nnoremap <buffer><leader>rk :call StopR("R")<cr>
-autocmd FileType r nnoremap <buffer><leader>rf :call SendParagraphToR("silent", "down")<cr>
+autocmd FileType r,rmd nnoremap <buffer><leader>rr :call SendToR()<cr>
+autocmd FileType r,rmd nnoremap <buffer><leader>rs :call StartR("R")<cr>
+autocmd FileType rrmd nnoremap <buffer><leader>rk :call StopR("R")<cr>
+autocmd FileType r,rmd nnoremap <buffer><leader>rf :call SendParagraphToR("silent", "down")<cr>
 augroup END
 
