@@ -204,10 +204,15 @@ function SendToR ()
     endif
 endfunction
 
+" when in the term buffer, escape should go back to normal mode
+tnoremap <Esc> <C-\><C-n>
+
 let R_assign = 0
 let R_in_buffer = 1
 let R_applescript = 0
 let r_indent_comment_column = 0
+let R_esc_term = 0
+let r_esc_term = 0
 "let g:R_tmux_title = get(g:, 'R_tmux_title', 'NvimR')
 
 autocmd FileType r,rmd nnoremap <buffer><leader>rr :call SendToR()<cr>
