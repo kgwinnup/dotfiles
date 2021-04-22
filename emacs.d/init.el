@@ -170,6 +170,10 @@ shell, e.g. 'shell' or 'eshell'"
                       :height (+ size my-font-size))
   (setq my-font-size (+ size my-font-size)))
 
+(add-hook 'eww-mode-hook
+          (lambda ()
+            (define-key evil-normal-state-local-map (kbd "SPC g p") 'eww-back-url)))
+
 (use-package web-mode
   :ensure t
   :init
@@ -384,6 +388,7 @@ shell, e.g. 'shell' or 'eshell'"
   (setq lsp-enable-file-watchers nil)
   (setq lsp-ui-doc-enable nil)
   (setq lsp-ui-sideline-enable nil)
+  (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-log-io nil)
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
   (lsp-register-client
@@ -467,7 +472,11 @@ shell, e.g. 'shell' or 'eshell'"
   (setq company-lsp-cache-candidates t)
   (setq company-lsp-async t)
   (add-to-list 'company-backends 'company-gtags)
-  (add-hook 'after-init-hook 'global-company-mode))
+  (add-hook 'after-init-hook 'global-company-mode)
+  (with-eval-after-load 'company
+    (define-key company-active-map [tab] 'company-complete-cycle-next)
+    (define-key company-active-map (kbd "TAB") 'company-complete-cycle-next)))
+
 
 ;;
 ;; neotree
@@ -562,6 +571,7 @@ shell, e.g. 'shell' or 'eshell'"
                "m s" 'magit
                "m b" 'magit-blame-addition
                "m l" 'elfeed
+               "m e" 'eww-browse-url
                "m r" 'restclient-mode
                ;; view
                "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (load-theme 'tsdh-light) (set-face-background 'mode-line "gold")))
@@ -580,8 +590,8 @@ shell, e.g. 'shell' or 'eshell'"
 
 (set-face-attribute 'default nil
                     :family "mononoki"
-                    :height my-font-size)
-                    ;:weight 'medium)
+                    :height my-font-size
+                    :weight 'medium)
 
 (global-display-line-numbers-mode)
 (global-hl-line-mode)
