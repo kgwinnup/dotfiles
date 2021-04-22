@@ -2,8 +2,8 @@
 ;; Packages and General stuff
 ;;
 (require 'package)
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                         ("elpa" . "https://elpa.gnu.org/packages/")))
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")))
+                         ;("elpa" . "https://elpa.gnu.org/packages/")))
 
 ;; eshell configuration
 (defun my-eshell-git-info ()
@@ -50,7 +50,8 @@ users $HOME directory, trim that part of and add a tilde"
               eshell-scroll-to-bottom-on-output 'all
               eshell-destroy-buffer-when-process-dies t
               eshell-banner-message ""
-              my-last-eshell-cmd ""
+              my-last-shell-cmd ""
+              shell-file-name "/usr/local/bin/fish"
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
@@ -64,6 +65,7 @@ users $HOME directory, trim that part of and add a tilde"
 
 ;; for use when running shells within emacs, this sets the path for
 ;; those shells
+(setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "/usr/local/go/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/go/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/bin:" (getenv "PATH")))
@@ -112,23 +114,14 @@ shell, e.g. 'shell' or 'eshell'"
         (select-window w1)
         (set-window-buffer w2 shell-string)))))
 
-(defun my-clear-shell ()
-  "clears the eshell buffer, does not set my-last-eshell-cmd"
-  (interactive)
-  (my-send-to-shell "clear 1"))
-
 (defun my-send-to-shell (cmd &optional set-last-cmd-p)
   (interactive)
-  (with-current-buffer "*eshell*"
-    (evil-insert-state)
-    (eshell-kill-input)
-    (end-of-buffer)
-    (insert cmd)
-    (eshell-send-input)
-    (end-of-buffer)
-    (eshell-bol)
+  (with-current-buffer "*vterm*"
+    (read-only-mode -1)
+    (vterm-send-string cmd)
+    (vterm-send-return)
     (if set-last-cmd-p
-        (setq my-last-eshell-cmd cmd))))
+        (setq my-last-shell-cmd cmd))))
 
 (eval-after-load "comint"
   '(progn
@@ -137,7 +130,7 @@ shell, e.g. 'shell' or 'eshell'"
 (defun my-send-to-shell-again ()
   "sends the previous command to the active shell"
   (interactive)
-  (my-send-to-shell my-last-eshell-cmd t))
+  (my-send-to-shell my-last-shell-cmd t))
 
 (defun my-send-to-shell-input ()
   "gets the user command and sends to the buffer containing an active shell"
@@ -173,6 +166,9 @@ shell, e.g. 'shell' or 'eshell'"
 (add-hook 'eww-mode-hook
           (lambda ()
             (define-key evil-normal-state-local-map (kbd "SPC g p") 'eww-back-url)))
+
+(use-package vterm
+  :ensure t)
 
 (use-package web-mode
   :ensure t
@@ -547,9 +543,8 @@ shell, e.g. 'shell' or 'eshell'"
                "s r" 'ispell-region
                "s g" 'writegood-mode
                ;; cli integrations
-               "t t" '(lambda () (interactive) (my-toggle-shell "eshell"))
+               "t t" '(lambda () (interactive) (my-toggle-shell "vterm"))
                "t T" 'eshell
-               "t c" 'my-clear-shell
                "v p" 'my-send-to-shell-input
                "v l" 'my-send-to-shell-again
                ;; buffer keybindings
@@ -571,7 +566,7 @@ shell, e.g. 'shell' or 'eshell'"
                "m s" 'magit
                "m b" 'magit-blame-addition
                "m l" 'elfeed
-               "m e" 'eww-browse-url
+               "m e" '(lambda () (interactive) (eww-browse-url (read-string "url: ")))
                "m r" 'restclient-mode
                ;; view
                "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (load-theme 'tsdh-light) (set-face-background 'mode-line "gold")))
