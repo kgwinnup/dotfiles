@@ -2,34 +2,9 @@
 ;; Packages and General stuff
 ;;
 (require 'package)
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")))
-                         ;("elpa" . "https://elpa.gnu.org/packages/")))
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")))
 
-;; eshell configuration
-(defun my-eshell-git-info ()
-  "returns the current git branch name as a string wrapped in a color property"
-  (if (magit-get-current-branch)
-      (propertize (concat " (" (magit-get-current-branch) ")") 'face `(:foreground "#ebdbb2"))
-    ""))
-
-(defun my-eshell-pwd ()
-  "returns the current path as a string. If the path starts with the
-users $HOME directory, trim that part of and add a tilde"
-  (let ((ret (if (cl-search (getenv "HOME") (eshell/pwd))
-                 (concat "~" (substring (eshell/pwd) (length (getenv "HOME")) nil))
-               (eshell/pwd))))
-    (propertize ret 'face `(:foreground "#b8bb26"))))
-
-(setq eshell-prompt-function
-      (lambda ()
-        (concat (my-eshell-pwd)
-                (my-eshell-git-info)
-                (propertize " $ " 'face `(:foreground "#ebdbb2")))))
-
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            ;; adds color support to eshell stdout
-            (setenv "TERM" "xterm-256color")))
 
 (setq-default ring-bell-function 'ignore
               mac-allow-anti-aliasing nil
@@ -46,22 +21,26 @@ users $HOME directory, trim that part of and add a tilde"
               auto-save-default nil
               make-backup-files nil
               shr-width 80
-              eshell-scroll-to-bottom-on-input 'all
-              eshell-scroll-to-bottom-on-output 'all
-              eshell-destroy-buffer-when-process-dies t
-              eshell-banner-message ""
               my-last-shell-cmd ""
               shell-file-name "/usr/local/bin/fish"
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
 
-
 (if (display-graphic-p)
     (progn
       (scroll-bar-mode -1)))
 
+
 (shell-command "touch ~/.emacs.d/custom.el")
+(load custom-file)
+
+;; Bootstrap `use-package`
+(package-initialize)
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(require 'use-package)
 
 ;; for use when running shells within emacs, this sets the path for
 ;; those shells
@@ -80,14 +59,6 @@ users $HOME directory, trim that part of and add a tilde"
 (add-to-list 'exec-path "~/bin")
 (add-to-list 'exec-path "~/.cargo/bin")
 
-(load custom-file)
-
-;; Bootstrap `use-package`
-(package-initialize)
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(require 'use-package)
 
 ;;
 ;; custom functions
@@ -96,7 +67,7 @@ users $HOME directory, trim that part of and add a tilde"
 (defun my-toggle-shell (the-shell)
   "toggles the shells visibility to the right split window,
 'the-shell' parameter should be the symbol name as a string for the
-shell, e.g. 'shell' or 'eshell'"
+shell"
   (interactive)
   (let ((shell-string (concat "*" the-shell "*")))
     ;; if shell exists toggle view on/off
@@ -105,7 +76,7 @@ shell, e.g. 'shell' or 'eshell'"
             (delete-other-windows)
           (let ((w2 (split-window-horizontally)))
             (set-window-buffer w2 shell-string)))
-      ;; else split the screen and create eshell
+      ;; else split the screen and create shell
       (let ((w1 (selected-window))
             (w2 (split-window-horizontally)))
         (select-window w2)
@@ -174,12 +145,6 @@ shell, e.g. 'shell' or 'eshell'"
   :ensure t
   :init
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
-
-(use-package esh-autosuggest
-  :ensure t
-  :hook (eshell-mode-hook . esh-autosuggest-mode)
-  :init
-  (add-hook 'eshell-mode-hook #'esh-autosuggest-mode))
 
 (use-package helm
   :ensure t
@@ -544,7 +509,7 @@ shell, e.g. 'shell' or 'eshell'"
                "s g" 'writegood-mode
                ;; cli integrations
                "t t" '(lambda () (interactive) (my-toggle-shell "vterm"))
-               "t T" 'eshell
+               "t T" 'vterm
                "v p" 'my-send-to-shell-input
                "v l" 'my-send-to-shell-again
                ;; buffer keybindings
