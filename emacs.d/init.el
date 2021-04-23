@@ -5,7 +5,6 @@
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
 
-
 (setq-default ring-bell-function 'ignore
               mac-allow-anti-aliasing nil
               scroll-step 1
@@ -30,7 +29,6 @@
 (if (display-graphic-p)
     (progn
       (scroll-bar-mode -1)))
-
 
 (shell-command "touch ~/.emacs.d/custom.el")
 (load custom-file)
@@ -94,10 +92,6 @@ shell"
     (if set-last-cmd-p
         (setq my-last-shell-cmd cmd))))
 
-(eval-after-load "comint"
-  '(progn
-      (setq comint-move-point-for-output 'others)))
-
 (defun my-send-to-shell-again ()
   "sends the previous command to the active shell"
   (interactive)
@@ -106,7 +100,7 @@ shell"
 (defun my-send-to-shell-input ()
   "gets the user command and sends to the buffer containing an active shell"
   (interactive)
-  (my-send-to-shell (read-string "CMD: ") t))
+  (my-send-to-shell (read-string "cmd: ") t))
 
 (defun my-start-code-block ()
   "starts a code block in org mode"
