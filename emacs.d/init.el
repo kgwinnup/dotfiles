@@ -475,9 +475,9 @@ shell"
   :init
   (setq elfeed-feeds '(("https://www.lobste.rs/rss" lobsters)
                        ("https://tilde.news/rss" tildeverse)
+                       ("feed:https://lwn.net/headlines/rss" lwn)
                        ("http://www.reddit.com/r/reverseengineering/.rss" reddit-re)
                        ("http://www.reddit.com/r/bsd/.rss" reddit-bsd)
-                       ("http://www.reddit.com/r/emacs/.rss" reddit-emacs)
                        ("http://rss.slashdot.org/Slashdot/slashdotMain" slashdot)))
   (setq-default elfeed-search-filter "@1-week-ago +unread")
   (setq-default elfeed-search-title-max-width 100)
@@ -518,6 +518,7 @@ shell"
                "n r" '(lambda () (interactive) (switch-to-buffer "*scratch*"))
                "n a" '(lambda () (interactive) (find-file "~/workspace/notes.org"))
                "n f" 'make-frame
+               "n w" 'list-buffers
                ;; general movement
                "j" 'evil-scroll-down
                "k" 'evil-scroll-up
@@ -546,8 +547,8 @@ shell"
 
 (set-face-attribute 'default nil
                     :family "mononoki"
-                    :height my-font-size
-                    :weight 'medium)
+                    :height my-font-size)
+                    ;:weight 'medium)
 
 (global-display-line-numbers-mode)
 (global-hl-line-mode)
