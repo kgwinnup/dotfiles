@@ -174,6 +174,7 @@ augroup END
 " Go
 "
 augroup ft_go
+let g:ale_completion_enabled = 0
 let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 autocmd FileType go nnoremap <buffer><leader>t :GoInfo<cr>
 autocmd FileType go nnoremap <buffer><leader>gg :GoDef<cr>

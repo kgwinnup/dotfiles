@@ -538,6 +538,8 @@ shell"
 (menu-bar-mode -1)
 (xterm-mouse-mode 1)
 (fset 'yes-or-no-p 'y-or-n-p)
+(company-tng-configure-default)
+
 ;(load-theme 'tsdh-light)
 ;(set-face-background 'mode-line "gold")
 (load-theme 'gruvbox-dark-medium)
