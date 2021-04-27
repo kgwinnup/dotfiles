@@ -130,6 +130,7 @@ shell"
 
 (add-hook 'eww-mode-hook
           (lambda ()
+            (setq shr-use-fonts nil)
             (define-key evil-normal-state-local-map (kbd "SPC g p") 'eww-back-url)))
 
 (use-package vterm
@@ -311,9 +312,17 @@ shell"
               (turn-on-orgtbl)
               (turn-on-orgstruct++))))
 
+(require 'ansi-color)
 (use-package projectile
   :ensure t
   :config
+  (defun colorize-compilation-buffer ()
+    (toggle-read-only)
+    (ansi-color-apply-on-region compilation-filter-start (point))
+    (toggle-read-only))
+  (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+  (setq compilation-buffer-name-function #'projectile-compilation-buffer-name)
+  (setq compilation-save-buffers-predicate #'projectile-current-project-buffer-p)
   (projectile-mode +1))
 
 (use-package rust-mode
@@ -506,6 +515,7 @@ shell"
                "t T" 'vterm
                "v p" 'my-send-to-shell-input
                "v l" 'my-send-to-shell-again
+               "v u" 'projectile-compile-project
                ;; buffer keybindings
                "n e" 'window-swap-states
                "n t" 'neotree-toggle
