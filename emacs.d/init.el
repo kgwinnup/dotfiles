@@ -33,6 +33,10 @@
 (shell-command "touch ~/.emacs.d/custom.el")
 (load custom-file)
 
+(eval-after-load "comint"
+  '(progn
+      (setq comint-move-point-for-output 'others)))
+
 ;; Bootstrap `use-package`
 (package-initialize)
 (unless (package-installed-p 'use-package)
