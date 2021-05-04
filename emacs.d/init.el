@@ -6,6 +6,7 @@
                          ("elpa" . "https://elpa.gnu.org/packages/")))
 
 (setq-default ring-bell-function 'ignore
+              comp-async-report-warnings-errors nil
               mac-allow-anti-aliasing nil
               scroll-step 1
               scroll-conservatively  10000
@@ -522,6 +523,7 @@ shell"
                "v u" 'projectile-compile-project
                ;; buffer keybindings
                "n e" 'window-swap-states
+               "n k" (lambda () (interactive) (mapc 'kill-buffer (buffer-list)))
                "n t" 'neotree-toggle
                "n n" 'next-buffer
                "n s" 'next-multiframe-window 
