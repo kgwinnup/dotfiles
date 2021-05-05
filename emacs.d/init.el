@@ -53,6 +53,8 @@
 (setenv "PATH" (concat "~/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/.cargo/bin:" (getenv "PATH")))
 (setenv "GTAGSLIBPATH" "~/.gtags")
+(setenv "GOPRIVATE" "gitlab.bit9.local,carbonblack.com")
+(setenv "GONOSUMDB" "*")
 
 ;; for use when emacs it self calls out to find programs needed for
 ;; various plugin features
@@ -61,6 +63,7 @@
 (add-to-list 'exec-path "~/go/bin")
 (add-to-list 'exec-path "~/bin")
 (add-to-list 'exec-path "~/.cargo/bin")
+
 
 
 ;;
@@ -487,7 +490,7 @@ shell"
 (use-package elfeed
   :ensure t
   :init
-  (setq elfeed-feeds '(("https://www.lobste.rs/rss" lobsters)
+  (setq elfeed-feeds '(("https://lobste.rs/rss" lobsters)
                        ("https://tilde.news/rss" tildeverse)
                        ("feed:https://lwn.net/headlines/rss" lwn)
                        ("http://www.reddit.com/r/reverseengineering/.rss" reddit-re)
