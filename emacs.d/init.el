@@ -141,6 +141,9 @@ shell"
             (setq shr-use-fonts nil)
             (define-key evil-normal-state-local-map (kbd "SPC g p") 'eww-back-url)))
 
+(use-package dockerfile-mode
+  :ensure t)
+
 (use-package vterm
   :ensure t)
 
@@ -336,6 +339,7 @@ shell"
 (use-package rust-mode
   :ensure t
   :config
+  (setq rust-format-on-save t)
   (add-hook 'rust-mode-hook
 			(lambda ()
               (define-key evil-normal-state-local-map (kbd "SPC g g") 'lsp-find-definition)
@@ -448,7 +452,6 @@ shell"
   (with-eval-after-load 'company
     (define-key company-active-map [tab] 'company-complete-cycle-next)
     (define-key company-active-map (kbd "TAB") 'company-complete-cycle-next)))
-
 
 ;;
 ;; neotree
