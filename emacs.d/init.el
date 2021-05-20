@@ -1,6 +1,10 @@
 ;;
 ;; Packages and General stuff
 ;;
+
+(setenv "LIBRARY_PATH" "/usr/local/opt/gcc/lib/gcc/11/gcc/x86_64-apple-darwin20/11.1.0:/usr/local/opt/gcc/lib/gcc/11:/usr/local/opt/libgccjit/lib/gcc/11")
+
+
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
@@ -52,9 +56,8 @@
 (setenv "PATH" (concat "~/go/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/.cargo/bin:" (getenv "PATH")))
+(setenv "PATH" (concat "~/.local/share/nvm/v12.22.1/bin" (getenv "PATH")))
 (setenv "GTAGSLIBPATH" "~/.gtags")
-(setenv "GOPRIVATE" "gitlab.bit9.local,carbonblack.com")
-(setenv "GONOSUMDB" "*")
 
 ;; for use when emacs it self calls out to find programs needed for
 ;; various plugin features
@@ -63,6 +66,7 @@
 (add-to-list 'exec-path "~/go/bin")
 (add-to-list 'exec-path "~/bin")
 (add-to-list 'exec-path "~/.cargo/bin")
+(add-to-list 'exec-path "~/.local/share/nvm/v12.22.1/bin")
 
 
 
