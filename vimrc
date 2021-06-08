@@ -61,6 +61,8 @@ colorscheme gruvbox
 " ale settings
 let g:ale_linters_explicit = 1 
 let g:ale_completion_enabled = 1
+let g:ale_list_window_size = 1
+let g:ale_close_preview_on_insert = 1
 set omnifunc=ale#completion#OmniFunc
 let g:ale_fixers = {
     \ 'rust': ['rustfmt']
@@ -79,10 +81,6 @@ let g:airline_powerline_fonts=1
 let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#show_buffers=1
 set laststatus=2
-
-" system python
-let g:python2_host_prog = $HOME + '/anaconda3/bin/python'
-let g:python3_host_prog = $HOME + '/anaconda3/bin/python3'
 
 " leader key
 let mapleader=" "
@@ -104,6 +102,8 @@ nnoremap <leader>ns <C-W><C-W>
 nnoremap <leader>j <C-d>
 nnoremap <leader>k <C-u>
 nnoremap <leader>= <C-w>=
+nnoremap <leader>- :res -5<cr>
+nnoremap <leader>+ :res +5<cr>
 nnoremap <leader>nt :NERDTreeToggle<cr>
 nnoremap <leader>ss :setlocal spell spelllang=en_us<cr>
 nnoremap <leader>sf :setlocal nospell<cr>
@@ -125,9 +125,9 @@ nnoremap = :FormatXML<Cr>
 nnoremap = :FormatJSON<Cr>
 
 " visual keybindings
-vmap <leader>a= :Tab /=<cr>
-vmap <leader>a: :Tab /:<cr>
-vmap <leader>a, :Tab /,<cr>
+vmap <leader>t= :Tab /=<cr>
+vmap <leader>t: :Tab /:<cr>
+vmap <leader>t, :Tab /,<cr>
 
 "
 " markdown
@@ -189,36 +189,75 @@ augroup END
 " R 
 "
 augroup ft_r
-function SendToR ()
-    let startline = line(".")
-    let save_cursor = getpos(".")
-    let line = SanitizeRLine(getline("."))
-    let i = line(".")
-    while i > 0 && line !~ "function"
-        let i -= 1
+
+function SendRFunc () 
+    let lines = []
+    let leftbracket = 0
+
+    " find first opening bracket
+    while line('.') <= line('$') 
+        let cur = getline(".")
+        execute "normal! j"
+        let lines = add(lines, cur)
+
+        if cur =~ '{$'
+            break
+        endif
     endwhile
 
-    if i == 0
-        let out = SendParagraphToR("silent", "down")
+    let leftbracket += 1
+
+    while leftbracket > 0 && line('.') <= line('$')
+        let cur = getline(".")
+        execute "normal! j"
+        let lines = add(lines, cur)
+
+        if cur =~ '}$'
+            let leftbracket -= 1
+        endif
+
+        if cur =~ '{$'
+            let leftbracket += 1
+        endif
+
+    endwhile
+
+    for line in lines
+        VimuxRunCommand(line)
+    endfor
+
+endfunction
+
+function SendRRegion() 
+    let lines = []
+
+    while line('.') <= line('$')
+        let cur = getline(".")
+        execute "normal! j"
+        let lines = add(lines, cur)
+
+        if cur =~ '^$'
+            break
+        endif
+
+    endwhile
+
+    for line in lines
+        VimuxRunCommand(line)
+    endfor
+
+endfunction
+
+function SendToR ()
+    let lines = []
+
+    if getline('.') =~ 'function' 
+        call SendRFunc() 
     else
-        let out = SendFunctionToR("silent", "down")
+        call SendRRegion()
     endif
 endfunction
 
-" when in the term buffer, escape should go back to normal mode
-tnoremap <Esc> <C-\><C-n>
-
-let R_assign = 0
-let R_in_buffer = 1
-let R_applescript = 0
-let r_indent_comment_column = 0
-let R_esc_term = 0
-let r_esc_term = 0
-"let g:R_tmux_title = get(g:, 'R_tmux_title', 'NvimR')
-
 autocmd FileType r,rmd nnoremap <buffer><leader>rr :call SendToR()<cr>
-autocmd FileType r,rmd nnoremap <buffer><leader>rs :call StartR("R")<cr>
-autocmd FileType rrmd nnoremap <buffer><leader>rk :call StopR("R")<cr>
-autocmd FileType r,rmd nnoremap <buffer><leader>rf :call SendParagraphToR("silent", "down")<cr>
 augroup END
 
