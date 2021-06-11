@@ -190,6 +190,11 @@ augroup END
 "
 augroup ft_r
 
+let R_assign = 0
+let R_in_buffer = 1
+let R_applescript = 0
+let r_indent_comment_column = 0
+
 function SendRFunc () 
     let lines = []
     let leftbracket = 0
