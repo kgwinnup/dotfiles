@@ -256,7 +256,7 @@ endfunction
 function SendToR ()
     let lines = []
 
-    if getline('.') =~ 'function' 
+    if getline('.') =~ 'function' || getline('.') =~ 'for'
         call SendRFunc() 
     else
         call SendRRegion()
