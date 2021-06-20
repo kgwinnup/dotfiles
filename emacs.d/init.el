@@ -2,8 +2,7 @@
 ;; Packages and General stuff
 ;;
 
-(setenv "LIBRARY_PATH" "/usr/local/opt/gcc/lib/gcc/11/gcc/x86_64-apple-darwin20/11.1.0:/usr/local/opt/gcc/lib/gcc/11:/usr/local/opt/libgccjit/lib/gcc/11")
-
+;(setenv "LIBRARY_PATH" "/usr/local/opt/gcc/lib/gcc/11/gcc/x86_64-apple-darwin20/11.1.0:/usr/local/opt/gcc/lib/gcc/11:/usr/local/opt/libgccjit/lib/gcc/11")
 
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
@@ -349,7 +348,7 @@ shell"
               (define-key evil-normal-state-local-map (kbd "SPC g g") 'lsp-find-definition)
               (define-key evil-normal-state-local-map (kbd "SPC g p") 'pop-tag-mark)
               (define-key evil-normal-state-local-map (kbd "SPC g l") 'lsp-find-references)
-              (define-key evil-normal-state-local-map (kbd "SPC g d") 'lsp-describe-thing-at-point))))
+              (define-key evil-normal-state-local-map (kbd "SPC g i") 'lsp-describe-thing-at-point))))
 
 (use-package lsp-ui
   :ensure t
@@ -391,7 +390,7 @@ shell"
               (define-key evil-normal-state-local-map (kbd "SPC g g") 'lsp-find-definition)
               (define-key evil-normal-state-local-map (kbd "SPC g p") 'pop-tag-mark)
               (define-key evil-normal-state-local-map (kbd "SPC g l") 'lsp-find-references)
-              (define-key evil-normal-state-local-map (kbd "SPC g d") 'lsp-describe-thing-at-point)
+              (define-key evil-normal-state-local-map (kbd "SPC g i") 'lsp-describe-thing-at-point)
 			  (add-hook 'before-save-hook 'gofmt-before-save nil t))))
 
 (use-package poly-markdown
