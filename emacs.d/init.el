@@ -1,14 +1,22 @@
 ;;
-;; Packages and General stuff
+;; Packages and setup stuff
 ;;
-
-;(setenv "LIBRARY_PATH" "/usr/local/opt/gcc/lib/gcc/11/gcc/x86_64-apple-darwin20/11.1.0:/usr/local/opt/gcc/lib/gcc/11:/usr/local/opt/libgccjit/lib/gcc/11")
 
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
+(package-initialize)
 
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+(require 'use-package)
+
+(setq use-package-always-ensure t)
+
+;; some basic global settings
 (setq-default ring-bell-function 'ignore
+              require-final-newline t
+              warning-minimum-level :emergency
               comp-async-report-warnings-errors nil
               mac-allow-anti-aliasing nil
               scroll-step 1
@@ -30,6 +38,15 @@
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
 
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(xterm-mouse-mode 1)
+(fset 'yes-or-no-p 'y-or-n-p)
+(company-tng-configure-default)
+
+(global-display-line-numbers-mode)
+(global-hl-line-mode)
+
 (if (display-graphic-p)
     (progn
       (scroll-bar-mode -1)))
@@ -37,16 +54,17 @@
 (shell-command "touch ~/.emacs.d/custom.el")
 (load custom-file)
 
+;; this is for vterm and R shells, will move cursor to bottom of
+;; buffer after sending command
 (eval-after-load "comint"
   '(progn
-      (setq comint-move-point-for-output 'others)))
+     (setq comint-move-point-for-output 'others)))
 
-;; Bootstrap `use-package`
-(package-initialize)
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(require 'use-package)
+;; eww-mode browser keybinding
+(add-hook 'eww-mode-hook
+          (lambda ()
+            (setq shr-use-fonts nil)
+            (define-key evil-normal-state-local-map (kbd "SPC g p") 'eww-back-url)))
 
 ;; for use when running shells within emacs, this sets the path for
 ;; those shells
@@ -68,9 +86,68 @@
 (add-to-list 'exec-path "~/.local/share/nvm/v12.22.1/bin")
 
 
+;;
+;; eshell 
+;;
+
+(defun my-eshell-git-info ()
+  (if (magit-get-current-branch)
+      (propertize (concat " (" (magit-get-current-branch) ")") 'face `(:foreground "#ebdbb2"))
+    ""))
+
+(defun my-eshell-pwd ()
+  (let ((ret (if (cl-search (getenv "HOME") (eshell/pwd))
+                 (concat "~" (substring (eshell/pwd) (length (getenv "HOME")) nil))
+               (eshell/pwd))))
+    (propertize ret 'face `(:foreground "#b8bb26"))))
+
+(setq eshell-prompt-function
+      (lambda ()
+        (concat (my-eshell-pwd)
+                (my-eshell-git-info)
+                (propertize " $ " 'face `(:foreground "#ebdbb2")))))
+
+(defun my-clear-eshell ()
+  "clears the eshell buffer, does not set my-last-eshell-cmd"
+  (interactive)
+  (my-send-to-eshell "clear 1"))
+
+(defun my-send-to-eshell (cmd &optional set-last-cmd-p)
+  (interactive)
+  (with-current-buffer "*eshell*"
+    (evil-insert-state)
+    (eshell-kill-input)
+    (end-of-buffer)
+    (insert cmd)
+    (eshell-send-input)
+    (end-of-buffer)
+    (eshell-bol)
+    (if set-last-cmd-p
+        (setq my-last-shell-cmd cmd))))
+
+(defun my-send-to-eshell-again ()
+  "sends the previous command to the active shell"
+  (interactive)
+  (my-send-to-eshell my-last-shell-cmd t))
+
+(defun my-send-to-eshell-input ()
+  "gets the user command and sends to the buffer containing an active shell"
+  (interactive)
+  (my-send-to-eshell (read-string "CMD: ") t))
+
+(use-package esh-autosuggest
+  :ensure t
+  :hook (eshell-mode-hook . esh-autosuggest-mode)
+  :init
+  (add-hook 'eshell-mode-hook #'esh-autosuggest-mode))
+
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            ;; adds color support to eshell stdout
+            (setenv "TERM" "xterm-256color")))
 
 ;;
-;; custom functions
+;; general shell functions
 ;;
 
 (defun my-toggle-shell (the-shell)
@@ -113,6 +190,10 @@ shell"
   (interactive)
   (my-send-to-shell (read-string "cmd: ") t))
 
+;;
+;; org-mode functions 
+;;
+
 (defun my-start-code-block ()
   "starts a code block in org mode"
   (interactive)
@@ -139,13 +220,10 @@ shell"
                       :height (+ size my-font-size))
   (setq my-font-size (+ size my-font-size)))
 
-(add-hook 'eww-mode-hook
-          (lambda ()
-            (setq shr-use-fonts nil)
-            (define-key evil-normal-state-local-map (kbd "SPC g p") 'eww-back-url)))
 
 (use-package dockerfile-mode
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package vterm
   :ensure t)
@@ -183,7 +261,8 @@ shell"
               (define-key evil-normal-state-local-map (kbd "SPC g u") 'helm-gtags-update-tags))))
 
 (use-package yaml-mode
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package helm-themes
   :ensure t)
@@ -315,6 +394,7 @@ shell"
 
 (use-package markdown-mode
   :ensure t
+  :defer t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
@@ -343,6 +423,7 @@ shell"
   :ensure t
   :config
   (setq rust-format-on-save t)
+  :init
   (add-hook 'rust-mode-hook
 			(lambda ()
               (define-key evil-normal-state-local-map (kbd "SPC g g") 'lsp-find-definition)
@@ -369,6 +450,7 @@ shell"
   (setq lsp-ui-sideline-enable nil)
   (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-log-io nil)
+  :init 
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
   (lsp-register-client
    (make-lsp-client :new-connection (lsp-tramp-connection "gopls")
@@ -383,7 +465,7 @@ shell"
 (use-package go-mode
   :ensure t
   :mode "\\*\\.go"
-  :config
+  :init
   (add-hook 'go-mode-hook
 			(lambda ()
 			  (setq gofmt-command "goimports")
@@ -472,9 +554,10 @@ shell"
 
 (use-package neotree
   :ensure t
-  :init
+  :config
   (setq neo-theme 'arrow)
   (setq neo-window-fixed-size nil)
+  :init
   (display-line-numbers-mode -1)
   (add-hook 'neotree-mode-hook
 			(lambda ()
@@ -495,7 +578,7 @@ shell"
 
 (use-package elfeed
   :ensure t
-  :init
+  :config
   (setq elfeed-feeds '(("https://lobste.rs/rss" lobsters)
                        ("https://tilde.news/rss" tildeverse)
                        ("feed:https://lwn.net/headlines/rss" lwn)
@@ -525,10 +608,12 @@ shell"
                "s r" 'ispell-region
                "s g" 'writegood-mode
                ;; cli integrations
-               "t t" '(lambda () (interactive) (my-toggle-shell "vterm"))
-               "t T" 'vterm
-               "v p" 'my-send-to-shell-input
-               "v l" 'my-send-to-shell-again
+               "t t" '(lambda () (interactive) (my-toggle-shell "eshell"))
+               ;;"t t" '(lambda () (interactive) (my-toggle-shell "vterm"))
+               "t T" 'eshell
+               ;;"t T" 'vterm
+               "v p" 'my-send-to-eshell-input
+               "v l" 'my-send-to-eshell-again
                "v u" 'projectile-compile-project
                ;; buffer keybindings
                "n e" 'window-swap-states
@@ -560,12 +645,6 @@ shell"
                "=" (lambda () (interactive) (my-global-font-size 10))
                "-" (lambda () (interactive) (my-global-font-size -10)))))
 
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(xterm-mouse-mode 1)
-(fset 'yes-or-no-p 'y-or-n-p)
-(company-tng-configure-default)
-
 ;(load-theme 'tsdh-light)
 ;(set-face-background 'mode-line "gold")
 (load-theme 'gruvbox-dark-medium)
@@ -574,7 +653,3 @@ shell"
                     :family "mononoki"
                     :height my-font-size)
                     ;:weight 'medium)
-
-(global-display-line-numbers-mode)
-(global-hl-line-mode)
-
