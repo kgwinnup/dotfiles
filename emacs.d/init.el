@@ -13,6 +13,25 @@
 
 (setq use-package-always-ensure t)
 
+;; for use when running shells within emacs, this sets the path for
+;; those shells
+(setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH")))
+(setenv "PATH" (concat "/usr/local/go/bin:" (getenv "PATH")))
+(setenv "PATH" (concat "~/go/bin:" (getenv "PATH")))
+(setenv "PATH" (concat "~/bin:" (getenv "PATH")))
+(setenv "PATH" (concat "~/.cargo/bin:" (getenv "PATH")))
+(setenv "PATH" (concat "~/.local/share/nvm/v12.22.1/bin" (getenv "PATH")))
+(setenv "GTAGSLIBPATH" "~/.gtags")
+
+;; for use when emacs it self calls out to find programs needed for
+;; various plugin features
+(add-to-list 'exec-path "/usr/local/go/bin")
+(add-to-list 'exec-path "/usr/local/bin")
+(add-to-list 'exec-path "~/go/bin")
+(add-to-list 'exec-path "~/bin")
+(add-to-list 'exec-path "~/.cargo/bin")
+(add-to-list 'exec-path "~/.local/share/nvm/v12.22.1/bin")
+
 ;; some basic global settings
 (setq-default ring-bell-function 'ignore
               require-final-newline t
@@ -42,7 +61,6 @@
 (menu-bar-mode -1)
 (xterm-mouse-mode 1)
 (fset 'yes-or-no-p 'y-or-n-p)
-(company-tng-configure-default)
 
 (global-display-line-numbers-mode)
 (global-hl-line-mode)
@@ -66,90 +84,10 @@
             (setq shr-use-fonts nil)
             (define-key evil-normal-state-local-map (kbd "SPC g p") 'eww-back-url)))
 
-;; for use when running shells within emacs, this sets the path for
-;; those shells
-(setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH")))
-(setenv "PATH" (concat "/usr/local/go/bin:" (getenv "PATH")))
-(setenv "PATH" (concat "~/go/bin:" (getenv "PATH")))
-(setenv "PATH" (concat "~/bin:" (getenv "PATH")))
-(setenv "PATH" (concat "~/.cargo/bin:" (getenv "PATH")))
-(setenv "PATH" (concat "~/.local/share/nvm/v12.22.1/bin" (getenv "PATH")))
-(setenv "GTAGSLIBPATH" "~/.gtags")
-
-;; for use when emacs it self calls out to find programs needed for
-;; various plugin features
-(add-to-list 'exec-path "/usr/local/go/bin")
-(add-to-list 'exec-path "/usr/local/bin")
-(add-to-list 'exec-path "~/go/bin")
-(add-to-list 'exec-path "~/bin")
-(add-to-list 'exec-path "~/.cargo/bin")
-(add-to-list 'exec-path "~/.local/share/nvm/v12.22.1/bin")
-
-
-;;
-;; eshell 
-;;
-
-(defun my-eshell-git-info ()
-  (if (magit-get-current-branch)
-      (propertize (concat " (" (magit-get-current-branch) ")") 'face `(:foreground "#ebdbb2"))
-    ""))
-
-(defun my-eshell-pwd ()
-  (let ((ret (if (cl-search (getenv "HOME") (eshell/pwd))
-                 (concat "~" (substring (eshell/pwd) (length (getenv "HOME")) nil))
-               (eshell/pwd))))
-    (propertize ret 'face `(:foreground "#b8bb26"))))
-
-(setq eshell-prompt-function
-      (lambda ()
-        (concat (my-eshell-pwd)
-                (my-eshell-git-info)
-                (propertize " $ " 'face `(:foreground "#ebdbb2")))))
-
-(defun my-clear-eshell ()
-  "clears the eshell buffer, does not set my-last-eshell-cmd"
-  (interactive)
-  (my-send-to-eshell "clear 1"))
-
-(defun my-send-to-eshell (cmd &optional set-last-cmd-p)
-  (interactive)
-  (with-current-buffer "*eshell*"
-    (evil-insert-state)
-    (eshell-kill-input)
-    (end-of-buffer)
-    (insert cmd)
-    (eshell-send-input)
-    (end-of-buffer)
-    (eshell-bol)
-    (if set-last-cmd-p
-        (setq my-last-shell-cmd cmd))))
-
-(defun my-send-to-eshell-again ()
-  "sends the previous command to the active shell"
-  (interactive)
-  (my-send-to-eshell my-last-shell-cmd t))
-
-(defun my-send-to-eshell-input ()
-  "gets the user command and sends to the buffer containing an active shell"
-  (interactive)
-  (my-send-to-eshell (read-string "CMD: ") t))
-
-(use-package esh-autosuggest
-  :ensure t
-  :hook (eshell-mode-hook . esh-autosuggest-mode)
-  :init
-  (add-hook 'eshell-mode-hook #'esh-autosuggest-mode))
-
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            ;; adds color support to eshell stdout
-            (setenv "TERM" "xterm-256color")))
 
 ;;
 ;; general shell functions
 ;;
-
 (defun my-toggle-shell (the-shell)
   "toggles the shells visibility to the right split window,
 'the-shell' parameter should be the symbol name as a string for the
@@ -197,7 +135,7 @@ shell"
 (defun my-start-code-block ()
   "starts a code block in org mode"
   (interactive)
-  (insert "#+BEGIN_SRC\n\n#+END_SRC")
+  (insert "#+begin_src\n\n#+end_src")
   (previous-line)
   (previous-line))
 
@@ -277,7 +215,6 @@ shell"
   :after evil
   :ensure t
   :config
-  (setq evil-collection-company-use-tng nil)
   (evil-collection-init))
 
 (use-package magit
@@ -287,6 +224,10 @@ shell"
 (use-package org
   :ensure t
   :init
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((R . t)))
+  (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
   (use-package ox-gfm
     :ensure t)
   (use-package org-present
@@ -318,7 +259,7 @@ shell"
             ("doing" . "lime green")
             ("backlog" . "dim gray")))
     (setq org-todo-keywords
-          '((sequence "project" "notes" "mgmt" "review" "todo" "doing" "backlog")))
+          '((sequence "project" "notes" "mgmt" "todo" "doing" "backlog")))
     (setq org-latex-create-formula-image-program 'dvipng)
     (setq org-preview-latex-default-process 'dvipng)
     (eval-after-load "org-present"
@@ -489,39 +430,31 @@ shell"
 (use-package js2-mode
   :ensure t)
 
+(defun my-ess-toggle-R ()
+  (interactive)
+  (let ((name (concat "*R:" (projectile-project-name) "*")))
+    (if (get-buffer name)
+        (if (and (get-buffer-window name))
+            (delete-other-windows)
+          (let ((w2 (split-window-horizontally)))
+            (set-window-buffer w2 name))))))
+
 (use-package ess
   :ensure t
   :mode (("\\*\\.R" . ess-site)
          ("\\*\\.Rmd" . ess-site))
   :commands R
   :hook (ess-mode-hook . subword-mode)
-  :defer t
-  :init
-  (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+R-mode))
+  :config
   (setq ess-ask-for-ess-directory nil)
   (setq ess-local-process-name "R")
   (setq scroll-down-aggressively 0.01)
   (setq ess-fancy-comments nil)
-  (defun my-ess-start-R ()
-    (interactive)
-    (if (not (get-process "R"))
-    ;(if (not (member "*R*" (mapcar (function buffer-name) (buffer-list))))
-        (progn
-          (setq w1 (selected-window))
-          (setq w2 (split-window-horizontally))
-          (R)
-          (display-line-numbers-mode -1)
-          (set-window-buffer w2 "*R*")
-          (select-window w1))
-      (if (and (get-buffer-window "*R*"))
-          (delete-other-windows)
-        (progn (let ((w1 (selected-window))
-                     (w2 (split-window-horizontally)))
-                 (set-window-buffer w2 "*R*")
-                 (selecte-window w1))))))
+  :init
+  (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+R-mode))
   (add-hook 'ess-mode-hook
             (lambda ()
-              (define-key evil-normal-state-local-map (kbd "SPC r s") 'my-ess-start-R)
+              (define-key evil-normal-state-local-map (kbd "SPC r s") 'my-ess-toggle-R)
               (define-key evil-normal-state-local-map (kbd "SPC r r") (lambda () (interactive) (ess-eval-function-or-paragraph-and-step))))))
 
 (use-package company
@@ -533,10 +466,11 @@ shell"
   (setq company-lsp-cache-candidates t)
   (setq company-lsp-async t)
   (add-to-list 'company-backends 'company-gtags)
-  (add-hook 'after-init-hook 'global-company-mode)
-  (with-eval-after-load 'company
-    (define-key company-active-map [tab] 'company-complete-cycle-next)
-    (define-key company-active-map (kbd "TAB") 'company-complete-cycle-next)))
+  (add-hook 'after-init-hook 'global-company-mode))
+  ;;(setq evil-collection-company-use-tng nil)
+  ;(with-eval-after-load 'company
+  ;  (define-key company-active-map [tab] 'company-complete-cycle-next)
+  ;  (define-key company-active-map (kbd "TAB") 'company-complete-cycle-next)))
 
 ;;
 ;; neotree
@@ -608,12 +542,12 @@ shell"
                "s r" 'ispell-region
                "s g" 'writegood-mode
                ;; cli integrations
-               "t t" '(lambda () (interactive) (my-toggle-shell "eshell"))
+               "t t" '(lambda () (interactive) (my-toggle-shell "vterm"))
                ;;"t t" '(lambda () (interactive) (my-toggle-shell "vterm"))
-               "t T" 'eshell
+               "t T" 'vterm
                ;;"t T" 'vterm
-               "v p" 'my-send-to-eshell-input
-               "v l" 'my-send-to-eshell-again
+               "v p" 'my-send-to-shell-input
+               "v l" 'my-send-to-shell-again
                "v u" 'projectile-compile-project
                ;; buffer keybindings
                "n e" 'window-swap-states
@@ -653,3 +587,5 @@ shell"
                     :family "mononoki"
                     :height my-font-size)
                     ;:weight 'medium)
+
+
