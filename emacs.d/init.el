@@ -86,6 +86,63 @@
 
 
 ;;
+;; eshell 
+;;
+
+(defun my-eshell-git-info ()
+  (if (magit-get-current-branch)
+      (propertize (concat " (" (magit-get-current-branch) ")") 'face `(:foreground "#ebdbb2"))
+    ""))
+
+(defun my-eshell-pwd ()
+  (let ((ret (if (cl-search (getenv "HOME") (eshell/pwd))
+                 (concat "~" (substring (eshell/pwd) (length (getenv "HOME")) nil))
+               (eshell/pwd))))
+    (propertize ret 'face `(:foreground "#b8bb26"))))
+
+(setq eshell-prompt-function
+      (lambda ()
+        (concat (my-eshell-pwd)
+                (my-eshell-git-info)
+                (propertize " $ " 'face `(:foreground "#ebdbb2")))))
+
+(defun my-clear-eshell ()
+  "clears the eshell buffer, does not set my-last-eshell-cmd"
+  (interactive)
+  (my-send-to-eshell "clear 1"))
+
+(defun my-send-to-eshell (cmd &optional set-last-cmd-p)
+  (interactive)
+  (with-current-buffer "*eshell*"
+    (evil-insert-state)
+    (eshell-kill-input)
+    (end-of-buffer)
+    (insert cmd)
+    (eshell-send-input)
+    (end-of-buffer)
+    (eshell-bol)
+    (if set-last-cmd-p
+        (setq my-last-shell-cmd cmd))))
+
+(defun my-send-to-eshell-again ()
+  "sends the previous command to the active shell"
+  (interactive)
+  (my-send-to-eshell my-last-shell-cmd t))
+
+(defun my-send-to-eshell-input ()
+  "gets the user command and sends to the buffer containing an active shell"
+  (interactive)
+  (my-send-to-eshell (read-string "CMD: ") t))
+
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (add-to-list 'eshell-visual-commands "ssh")
+            (add-to-list 'eshell-visual-subcommands '("docker" "attach"))
+            (add-to-list 'eshell-visual-subcommands '("git" "log"))
+            ;; adds color support to eshell stdout
+            (setenv "TERM" "xterm-256color")))
+
+;;
 ;; general shell functions
 ;;
 (defun my-toggle-shell (the-shell)
@@ -151,7 +208,7 @@ shell"
   (insert ":DATE: ")
   (org-insert-time-stamp (current-time)))
 
-(setq my-font-size 150)
+(setq my-font-size 170)
 (defun my-global-font-size (size)
   (interactive)
   (set-face-attribute 'default nil
@@ -176,7 +233,7 @@ shell"
   :init
   (global-set-key (kbd "M-x") 'helm-M-x)
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
-  :config
+    :config
   (setq helm-boring-buffer-regexp-list
       (quote
        (  "\\Minibuf.+\\*"
@@ -465,9 +522,10 @@ shell"
   (setq company-minimum-prefix-length 1)
   (setq company-lsp-cache-candidates t)
   (setq company-lsp-async t)
+  ;(setq evil-collection-company-use-tng nil)
+  (define-key company-active-map (kbd "C-SPC") 'company-complete-selection)
   (add-to-list 'company-backends 'company-gtags)
   (add-hook 'after-init-hook 'global-company-mode))
-  ;;(setq evil-collection-company-use-tng nil)
   ;(with-eval-after-load 'company
   ;  (define-key company-active-map [tab] 'company-complete-cycle-next)
   ;  (define-key company-active-map (kbd "TAB") 'company-complete-cycle-next)))
@@ -542,12 +600,14 @@ shell"
                "s r" 'ispell-region
                "s g" 'writegood-mode
                ;; cli integrations
-               "t t" '(lambda () (interactive) (my-toggle-shell "vterm"))
-               ;;"t t" '(lambda () (interactive) (my-toggle-shell "vterm"))
-               "t T" 'vterm
-               ;;"t T" 'vterm
-               "v p" 'my-send-to-shell-input
-               "v l" 'my-send-to-shell-again
+               ;"t t" '(lambda () (interactive) (my-toggle-shell "vterm"))
+               ;"t T" 'vterm
+               ;"v p" 'my-send-to-shell-input
+               ;"v l" 'my-send-to-shell-again
+               "t t" '(lambda () (interactive) (my-toggle-shell "eshell"))
+               "t T" 'eshell
+               "v p" 'my-send-to-eshell-input
+               "v l" 'my-send-to-eshell-again
                "v u" 'projectile-compile-project
                ;; buffer keybindings
                "n e" 'window-swap-states
@@ -573,19 +633,18 @@ shell"
                "m e" '(lambda () (interactive) (eww-browse-url (read-string "url: ")))
                "m r" 'restclient-mode
                ;; view
-               "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-medium) (load-theme 'tsdh-light) (set-face-background 'mode-line "gold")))
-               "d g" (lambda () (interactive) (load-theme 'gruvbox-dark-medium))
+               "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-hard) (load-theme 'tsdh-light) (set-face-background 'mode-line "gold")))
+               "d g" (lambda () (interactive) (load-theme 'gruvbox-dark-hard))
                "d f" (lambda () (interactive) (toggle-frame-fullscreen))
                "=" (lambda () (interactive) (my-global-font-size 10))
                "-" (lambda () (interactive) (my-global-font-size -10)))))
 
 ;(load-theme 'tsdh-light)
 ;(set-face-background 'mode-line "gold")
-(load-theme 'gruvbox-dark-medium)
+(load-theme 'gruvbox-dark-hard)
 
 (set-face-attribute 'default nil
                     :family "mononoki"
                     :height my-font-size)
                     ;:weight 'medium)
-
 
