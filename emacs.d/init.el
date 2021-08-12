@@ -574,8 +574,6 @@ shell"
   (setq elfeed-feeds '(("https://lobste.rs/rss" lobsters)
                        ("https://tilde.news/rss" tildeverse)
                        ("feed:https://lwn.net/headlines/rss" lwn)
-                       ("http://www.reddit.com/r/reverseengineering/.rss" reddit-re)
-                       ("http://www.reddit.com/r/bsd/.rss" reddit-bsd)
                        ("http://rss.slashdot.org/Slashdot/slashdotMain" slashdot)))
   (setq-default elfeed-search-filter "@1-week-ago +unread")
   (setq-default elfeed-search-title-max-width 100)
