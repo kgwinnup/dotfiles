@@ -598,14 +598,14 @@ shell"
                "s r" 'ispell-region
                "s g" 'writegood-mode
                ;; cli integrations
-               ;"t t" '(lambda () (interactive) (my-toggle-shell "vterm"))
-               ;"t T" 'vterm
-               ;"v p" 'my-send-to-shell-input
-               ;"v l" 'my-send-to-shell-again
-               "t t" '(lambda () (interactive) (my-toggle-shell "eshell"))
-               "t T" 'eshell
-               "v p" 'my-send-to-eshell-input
-               "v l" 'my-send-to-eshell-again
+               "t t" '(lambda () (interactive) (my-toggle-shell "vterm"))
+               "t T" 'vterm
+               "v p" 'my-send-to-shell-input
+               "v l" 'my-send-to-shell-again
+               ;"t t" '(lambda () (interactive) (my-toggle-shell "eshell"))
+               ;"t T" 'eshell
+               ;"v p" 'my-send-to-eshell-input
+               ;"v l" 'my-send-to-eshell-again
                "v u" 'projectile-compile-project
                ;; buffer keybindings
                "n e" 'window-swap-states
