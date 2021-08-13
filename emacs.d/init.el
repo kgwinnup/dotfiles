@@ -72,6 +72,8 @@
 (shell-command "touch ~/.emacs.d/custom.el")
 (load custom-file)
 
+(load "~/.emacs.d/llvm-mode.el")
+
 ;; this is for vterm and R shells, will move cursor to bottom of
 ;; buffer after sending command
 (eval-after-load "comint"
@@ -136,9 +138,13 @@
 
 (add-hook 'eshell-mode-hook
           (lambda ()
+            (define-key company-active-map (kbd "RET") nil)
             (add-to-list 'eshell-visual-commands "ssh")
+            (add-to-list 'eshell-visual-commands "man")
             (add-to-list 'eshell-visual-subcommands '("docker" "attach"))
             (add-to-list 'eshell-visual-subcommands '("git" "log"))
+            (add-to-list 'eshell-visual-subcommands '("git" "status"))
+            (add-to-list 'eshell-visual-subcommands '("git" "diff"))
             ;; adds color support to eshell stdout
             (setenv "TERM" "xterm-256color")))
 
@@ -165,25 +171,6 @@ shell"
         (display-line-numbers-mode -1)
         (select-window w1)
         (set-window-buffer w2 shell-string)))))
-
-(defun my-send-to-shell (cmd &optional set-last-cmd-p)
-  (interactive)
-  (with-current-buffer "*vterm*"
-    (read-only-mode -1)
-    (vterm-send-string cmd)
-    (vterm-send-return)
-    (if set-last-cmd-p
-        (setq my-last-shell-cmd cmd))))
-
-(defun my-send-to-shell-again ()
-  "sends the previous command to the active shell"
-  (interactive)
-  (my-send-to-shell my-last-shell-cmd t))
-
-(defun my-send-to-shell-input ()
-  "gets the user command and sends to the buffer containing an active shell"
-  (interactive)
-  (my-send-to-shell (read-string "cmd: ") t))
 
 ;;
 ;; org-mode functions 
@@ -283,7 +270,10 @@ shell"
   :init
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((R . t)))
+   '(
+     (R . t)
+     (shell . t)
+     ))
   (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
   (use-package ox-gfm
     :ensure t)
@@ -338,57 +328,7 @@ shell"
                      (org-present-small)
                      (org-remove-inline-images)
                      (org-present-show-cursor)
-                     (org-present-read-write)))))
-    '(org-preview-latex-process-alist
-      (quote
-       ((dvipng :programs ("lualatex" "dvipng")
-                :description "dvi > png"
-                :message "you need to install the programs: latex and dvipng."
-                :image-input-type "dvi"
-                :image-output-type "png"
-                :image-size-adjust (1.0 . 1.0)
-                :latex-compiler ("lualatex -output-format dvi -interaction nonstopmode -output-directory %o %f")
-                :image-converter ("dvipng -fg %F -bg %B -D %D -T tight -o %O %f"))
-        (dvisvgm :programs ("latex" "dvisvgm")
-                 :description "dvi > svg"
-                 :message "you need to install the programs: latex and dvisvgm."
-                 :use-xcolor t
-                 :image-input-type "xdv"
-                 :image-output-type "svg"
-                 :image-size-adjust (1.7 . 1.5)
-                 :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
-                 :image-converter ("dvisvgm %f -n -b min -c %S -o %O"))
-        (imagemagick :programs ("latex" "convert")
-                     :description "pdf > png"
-                     :message "you need to install the programs: latex and imagemagick."
-                     :use-xcolor t
-                     :image-input-type "pdf"
-                     :image-output-type "png"
-                     :image-size-adjust (1.0 . 1.0)
-                     :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
-                     :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))))
-    (add-to-list 'org-latex-classes
-                 '("koma-article2" "\\documentclass[times,11pt,letterpaper,twopage,parskip=half-,headings=small,booktabs,longtable,DIV=15]{scrartcl}
-                    \\usepackage[utf8]{inputenc}
-                    \\usepackage[T1]{fontenc}
-                    \\usepackage[margin=1in]{geometry}
-                    \\usepackage{longtable}
-                    \\usepackage{wrapfig}
-                    \\usepackage{rotating}
-                    \\usepackage[normalem]{ulem}
-                    \\usepackage{amsmath}
-                    \\usepackage{textcomp}
-                    \\usepackage{amssymb}
-                    \\usepackage{capt-of}
-                    \\usepackage[style=authortitle-ibid,sortcites=true,sorting=nyt,backend=biber]{biblatex}
-                    \\usepackage{xurl}
-                    \\usepackage[colorlinks=true,urlcolor=blue,citecolor=blue,breaklinks=true]{hyperref}
-                    [NO-DEFAULT-PACKAGES]"
-                ("\\section{%s}" . "\\section*{%s}")
-                ("\\subsection{%s}" . "\\subsection*{%s}")
-                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+                     (org-present-read-write))))))
 
 (use-package markdown-mode
   :ensure t
@@ -524,6 +464,7 @@ shell"
   (setq company-lsp-async t)
   ;(setq evil-collection-company-use-tng nil)
   (define-key company-active-map (kbd "C-SPC") 'company-complete-selection)
+  (define-key company-active-map (kbd "<tab>") 'company-select-next)
   (add-to-list 'company-backends 'company-gtags)
   (add-hook 'after-init-hook 'global-company-mode))
   ;(with-eval-after-load 'company
@@ -598,14 +539,10 @@ shell"
                "s r" 'ispell-region
                "s g" 'writegood-mode
                ;; cli integrations
-               "t t" '(lambda () (interactive) (my-toggle-shell "vterm"))
-               "t T" 'vterm
-               "v p" 'my-send-to-shell-input
-               "v l" 'my-send-to-shell-again
-               ;"t t" '(lambda () (interactive) (my-toggle-shell "eshell"))
-               ;"t T" 'eshell
-               ;"v p" 'my-send-to-eshell-input
-               ;"v l" 'my-send-to-eshell-again
+               "t t" '(lambda () (interactive) (my-toggle-shell "eshell"))
+               "t T" 'eshell
+               "v p" 'my-send-to-eshell-input
+               "v l" 'my-send-to-eshell-again
                "v u" 'projectile-compile-project
                ;; buffer keybindings
                "n e" 'window-swap-states
@@ -634,12 +571,13 @@ shell"
                "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-hard) (load-theme 'tsdh-light) (set-face-background 'mode-line "gold")))
                "d g" (lambda () (interactive) (load-theme 'gruvbox-dark-hard))
                "d f" (lambda () (interactive) (toggle-frame-fullscreen))
+               "|" 'split-window-right
                "=" (lambda () (interactive) (my-global-font-size 10))
                "-" (lambda () (interactive) (my-global-font-size -10)))))
 
 ;(load-theme 'tsdh-light)
 ;(set-face-background 'mode-line "gold")
-(load-theme 'gruvbox-dark-hard)
+(load-theme 'gruvbox-dark-medium t)
 
 (set-face-attribute 'default nil
                     :family "mononoki"
