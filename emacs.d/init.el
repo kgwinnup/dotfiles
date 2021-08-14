@@ -225,8 +225,13 @@ shell"
       (quote
        (  "\\Minibuf.+\\*"
           "\\` "
-          "\\magit"
-          "\\*.+\\*"))))
+          "\\*Messages\\*"
+          "\\*Async.+\\*"
+          "\\*Warnings\\*"
+          "\\*elfeed.+\\*"
+          "\\*helm.+\\*"
+          "\\*Shell.+\\*"
+          "\\magit"))))
 
 (use-package helm-gtags
   :ensure t
@@ -553,7 +558,7 @@ shell"
                "n p" 'previous-buffer
                "n o" 'delete-other-windows
                "n d" 'kill-buffer-and-window
-               "n b" 'helm-mini
+               "n b" 'helm-buffers-list
                "n r" '(lambda () (interactive) (switch-to-buffer "*scratch*"))
                "n a" '(lambda () (interactive) (find-file "~/workspace/notes.org"))
                "n f" 'make-frame
