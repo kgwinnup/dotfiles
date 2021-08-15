@@ -82,16 +82,27 @@
 ;; eww-mode browser keybinding
 (add-hook 'eww-mode-hook
           (lambda ()
-            (setq shr-use-fonts nil)
-            (setq shr-use-fonts nil)
-            (setq shr-use-colors nil)
-            (setq shr-indentation 2)
-            (setq eww-search-prefix "https://ddg.gg/html?q=")
-            (setq shr-width 70)
+            (setq shr-use-fonts nil
+                  shr-use-fonts nil
+                  shr-use-colors nil
+                  shr-indentation 2
+                  eww-search-prefix "https://ddg.gg/html?q="
+                  shr-width 70)
             (local-set-key "n" 'shr-next-link)
             (local-set-key "p" 'shr-previous-link)
             (local-set-key "u" 'eww-back-url)
             (define-key evil-normal-state-local-map (kbd "SPC g p") 'eww-back-url)))
+
+;; gnus
+(add-hook 'gnus-summary-mode-hook
+          (lambda ()
+            (setq gnus-select-method '(nnnil)
+                  gnus-secondary-select-methods '((nntp "news.tilde.club"))
+                  gnus-thread-hide-subtree t
+                  gnus-newsgroup-maximum-articles 50
+                  gnus-summary-line-format "%U%R%z %d  %-15,15n  %B%s\n")
+            (local-set-key "h" 'gnus-summary-hide-thread)
+            (local-set-key "s" 'gnus-summary-show-thread)))
 
 ;;
 ;; eshell 
@@ -576,6 +587,7 @@ shell"
                "m s" 'magit
                "m b" 'magit-blame-addition
                "m l" 'elfeed
+               "m g" 'gnus
                "m e" '(lambda () (interactive) (eww-browse-url (read-string "url: ")))
                "m r" 'restclient-mode
                ;; view
