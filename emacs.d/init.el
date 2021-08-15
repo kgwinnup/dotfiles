@@ -50,7 +50,6 @@
               inhibit-startup-screen t
               auto-save-default nil
               make-backup-files nil
-              shr-width 80
               my-last-shell-cmd ""
               shell-file-name "/usr/local/bin/fish"
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
@@ -84,8 +83,15 @@
 (add-hook 'eww-mode-hook
           (lambda ()
             (setq shr-use-fonts nil)
+            (setq shr-use-fonts nil)
+            (setq shr-use-colors nil)
+            (setq shr-indentation 2)
+            (setq eww-search-prefix "https://ddg.gg/html?q=")
+            (setq shr-width 70)
+            (local-set-key "n" 'shr-next-link)
+            (local-set-key "p" 'shr-previous-link)
+            (local-set-key "u" 'eww-back-url)
             (define-key evil-normal-state-local-map (kbd "SPC g p") 'eww-back-url)))
-
 
 ;;
 ;; eshell 
