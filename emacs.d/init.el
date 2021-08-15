@@ -56,6 +56,11 @@
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
 
+;(setq browse-url-browser-function
+;      '(("lobste.rs" . eww-browse-url)
+;        ("slashdot.org" . eww-browse-url)
+;        ("." . browse-url)))
+
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (xterm-mouse-mode 1)
@@ -87,22 +92,11 @@
                   shr-use-colors nil
                   shr-indentation 2
                   eww-search-prefix "https://ddg.gg/html?q="
-                  shr-width 70)
+                  shr-width 120)
             (local-set-key "n" 'shr-next-link)
             (local-set-key "p" 'shr-previous-link)
             (local-set-key "u" 'eww-back-url)
             (define-key evil-normal-state-local-map (kbd "SPC g p") 'eww-back-url)))
-
-;; gnus
-(add-hook 'gnus-summary-mode-hook
-          (lambda ()
-            (setq gnus-select-method '(nnnil)
-                  gnus-secondary-select-methods '((nntp "news.tilde.club"))
-                  gnus-thread-hide-subtree t
-                  gnus-newsgroup-maximum-articles 50
-                  gnus-summary-line-format "%U%R%z %d  %-15,15n  %B%s\n")
-            (local-set-key "h" 'gnus-summary-hide-thread)
-            (local-set-key "s" 'gnus-summary-show-thread)))
 
 ;;
 ;; eshell 
