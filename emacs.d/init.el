@@ -200,6 +200,10 @@ shell"
           "\\*Warnings\\*"
           "\\*elfeed.+\\*"
           "\\*helm.+\\*"
+          "\\*rust-analyzer.+\\*"
+          "\\*rust-analyzer\\*"
+          "\\*lsp-log\\*"
+          "\\*Flymake.+\\*"
           "\\*Shell.+\\*"
           "\\magit"))))
 
@@ -556,9 +560,9 @@ shell"
                "=" (lambda () (interactive) (my-global-font-size 10))
                "-" (lambda () (interactive) (my-global-font-size -10)))))
 
-;(load-theme 'tsdh-light)
-;(set-face-background 'mode-line "gold")
-(load-theme 'gruvbox-dark-medium t)
+(load-theme 'tsdh-light)
+(set-face-background 'mode-line "gold")
+;(load-theme 'gruvbox-dark-medium t)
 
 (set-face-attribute 'default nil
                     :family "mononoki"
