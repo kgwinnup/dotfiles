@@ -37,6 +37,7 @@
               require-final-newline t
               warning-minimum-level :emergency
               comp-async-report-warnings-errors nil
+              compilation-scroll-output t
               mac-allow-anti-aliasing nil
               scroll-step 1
               scroll-conservatively  10000
