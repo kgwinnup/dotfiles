@@ -99,67 +99,6 @@
             (define-key evil-normal-state-local-map (kbd "SPC g p") 'eww-back-url)))
 
 ;;
-;; eshell 
-;;
-
-(defun my-eshell-git-info ()
-  (if (magit-get-current-branch)
-      (propertize (concat " (" (magit-get-current-branch) ")") 'face `(:foreground "#ebdbb2"))
-    ""))
-
-(defun my-eshell-pwd ()
-  (let ((ret (if (cl-search (getenv "HOME") (eshell/pwd))
-                 (concat "~" (substring (eshell/pwd) (length (getenv "HOME")) nil))
-               (eshell/pwd))))
-    (propertize ret 'face `(:foreground "#b8bb26"))))
-
-(setq eshell-prompt-function
-      (lambda ()
-        (concat (my-eshell-pwd)
-                (my-eshell-git-info)
-                (propertize " $ " 'face `(:foreground "#ebdbb2")))))
-
-(defun my-clear-eshell ()
-  "clears the eshell buffer, does not set my-last-eshell-cmd"
-  (interactive)
-  (my-send-to-eshell "clear 1"))
-
-(defun my-send-to-eshell (cmd &optional set-last-cmd-p)
-  (interactive)
-  (with-current-buffer "*eshell*"
-    (evil-insert-state)
-    (eshell-kill-input)
-    (end-of-buffer)
-    (insert cmd)
-    (eshell-send-input)
-    (end-of-buffer)
-    (eshell-bol)
-    (if set-last-cmd-p
-        (setq my-last-shell-cmd cmd))))
-
-(defun my-send-to-eshell-again ()
-  "sends the previous command to the active shell"
-  (interactive)
-  (my-send-to-eshell my-last-shell-cmd t))
-
-(defun my-send-to-eshell-input ()
-  "gets the user command and sends to the buffer containing an active shell"
-  (interactive)
-  (my-send-to-eshell (read-string "CMD: ") t))
-
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (define-key company-active-map (kbd "RET") nil)
-            (add-to-list 'eshell-visual-commands "ssh")
-            (add-to-list 'eshell-visual-commands "man")
-            (add-to-list 'eshell-visual-subcommands '("docker" "attach"))
-            (add-to-list 'eshell-visual-subcommands '("git" "log"))
-            (add-to-list 'eshell-visual-subcommands '("git" "status"))
-            (add-to-list 'eshell-visual-subcommands '("git" "diff"))
-            ;; adds color support to eshell stdout
-            (setenv "TERM" "xterm-256color")))
-
-;;
 ;; general shell functions
 ;;
 (defun my-toggle-shell (the-shell)
@@ -182,6 +121,25 @@ shell"
         (display-line-numbers-mode -1)
         (select-window w1)
         (set-window-buffer w2 shell-string)))))
+
+(defun my-send-to-shell (cmd &optional set-last-cmd-p)
+  (interactive)
+  (with-current-buffer "*vterm*"
+    (read-only-mode -1)
+    (vterm-send-string cmd)
+    (vterm-send-return)
+    (if set-last-cmd-p
+        (setq my-last-shell-cmd cmd))))
+
+(defun my-send-to-shell-again ()
+  "sends the previous command to the active shell"
+  (interactive)
+  (my-send-to-shell my-last-shell-cmd t))
+
+(defun my-send-to-shell-input ()
+  "gets the user command and sends to the buffer containing an active shell"
+  (interactive)
+  (my-send-to-shell (read-string "cmd: ") t))
 
 ;;
 ;; org-mode functions 
@@ -555,10 +513,14 @@ shell"
                "s r" 'ispell-region
                "s g" 'writegood-mode
                ;; cli integrations
-               "t t" '(lambda () (interactive) (my-toggle-shell "eshell"))
-               "t T" 'eshell
-               "v p" 'my-send-to-eshell-input
-               "v l" 'my-send-to-eshell-again
+               ;"t t" '(lambda () (interactive) (my-toggle-shell "eshell"))
+               ;"t T" 'eshell
+               ;"v p" 'my-send-to-eshell-input
+               ;"v l" 'my-send-to-eshell-again
+               "t t" '(lambda () (interactive) (my-toggle-shell "vterm"))
+               "t T" 'vterm
+               "v p" 'my-send-to-shell-input
+               "v l" 'my-send-to-shell-again
                "v u" 'projectile-compile-project
                ;; buffer keybindings
                "n e" 'window-swap-states
@@ -588,6 +550,7 @@ shell"
                "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-hard) (load-theme 'tsdh-light) (set-face-background 'mode-line "gold")))
                "d g" (lambda () (interactive) (load-theme 'gruvbox-dark-hard))
                "d f" (lambda () (interactive) (toggle-frame-fullscreen))
+               "," 'rename-buffer
                "|" 'split-window-right
                "=" (lambda () (interactive) (my-global-font-size 10))
                "-" (lambda () (interactive) (my-global-font-size -10)))))
