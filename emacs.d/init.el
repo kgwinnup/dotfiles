@@ -195,16 +195,7 @@ shell"
       (quote
        (  "\\Minibuf.+\\*"
           "\\` "
-          "\\*Messages\\*"
-          "\\*Async.+\\*"
-          "\\*Warnings\\*"
-          "\\*elfeed.+\\*"
-          "\\*helm.+\\*"
-          "\\*rust-analyzer.+\\*"
-          "\\*rust-analyzer\\*"
-          "\\*lsp-log\\*"
-          "\\*Flymake.+\\*"
-          "\\*Shell.+\\*"
+          "\\*.+\\*"
           "\\magit"))))
 
 (use-package helm-gtags
@@ -560,9 +551,9 @@ shell"
                "=" (lambda () (interactive) (my-global-font-size 10))
                "-" (lambda () (interactive) (my-global-font-size -10)))))
 
-(load-theme 'tsdh-light)
-(set-face-background 'mode-line "gold")
-;(load-theme 'gruvbox-dark-medium t)
+;(load-theme 'tsdh-light)
+;(set-face-background 'mode-line "gold")
+(load-theme 'gruvbox-dark-hard t)
 
 (set-face-attribute 'default nil
                     :family "mononoki"
