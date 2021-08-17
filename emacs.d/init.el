@@ -47,6 +47,7 @@
               indent-tabs-mode nil
               c-basic-offset 4
               tab-width 4
+              show-paren-mode t
               initial-scratch-message nil
               inhibit-startup-screen t
               auto-save-default nil
@@ -332,6 +333,7 @@ shell"
   :config
   (setq rust-format-on-save t)
   :init
+  (show-paren-mode)
   (add-hook 'rust-mode-hook
 			(lambda ()
               (define-key evil-normal-state-local-map (kbd "SPC g g") 'lsp-find-definition)
@@ -374,6 +376,7 @@ shell"
   :ensure t
   :mode "\\*\\.go"
   :init
+  (show-paren-mode)
   (add-hook 'go-mode-hook
 			(lambda ()
 			  (setq gofmt-command "goimports")
@@ -484,7 +487,7 @@ shell"
   :config
   (setq elfeed-feeds '(("https://lobste.rs/rss" lobsters)
                        ("https://tilde.news/rss" tildeverse)
-                       ("feed:https://lwn.net/headlines/rss" lwn)
+                       ("https://lwn.net/headlines/rss" lwn)
                        ("http://rss.slashdot.org/Slashdot/slashdotMain" slashdot)))
   (setq-default elfeed-search-filter "@1-week-ago +unread")
   (setq-default elfeed-search-title-max-width 100)
