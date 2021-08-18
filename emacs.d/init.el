@@ -44,6 +44,7 @@
               mouse-wheel-scroll-amount '(1 ((shift) . 1))
               mouse-wheel-progressive-speed nil
               mouse-wheel-follow-mouse 't
+              column-number-mode t
               indent-tabs-mode nil
               c-basic-offset 4
               tab-width 4
@@ -352,7 +353,7 @@ shell"
   :commands lsp-deferred
   :config
   (setq gc-cons-threshold 100000000)
-  (setq read-process-output-max (* 1024 1024 3)) ;; 1mb
+  (setq read-process-output-max (* 1024 1024 3))
   (setq lsp-completion-provider :capf)
   (setq lsp-idle-delay 0.1)
   (setq lsp-enable-file-watchers nil)
