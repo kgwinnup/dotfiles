@@ -20,6 +20,7 @@
 (setenv "PATH" (concat "~/go/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/.cargo/bin:" (getenv "PATH")))
+(setenv "PATH" (concat "/Library/TeX/texbin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/.local/share/nvm/v12.22.1/bin" (getenv "PATH")))
 (setenv "GTAGSLIBPATH" "~/.gtags")
 
@@ -29,6 +30,7 @@
 (add-to-list 'exec-path "/usr/local/bin")
 (add-to-list 'exec-path "~/go/bin")
 (add-to-list 'exec-path "~/bin")
+(add-to-list 'exec-path "/Library/TeX/texbin")
 (add-to-list 'exec-path "~/.cargo/bin")
 (add-to-list 'exec-path "~/.local/share/nvm/v12.22.1/bin")
 
@@ -54,15 +56,13 @@
               auto-save-default nil
               make-backup-files nil
               my-last-shell-cmd ""
-              shell-file-name "/usr/local/bin/fish"
+              shell-file-name "fish"
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
               default-directory "~/workspace/"
               custom-file "~/.emacs.d/custom.el")
 
-;(setq browse-url-browser-function
-;      '(("lobste.rs" . eww-browse-url)
-;        ("slashdot.org" . eww-browse-url)
-;        ("." . browse-url)))
+(require 'ox-latex)
+(require 'ansi-color)
 
 (tool-bar-mode -1)
 (menu-bar-mode -1)
@@ -79,6 +79,7 @@
 (shell-command "touch ~/.emacs.d/custom.el")
 (load custom-file)
 
+(shell-command "touch ~/.emacs.d/llvm-mode.el")
 (load "~/.emacs.d/llvm-mode.el")
 
 ;; this is for vterm and R shells, will move cursor to bottom of
@@ -144,37 +145,6 @@ shell"
   (interactive)
   (my-send-to-shell (read-string "cmd: ") t))
 
-;;
-;; org-mode functions 
-;;
-
-(defun my-start-code-block ()
-  "starts a code block in org mode"
-  (interactive)
-  (insert "#+begin_src\n\n#+end_src")
-  (previous-line)
-  (previous-line))
-
-(defun my-org-refresh ()
-  "refreshes tag alignment and table contents"
-  (interactive)
-  (org-align-all-tags)
-  (org-table-recalculate-buffer-tables))
-
-(defun my-org-timestamp ()
-  "sets heading timestamp field"
-  (interactive)
-  (insert ":DATE: ")
-  (org-insert-time-stamp (current-time)))
-
-(setq my-font-size 170)
-(defun my-global-font-size (size)
-  (interactive)
-  (set-face-attribute 'default nil
-                      :height (+ size my-font-size))
-  (setq my-font-size (+ size my-font-size)))
-
-
 (use-package dockerfile-mode
   :ensure t
   :defer t)
@@ -198,6 +168,7 @@ shell"
        (  "\\Minibuf.+\\*"
           "\\` "
           "\\*.+\\*"
+          "<*.+>$"
           "\\magit"))))
 
 (use-package helm-gtags
@@ -218,9 +189,6 @@ shell"
   :ensure t
   :defer t)
 
-(use-package helm-themes
-  :ensure t)
-
 (setq evil-want-keybinding nil)
 (use-package evil
   :ensure t
@@ -236,7 +204,29 @@ shell"
 (use-package magit
   :ensure t)
 
-(require 'ox-latex)
+;;
+;; org-mode functions 
+;;
+
+(defun my-start-code-block ()
+  "starts a code block in org mode"
+  (interactive)
+  (insert "#+begin_src\n\n#+end_src")
+  (previous-line)
+  (previous-line))
+
+(defun my-org-refresh ()
+  "refreshes tag alignment and table contents"
+  (interactive)
+  (org-align-all-tags)
+  (org-table-recalculate-buffer-tables))
+
+(defun my-org-timestamp ()
+  "sets heading timestamp field"
+  (interactive)
+  (insert ":DATE: ")
+  (org-insert-time-stamp (current-time)))
+
 (use-package org
   :ensure t
   :init
@@ -316,7 +306,6 @@ shell"
               (turn-on-orgtbl)
               (turn-on-orgstruct++))))
 
-(require 'ansi-color)
 (use-package projectile
   :ensure t
   :config
@@ -476,13 +465,6 @@ shell"
 			  (define-key evil-normal-state-local-map (kbd "SPC n s") 'next-multiframe-window)
 			  (define-key evil-normal-state-local-map (kbd "SPC n p") 'neotree-change-root))))
 
-(use-package restclient
-  :ensure t
-  :init
-  (add-hook 'restclient-mode-hook
-            (lambda ()
-              (define-key evil-normal-state-local-map (kbd "SPC r r") 'restclient-http-send-current-stay-in-window))))
-
 (use-package elfeed
   :ensure t
   :config
@@ -494,8 +476,12 @@ shell"
   (setq-default elfeed-search-title-max-width 100)
   (setq-default elfeed-search-title-min-width 100))
 
-(use-package writegood-mode
-  :ensure t)
+(setq my-font-size 170)
+(defun my-global-font-size (size)
+  (interactive)
+  (set-face-attribute 'default nil
+                      :height (+ size my-font-size))
+  (setq my-font-size (+ size my-font-size)))
 
 (use-package bind-map
   :ensure t
@@ -511,12 +497,7 @@ shell"
                "c k" 'describe-function
                "s s" 'ispell
                "s r" 'ispell-region
-               "s g" 'writegood-mode
                ;; cli integrations
-               ;"t t" '(lambda () (interactive) (my-toggle-shell "eshell"))
-               ;"t T" 'eshell
-               ;"v p" 'my-send-to-eshell-input
-               ;"v l" 'my-send-to-eshell-again
                "t t" '(lambda () (interactive) (my-toggle-shell "vterm"))
                "t T" 'vterm
                "v p" 'my-send-to-shell-input
@@ -543,20 +524,12 @@ shell"
                "m s" 'magit
                "m b" 'magit-blame-addition
                "m l" 'elfeed
-               "m g" 'gnus
                "m e" '(lambda () (interactive) (eww-browse-url (read-string "url: ")))
-               "m r" 'restclient-mode
                ;; view
-               "d t" (lambda () (interactive) (progn (disable-theme 'gruvbox-dark-hard) (load-theme 'tsdh-light) (set-face-background 'mode-line "gold")))
-               "d g" (lambda () (interactive) (load-theme 'gruvbox-dark-hard))
-               "d f" (lambda () (interactive) (toggle-frame-fullscreen))
                "," 'rename-buffer
-               "|" 'split-window-right
                "=" (lambda () (interactive) (my-global-font-size 10))
                "-" (lambda () (interactive) (my-global-font-size -10)))))
 
-;(load-theme 'tsdh-light)
-;(set-face-background 'mode-line "gold")
 (load-theme 'gruvbox-dark-hard t)
 
 (set-face-attribute 'default nil
