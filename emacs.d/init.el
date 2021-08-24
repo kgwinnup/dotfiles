@@ -71,10 +71,7 @@
 
 (global-display-line-numbers-mode)
 (global-hl-line-mode)
-
-(if (display-graphic-p)
-    (progn
-      (scroll-bar-mode -1)))
+(and (display-graphic-p) (scroll-bar-mode -1))
 
 (shell-command "touch ~/.emacs.d/custom.el")
 (load custom-file)
