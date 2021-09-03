@@ -1,4 +1,5 @@
 ;;
+
 ;; Packages and setup stuff
 ;;
 
@@ -229,10 +230,8 @@ shell"
   :init
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '(
-     (R . t)
-     (shell . t)
-     ))
+   '((R . t)
+     (shell . t)))
   (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
   (use-package ox-gfm
     :ensure t)
@@ -241,16 +240,11 @@ shell"
     (add-hook 'org-mode-hook
             (lambda ()
               (org-indent-mode)
-              ;(add-hook 'after-save-hook 'org-preview-latex-fragment)
-              (define-key evil-normal-state-local-map (kbd "SPC r r") 'org-preview-latex-fragment)
-              (define-key evil-normal-state-local-map (kbd "SPC E") 'org-gfm-export-to-markdown)
               (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
               (define-key evil-normal-state-local-map (kbd "SPC P") 'org-present)
               (define-key evil-normal-state-local-map (kbd "SPC R") 'my-org-refresh)
-              (define-key evil-normal-state-local-map (kbd "SPC T") 'my-org-timestamp)
               (define-key evil-normal-state-local-map (kbd "SPC p") 'org-cycle)
               (define-key evil-normal-state-local-map (kbd "SPC g p") 'org-global-cycle)
-              (define-key evil-normal-state-local-map (kbd "SPC g t") '(lambda () (interactive) (org-insert-time-stamp (current-time))))
               (define-key evil-normal-state-local-map (kbd "SPC s n") 'my-start-code-block)
               (define-key evil-normal-state-local-map (kbd "SPC s o") 'org-edit-src-code)
               (define-key evil-normal-state-local-map (kbd "SPC u") 'org-todo)
@@ -427,9 +421,6 @@ shell"
   (define-key company-active-map (kbd "<tab>") 'company-select-next)
   (add-to-list 'company-backends 'company-gtags)
   (add-hook 'after-init-hook 'global-company-mode))
-  ;(with-eval-after-load 'company
-  ;  (define-key company-active-map [tab] 'company-complete-cycle-next)
-  ;  (define-key company-active-map (kbd "TAB") 'company-complete-cycle-next)))
 
 ;;
 ;; neotree
@@ -528,9 +519,12 @@ shell"
                "-" (lambda () (interactive) (my-global-font-size -10)))))
 
 (load-theme 'gruvbox-dark-hard t)
+;(load-theme 'adwaita t)
+;(global-hl-line-mode 0)
 
 (set-face-attribute 'default nil
-                    :family "mononoki"
-                    :height my-font-size)
-                    ;:weight 'medium)
+                    ;:family "mononoki"
+                    :family "Fira Code"
+                    :height my-font-size
+                    :weight 'medium)
 
