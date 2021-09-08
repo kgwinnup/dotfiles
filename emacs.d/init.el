@@ -103,26 +103,22 @@
 ;;
 ;; general shell functions
 ;;
-(defun my-toggle-shell (the-shell)
-  "toggles the shells visibility to the right split window,
-'the-shell' parameter should be the symbol name as a string for the
-shell"
+(defun my-toggle-shell ()
   (interactive)
-  (let ((shell-string (concat "*" the-shell "*")))
-    ;; if shell exists toggle view on/off
-    (if (get-buffer shell-string)
-        (if (and (get-buffer-window shell-string))
-            (delete-other-windows)
-          (let ((w2 (split-window-horizontally)))
-            (set-window-buffer w2 shell-string)))
-      ;; else split the screen and create shell
-      (let ((w1 (selected-window))
-            (w2 (split-window-horizontally)))
-        (select-window w2)
-        (funcall (intern the-shell))
-        (display-line-numbers-mode -1)
-        (select-window w1)
-        (set-window-buffer w2 shell-string)))))
+  ;; if shell exists toggle view on/off
+  (if (get-buffer "*vterm*")
+      (if (and (get-buffer-window "*vterm*"))
+          (delete-other-windows)
+        (let ((w2 (split-window-horizontally)))
+          (set-window-buffer w2 "*vterm*")))
+    ;; else split the screen and create shell
+    (let ((w1 (selected-window))
+          (w2 (split-window-horizontally)))
+      (select-window w2)
+      (vterm)
+      (display-line-numbers-mode -1)
+      (select-window w1)
+      (set-window-buffer w2 "*vterm*"))))
 
 (defun my-send-to-shell (cmd &optional set-last-cmd-p)
   (interactive)
@@ -134,12 +130,10 @@ shell"
         (setq my-last-shell-cmd cmd))))
 
 (defun my-send-to-shell-again ()
-  "sends the previous command to the active shell"
   (interactive)
   (my-send-to-shell my-last-shell-cmd t))
 
 (defun my-send-to-shell-input ()
-  "gets the user command and sends to the buffer containing an active shell"
   (interactive)
   (my-send-to-shell (read-string "cmd: ") t))
 
@@ -148,6 +142,9 @@ shell"
   :defer t)
 
 (use-package vterm
+  :ensure t)
+
+(use-package transpose-frame
   :ensure t)
 
 (use-package web-mode
@@ -213,18 +210,6 @@ shell"
   (previous-line)
   (previous-line))
 
-(defun my-org-refresh ()
-  "refreshes tag alignment and table contents"
-  (interactive)
-  (org-align-all-tags)
-  (org-table-recalculate-buffer-tables))
-
-(defun my-org-timestamp ()
-  "sets heading timestamp field"
-  (interactive)
-  (insert ":DATE: ")
-  (org-insert-time-stamp (current-time)))
-
 (use-package org
   :ensure t
   :init
@@ -242,7 +227,6 @@ shell"
               (org-indent-mode)
               (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
               (define-key evil-normal-state-local-map (kbd "SPC P") 'org-present)
-              (define-key evil-normal-state-local-map (kbd "SPC R") 'my-org-refresh)
               (define-key evil-normal-state-local-map (kbd "SPC p") 'org-cycle)
               (define-key evil-normal-state-local-map (kbd "SPC g p") 'org-global-cycle)
               (define-key evil-normal-state-local-map (kbd "SPC s n") 'my-start-code-block)
@@ -459,6 +443,7 @@ shell"
   (setq elfeed-feeds '(("https://lobste.rs/rss" lobsters)
                        ("https://tilde.news/rss" tildeverse)
                        ("https://lwn.net/headlines/rss" lwn)
+                       ("https://news.ycombinator.com/rss" hn)
                        ("http://rss.slashdot.org/Slashdot/slashdotMain" slashdot)))
   (setq-default elfeed-search-filter "@1-week-ago +unread")
   (setq-default elfeed-search-title-max-width 100)
@@ -486,13 +471,13 @@ shell"
                "s s" 'ispell
                "s r" 'ispell-region
                ;; cli integrations
-               "t t" '(lambda () (interactive) (my-toggle-shell "vterm"))
+               "t t" 'my-toggle-shell
                "t T" 'vterm
                "v p" 'my-send-to-shell-input
                "v l" 'my-send-to-shell-again
                "v u" 'projectile-compile-project
                ;; buffer keybindings
-               "n e" 'window-swap-states
+               "n e" 'transpose-frame
                "n k" (lambda () (interactive) (mapc 'kill-buffer (buffer-list)))
                "n t" 'neotree-toggle
                "n n" 'next-buffer
@@ -524,7 +509,6 @@ shell"
 
 (set-face-attribute 'default nil
                     ;:family "mononoki"
-                    :family "Fira Code"
-                    :height my-font-size
-                    :weight 'medium)
+                    :family "Fira Code Retina"
+                    :height my-font-size)
 
