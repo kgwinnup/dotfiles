@@ -57,10 +57,8 @@
               inhibit-startup-screen t
               auto-save-default nil
               make-backup-files nil
-              my-last-shell-cmd ""
               shell-file-name "fish"
-              backup-directory-alist '(("" . "~/.emacs.d/backup"))
-              default-directory "~/workspace/")
+              backup-directory-alist '(("" . "~/.emacs.d/backup")))
 
 (require 'ox-latex)
 (require 'ansi-color)
@@ -269,14 +267,13 @@
 
 (use-package go-mode
   :ensure t
-  :mode "\\*\\.go"
   :init
+  (setq gofmt-command "goimports")
   (add-hook 'go-mode-hook
 			(lambda ()
               (show-paren-mode)
               (eglot-ensure)
               (company-mode)
-			  (setq gofmt-command "goimports")
               (define-key evil-normal-state-local-map (kbd "SPC g g") 'xref-find-definitions)
               (define-key evil-normal-state-local-map (kbd "SPC g p") 'pop-tag-mark)
               (define-key evil-normal-state-local-map (kbd "SPC g r") 'eglot-rename)
@@ -445,7 +442,6 @@
 ;(global-hl-line-mode 0)
 
 (set-face-attribute 'default nil
-                    ;:family "mononoki"
                     :family "Fira Code Retina"
                     :height my-font-size)
 
