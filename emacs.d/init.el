@@ -11,8 +11,8 @@
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 (require 'use-package)
+(require 'ansi-color)
 
-(setq use-package-always-ensure t)
 (setq mac-command-modifier 'meta)
 
 ;; for use when running shells within emacs, this sets the path for
@@ -60,14 +60,10 @@
               shell-file-name "fish"
               backup-directory-alist '(("" . "~/.emacs.d/backup")))
 
-(require 'ox-latex)
-(require 'ansi-color)
-
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (xterm-mouse-mode 1)
 (fset 'yes-or-no-p 'y-or-n-p)
-
 (global-display-line-numbers-mode)
 (global-hl-line-mode)
 (and (display-graphic-p) (scroll-bar-mode -1))
@@ -125,6 +121,7 @@
 
 (use-package helm
   :ensure t
+  :defer t
   :init
   (global-set-key (kbd "M-x") 'helm-M-x)
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
@@ -153,7 +150,8 @@
   (evil-collection-init))
 
 (use-package magit
-  :ensure t)
+  :ensure t
+  :defer t)
 
 ;;
 ;; org-mode functions 
@@ -175,8 +173,6 @@
    '((R . t)
      (shell . t)))
   (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
-  (use-package ox-gfm
-    :ensure t)
   (use-package org-present
     :ensure t)
     (add-hook 'org-mode-hook
@@ -192,15 +188,12 @@
               (define-key evil-normal-state-local-map (kbd "SPC o") 'org-toggle-checkbox)))
     :config
     (setq org-todo-keyword-faces
-          '(("project" . "dodger blue")
-            ("notes" . "coral")
-            ("mgmt" . "magenta")
-            ("review" . "deep pink")
-            ("todo" . "plum")
-            ("doing" . "lime green")
-            ("backlog" . "dim gray")))
+          '(("NOTES" . "coral")
+            ("TODO" . "dodger blue")
+            ("DOING" . "lime green")
+            ("DONE" . "dark gray")))
     (setq org-todo-keywords
-          '((sequence "project" "notes" "mgmt" "todo" "doing" "backlog")))
+          '((sequence "NOTES" "TODO" "DOING" "DONE")))
     (setq org-latex-create-formula-image-program 'dvipng)
     (setq org-preview-latex-default-process 'dvipng)
     (eval-after-load "org-present"
@@ -252,6 +245,7 @@
 
 (use-package rust-mode
   :ensure t
+  :defer t
   :init
   (setq rust-format-on-save t)
   (add-hook 'rust-mode-hook
@@ -267,6 +261,7 @@
 
 (use-package go-mode
   :ensure t
+  :defer t
   :init
   (setq gofmt-command "goimports")
   (add-hook 'go-mode-hook
