@@ -13,6 +13,7 @@
 (require 'use-package)
 
 (setq use-package-always-ensure t)
+(setq mac-command-modifier 'meta)
 
 ;; for use when running shells within emacs, this sets the path for
 ;; those shells
@@ -76,7 +77,7 @@
 (shell-command "touch ~/.emacs.d/custom.el")
 (load "~/.emacs.d/custom.el")
 
-;; this is for vterm and R shells, will move cursor to bottom of
+;; this is for shell and R shells, will move cursor to bottom of
 ;; buffer after sending command
 (eval-after-load "comint"
   '(progn
@@ -102,58 +103,33 @@
 (defun my-toggle-shell ()
   (interactive)
   ;; if shell exists toggle view on/off
-  (if (get-buffer "*vterm*")
-      (if (and (get-buffer-window "*vterm*"))
+  (if (get-buffer "*shell*")
+      (if (and (get-buffer-window "*shell*"))
           (delete-other-windows)
         (let ((w2 (split-window-horizontally)))
-          (set-window-buffer w2 "*vterm*")))
+          (set-window-buffer w2 "*shell*")))
     ;; else split the screen and create shell
     (let ((w1 (selected-window))
           (w2 (split-window-horizontally)))
       (select-window w2)
-      (vterm)
+      (shell)
       (display-line-numbers-mode -1)
       (select-window w1)
-      (set-window-buffer w2 "*vterm*"))))
-
-(defun my-send-to-shell (cmd &optional set-last-cmd-p)
-  (interactive)
-  (with-current-buffer "*vterm*"
-    (read-only-mode -1)
-    (vterm-send-string cmd)
-    (vterm-send-return)
-    (if set-last-cmd-p
-        (setq my-last-shell-cmd cmd))))
-
-(defun my-send-to-shell-again ()
-  (interactive)
-  (my-send-to-shell my-last-shell-cmd t))
-
-(defun my-send-to-shell-input ()
-  (interactive)
-  (my-send-to-shell (read-string "cmd: ") t))
+      (set-window-buffer w2 "*shell*"))))
 
 (use-package dockerfile-mode
   :ensure t
   :defer t)
 
-(use-package vterm
-  :ensure t)
-
 (use-package transpose-frame
-  :ensure t)
-
-(use-package web-mode
   :ensure t
-  :init
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
+  :defer t)
 
 (use-package helm
   :ensure t
   :init
   (global-set-key (kbd "M-x") 'helm-M-x)
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
-    :config
   (setq helm-boring-buffer-regexp-list
       (quote
        (  "\\Minibuf.+\\*"
@@ -161,20 +137,6 @@
           "\\*.+\\*"
           "<*.+>$"
           "\\magit"))))
-
-(use-package helm-gtags
-  :ensure t
-  :init
-  (add-hook 'c-mode-hook 'helm-gtags-mode)
-  (add-hook 'c++-mode-hook 'helm-gtags-mode)
-  (add-hook 'asm-mode-hook 'helm-gtags-mode)
-  (add-hook 'helm-gtags-mode-hook
-            (lambda ()
-              (define-key evil-normal-state-local-map (kbd "SPC g g") 'helm-gtags-find-tag-from-here)
-              (define-key evil-normal-state-local-map (kbd "SPC g p") 'helm-gtags-pop-stack)
-              (define-key evil-normal-state-local-map (kbd "SPC g f") 'helm-gtags-select)
-              (define-key evil-normal-state-local-map (kbd "SPC g l") 'helm-gtags-parse-file)
-              (define-key evil-normal-state-local-map (kbd "SPC g u") 'helm-gtags-update-tags))))
 
 (use-package yaml-mode
   :ensure t
@@ -208,6 +170,7 @@
 
 (use-package org
   :ensure t
+  :defer t
   :init
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -291,47 +254,53 @@
 
 (use-package rust-mode
   :ensure t
-  :config
-  (setq rust-format-on-save t)
   :init
-  (show-paren-mode)
+  (setq rust-format-on-save t)
   (add-hook 'rust-mode-hook
-			(lambda ()
+            (lambda ()
+              (show-paren-mode)
               (eglot-ensure)
+              (company-mode)
               (define-key evil-normal-state-local-map (kbd "SPC g g") 'xref-find-definitions)
               (define-key evil-normal-state-local-map (kbd "SPC g p") 'pop-tag-mark)
+              (define-key evil-normal-state-local-map (kbd "SPC g r") 'eglot-rename)
+              (define-key evil-normal-state-local-map (kbd "SPC g h") 'eldoc)
               (define-key evil-normal-state-local-map (kbd "SPC g l") 'xref-find-references))))
 
 (use-package go-mode
   :ensure t
   :mode "\\*\\.go"
   :init
-  (show-paren-mode)
   (add-hook 'go-mode-hook
 			(lambda ()
+              (show-paren-mode)
               (eglot-ensure)
+              (company-mode)
 			  (setq gofmt-command "goimports")
               (define-key evil-normal-state-local-map (kbd "SPC g g") 'xref-find-definitions)
               (define-key evil-normal-state-local-map (kbd "SPC g p") 'pop-tag-mark)
+              (define-key evil-normal-state-local-map (kbd "SPC g r") 'eglot-rename)
+              (define-key evil-normal-state-local-map (kbd "SPC g h") 'eldoc)
               (define-key evil-normal-state-local-map (kbd "SPC g l") 'xref-find-references)
-			  (add-hook 'before-save-hook 'gofmt-before-save nil t))))
+              (add-hook 'before-save-hook 'gofmt-before-save nil t))))
 
 (use-package eglot
   :ensure t)
-
-(use-package poly-markdown
-  :ensure t)
-
-(use-package poly-R
-  :ensure t)
+  
+(use-package web-mode
+  :ensure t
+  :defer t
+  :mode ("\\.html\\'" . gfm-mode))
 
 (use-package rjsx-mode
   :ensure t
-  :init
-  (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode)))
+  :defer t
+  :mode ("\\.jsx\\'" . rjsx-mode))
 
 (use-package js2-mode
-  :ensure t)
+  :ensure t
+  :defer t
+  :mode ("\\.js\\'" . js2-mode))
 
 (defun my-ess-toggle-R ()
   (interactive)
@@ -342,8 +311,17 @@
           (let ((w2 (split-window-horizontally)))
             (set-window-buffer w2 name))))))
 
+(use-package poly-markdown
+  :ensure t
+  :defer t)
+
+(use-package poly-R
+  :ensure t
+  :defer t)
+
 (use-package ess
   :ensure t
+  :defer t
   :mode (("\\*\\.R" . ess-site)
          ("\\*\\.Rmd" . ess-site))
   :commands R
@@ -366,10 +344,7 @@
   (setq company-idle-delay 0)
   (setq company-tooltip-align-annotations t)
   (setq company-minimum-prefix-length 1)
-  (define-key company-active-map (kbd "C-SPC") 'company-complete-selection)
-  (define-key company-active-map (kbd "<tab>") 'company-select-next)
-  (add-to-list 'company-backends 'company-gtags)
-  (add-hook 'after-init-hook 'global-company-mode))
+  (define-key company-active-map (kbd "<tab>") 'company-select-next))
 
 ;;
 ;; neotree
@@ -404,6 +379,7 @@
 
 (use-package elfeed
   :ensure t
+  :defer t
   :config
   (setq elfeed-feeds '(("https://lobste.rs/rss" lobsters)
                        ("https://tilde.news/rss" tildeverse)
@@ -435,9 +411,7 @@
                "s r" 'ispell-region
                ;; cli integrations
                "t t" 'my-toggle-shell
-               "t T" 'vterm
-               "v p" 'my-send-to-shell-input
-               "v l" 'my-send-to-shell-again
+               "t T" 'shell
                "v u" 'projectile-compile-project
                ;; buffer keybindings
                "n e" 'transpose-frame
