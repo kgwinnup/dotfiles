@@ -59,8 +59,7 @@
               my-last-shell-cmd ""
               shell-file-name "fish"
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
-              default-directory "~/workspace/"
-              custom-file "~/.emacs.d/custom.el")
+              default-directory "~/workspace/")
 
 (require 'ox-latex)
 (require 'ansi-color)
@@ -75,10 +74,7 @@
 (and (display-graphic-p) (scroll-bar-mode -1))
 
 (shell-command "touch ~/.emacs.d/custom.el")
-(load custom-file)
-
-(shell-command "touch ~/.emacs.d/llvm-mode.el")
-(load "~/.emacs.d/llvm-mode.el")
+(load "~/.emacs.d/custom.el")
 
 ;; this is for vterm and R shells, will move cursor to bottom of
 ;; buffer after sending command
@@ -301,41 +297,10 @@
   (show-paren-mode)
   (add-hook 'rust-mode-hook
 			(lambda ()
-              (define-key evil-normal-state-local-map (kbd "SPC g g") 'lsp-find-definition)
+              (eglot-ensure)
+              (define-key evil-normal-state-local-map (kbd "SPC g g") 'xref-find-definitions)
               (define-key evil-normal-state-local-map (kbd "SPC g p") 'pop-tag-mark)
-              (define-key evil-normal-state-local-map (kbd "SPC g l") 'lsp-find-references)
-              (define-key evil-normal-state-local-map (kbd "SPC g i") 'lsp-describe-thing-at-point))))
-
-(use-package lsp-ui
-  :ensure t
-  :after lsp-mode)
-
-(use-package lsp-mode
-  :ensure t
-  :hook ((go-mode . lsp-deferred)
-         (rust-mode . lsp-deferred))
-  :commands lsp-deferred
-  :config
-  (setq gc-cons-threshold 100000000)
-  (setq read-process-output-max (* 1024 1024 3))
-  (setq lsp-completion-provider :capf)
-  (setq lsp-idle-delay 0.1)
-  (setq lsp-enable-file-watchers nil)
-  (setq lsp-ui-doc-enable nil)
-  (setq lsp-ui-sideline-enable nil)
-  (setq lsp-headerline-breadcrumb-enable nil)
-  (setq lsp-log-io nil)
-  :init 
-  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
-  (lsp-register-client
-   (make-lsp-client :new-connection (lsp-tramp-connection "gopls")
-                    :major-modes '(go-mode)
-                    :remote? t
-                    :server-id 'gopls-remote)))
-
-(use-package helm-lsp
-  :ensure t
-  :commands helm-lsp-workspace-symbol)
+              (define-key evil-normal-state-local-map (kbd "SPC g l") 'xref-find-references))))
 
 (use-package go-mode
   :ensure t
@@ -344,12 +309,15 @@
   (show-paren-mode)
   (add-hook 'go-mode-hook
 			(lambda ()
+              (eglot-ensure)
 			  (setq gofmt-command "goimports")
-              (define-key evil-normal-state-local-map (kbd "SPC g g") 'lsp-find-definition)
+              (define-key evil-normal-state-local-map (kbd "SPC g g") 'xref-find-definitions)
               (define-key evil-normal-state-local-map (kbd "SPC g p") 'pop-tag-mark)
-              (define-key evil-normal-state-local-map (kbd "SPC g l") 'lsp-find-references)
-              (define-key evil-normal-state-local-map (kbd "SPC g i") 'lsp-describe-thing-at-point)
+              (define-key evil-normal-state-local-map (kbd "SPC g l") 'xref-find-references)
 			  (add-hook 'before-save-hook 'gofmt-before-save nil t))))
+
+(use-package eglot
+  :ensure t)
 
 (use-package poly-markdown
   :ensure t)
@@ -398,9 +366,6 @@
   (setq company-idle-delay 0)
   (setq company-tooltip-align-annotations t)
   (setq company-minimum-prefix-length 1)
-  (setq company-lsp-cache-candidates t)
-  (setq company-lsp-async t)
-  ;(setq evil-collection-company-use-tng nil)
   (define-key company-active-map (kbd "C-SPC") 'company-complete-selection)
   (define-key company-active-map (kbd "<tab>") 'company-select-next)
   (add-to-list 'company-backends 'company-gtags)
@@ -459,8 +424,6 @@
 (use-package bind-map
   :ensure t
   :init
-  (use-package default-text-scale
-	:ensure t)
   (bind-map my-base-leader-map
     :keys ("M-m")
     :evil-keys ("SPC")
