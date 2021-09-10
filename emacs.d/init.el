@@ -325,16 +325,18 @@
   (setq-default elfeed-search-title-max-width 100)
   (setq-default elfeed-search-title-min-width 100))
 
+(defmacro kg/lang-std ()
+  `(progn
+     (show-paren-mode)
+     (eglot-ensure)
+     (company-mode)))
+
 (use-package rust-mode
   :ensure t
   :defer t
   :init
   (setq rust-format-on-save t)
-  (add-hook 'rust-mode-hook
-            (lambda ()
-              (show-paren-mode)
-              (eglot-ensure)
-              (company-mode))))
+  (add-hook 'rust-mode-hook (lambda () (kg/lang-std))))
 
 (use-package go-mode
   :ensure t
@@ -342,23 +344,12 @@
   :init
   (setq gofmt-command "goimports")
   (add-hook 'go-mode-hook
-			(lambda ()
-              (show-paren-mode)
-              (eglot-ensure)
-              (company-mode)
+            (lambda ()
+              (kg/lang-std)
               (add-hook 'before-save-hook 'gofmt-before-save nil t))))
 
-(add-hook 'c-mode-hook
-          (lambda ()
-            (show-paren-mode)
-            (eglot-ensure)
-            (company-mode)))
-
-(add-hook 'c++-mode-hook
-          (lambda ()
-            (show-paren-mode)
-            (eglot-ensure)
-            (company-mode)))
+(add-hook 'c-mode-hook (lambda () (kg/lang-std)))
+(add-hook 'c++-mode-hook (lambda () (kg/lang-std)))
 
 (setq kg/font-size 170)
 (defun kg/global-font-size (size)
