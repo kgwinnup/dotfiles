@@ -329,13 +329,13 @@
   `(progn
      (show-paren-mode)
      (eglot-ensure)
-     (company-mode)))
+     (company-mode)
+     (add-hook 'before-save-hook 'eglot-format nil t)))
 
 (use-package rust-mode
   :ensure t
   :defer t
   :init
-  (setq rust-format-on-save t)
   (add-to-list 'eglot-server-programs '(rust-mode . ("rust-analyzer")))
   (add-hook 'rust-mode-hook (lambda () (kg/lang-std))))
 
@@ -344,10 +344,7 @@
   :defer t
   :init
   (setq gofmt-command "goimports")
-  (add-hook 'go-mode-hook
-            (lambda ()
-              (kg/lang-std)
-              (add-hook 'before-save-hook 'gofmt-before-save nil t))))
+  (add-hook 'go-mode-hook (lambda () (kg/lang-std))))
 
 (add-hook 'c-mode-hook (lambda () (kg/lang-std)))
 (add-hook 'c++-mode-hook (lambda () (kg/lang-std)))
