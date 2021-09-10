@@ -112,7 +112,6 @@
 
 (use-package helm
   :ensure t
-  :defer t
   :init
   (global-set-key (kbd "M-x") 'helm-M-x)
   (global-set-key (kbd "C-x C-f") 'helm-find-files))
@@ -308,7 +307,6 @@
 
 (use-package rust-mode
   :ensure t
-  :defer t
   :init
   (setq rust-format-on-save t)
   (add-to-list 'eglot-server-programs '(rust-mode . ("rust-analyzer")))
@@ -319,7 +317,6 @@
 
 (use-package go-mode
   :ensure t
-  :defer t
   :init
   (setq gofmt-command "goimports")
   (add-hook 'go-mode-hook
@@ -329,6 +326,7 @@
 
 (add-hook 'c-mode-hook (lambda () (kg/lang-std)))
 (add-hook 'c++-mode-hook (lambda () (kg/lang-std)))
+(add-hook 'emacs-lisp-mode-hook (lambda () (progn (show-paren-mode) (company-mode))))
 
 (setq kg/font-size 170)
 (defun kg/global-font-size (size)
