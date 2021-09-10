@@ -104,10 +104,6 @@
       (select-window w1)
       (set-window-buffer w2 "*shell*"))))
 
-(use-package transpose-frame
-  :ensure t
-  :defer t)
-
 (use-package helm
   :ensure t
   :defer t
@@ -127,9 +123,7 @@
   :config
   (evil-collection-init))
 
-(use-package magit
-  :ensure t
-  :defer t)
+(use-package magit :ensure t :defer t)
 
 (use-package company
   :ensure t
@@ -239,16 +233,14 @@
   (setq compilation-save-buffers-predicate #'projectile-current-project-buffer-p)
   (projectile-mode +1))
 
-(use-package eglot
-  :ensure t)
-
-(use-package dockerfile-mode
-  :ensure t
-  :defer t)
-
-(use-package yaml-mode
-  :ensure t
-  :defer t)
+(use-package eglot :ensure t)
+(use-package dockerfile-mode :ensure t :defer t)
+(use-package yaml-mode :ensure t :defer t)
+(use-package web-mode :ensure t :defer t)
+(use-package rjsx-mode :ensure t :defer t)
+(use-package js2-mode :ensure t :defer t)
+(use-package poly-markdown :ensure t :defer t)
+(use-package poly-R :ensure t :defer t)
 
 (use-package markdown-mode
   :ensure t
@@ -261,29 +253,6 @@
               (turn-on-orgtbl)
               (turn-on-orgstruct++))))
   
-(use-package web-mode
-  :ensure t
-  :defer t
-  :mode ("\\.html\\'" . web-mode))
-
-(use-package rjsx-mode
-  :ensure t
-  :defer t
-  :mode ("\\.jsx\\'" . rjsx-mode))
-
-(use-package js2-mode
-  :ensure t
-  :defer t
-  :mode ("\\.js\\'" . js2-mode))
-
-(use-package poly-markdown
-  :ensure t
-  :defer t)
-
-(use-package poly-R
-  :ensure t
-  :defer t)
-
 (defun kg/toggle-ess-r ()
   (interactive)
   (let ((name (concat "*R:" (projectile-project-name) "*")))
@@ -373,7 +342,6 @@
                "t T" 'shell
                "v u" 'projectile-compile-project
                ;; buffer keybindings
-               "n e" 'transpose-frame
                "n k" (lambda () (interactive) (mapc 'kill-buffer (buffer-list)))
                "n t" 'neotree-toggle
                "n n" 'next-buffer
