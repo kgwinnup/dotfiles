@@ -13,8 +13,6 @@
 (require 'use-package)
 (require 'ansi-color)
 
-(setq mac-command-modifier 'meta)
-
 ;; for use when running shells within emacs, this sets the path for
 ;; those shells
 (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH")))
@@ -91,10 +89,7 @@
             (local-set-key "u" 'eww-back-url)
             (define-key evil-normal-state-local-map (kbd "SPC g p") 'eww-back-url)))
 
-;;
-;; general shell functions
-;;
-(defun my-toggle-shell ()
+(defun kg/toggle-shell ()
   (interactive)
   ;; if shell exists toggle view on/off
   (if (get-buffer "*shell*")
@@ -111,10 +106,6 @@
       (select-window w1)
       (set-window-buffer w2 "*shell*"))))
 
-(use-package dockerfile-mode
-  :ensure t
-  :defer t)
-
 (use-package transpose-frame
   :ensure t
   :defer t)
@@ -124,20 +115,9 @@
   :defer t
   :init
   (global-set-key (kbd "M-x") 'helm-M-x)
-  (global-set-key (kbd "C-x C-f") 'helm-find-files)
-  (setq helm-boring-buffer-regexp-list
-      (quote
-       (  "\\Minibuf.+\\*"
-          "\\` "
-          "\\*.+\\*"
-          "<*.+>$"
-          "\\magit"))))
+  (global-set-key (kbd "C-x C-f") 'helm-find-files))
 
-(use-package yaml-mode
-  :ensure t
-  :defer t)
-
-(setq evil-want-keybinding nil)
+  (setq evil-want-keybinding nil)
 (use-package evil
   :ensure t
   :init
@@ -153,183 +133,6 @@
   :ensure t
   :defer t)
 
-;;
-;; org-mode functions 
-;;
-
-(defun my-start-code-block ()
-  "starts a code block in org mode"
-  (interactive)
-  (insert "#+begin_src\n\n#+end_src")
-  (previous-line)
-  (previous-line))
-
-(use-package org
-  :ensure t
-  :defer t
-  :init
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((R . t)
-     (shell . t)))
-  (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
-  (use-package org-present
-    :ensure t)
-    (add-hook 'org-mode-hook
-            (lambda ()
-              (org-indent-mode)
-              (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
-              (define-key evil-normal-state-local-map (kbd "SPC P") 'org-present)
-              (define-key evil-normal-state-local-map (kbd "SPC p") 'org-cycle)
-              (define-key evil-normal-state-local-map (kbd "SPC g p") 'org-global-cycle)
-              (define-key evil-normal-state-local-map (kbd "SPC s n") 'my-start-code-block)
-              (define-key evil-normal-state-local-map (kbd "SPC s o") 'org-edit-src-code)
-              (define-key evil-normal-state-local-map (kbd "SPC u") 'org-todo)
-              (define-key evil-normal-state-local-map (kbd "SPC o") 'org-toggle-checkbox)))
-    :config
-    (setq org-todo-keyword-faces
-          '(("NOTES" . "coral")
-            ("TODO" . "dodger blue")
-            ("DOING" . "lime green")
-            ("DONE" . "dark gray")))
-    (setq org-todo-keywords
-          '((sequence "NOTES" "TODO" "DOING" "DONE")))
-    (setq org-latex-create-formula-image-program 'dvipng)
-    (setq org-preview-latex-default-process 'dvipng)
-    (eval-after-load "org-present"
-      '(progn
-         (add-hook 'org-present-mode-hook
-                   (lambda ()
-                     (local-set-key (kbd "C-c +") '(lambda () (interactive) (my-global-font-size 10)))
-                     (local-set-key (kbd "C-c -") '(lambda () (interactive) (my-global-font-size -10)))
-                     (turn-off-evil-mode)
-                     (org-present-big)
-                     (display-line-numbers-mode -1)
-                     (org-display-inline-images)
-                     (org-present-hide-cursor)
-                     (org-present-read-only)))
-         (add-hook 'org-present-mode-quit-hook
-                   (lambda ()
-                     (turn-on-evil-mode)
-                     (display-line-numbers-mode t)
-                     (org-present-small)
-                     (org-remove-inline-images)
-                     (org-present-show-cursor)
-                     (org-present-read-write))))))
-
-(use-package markdown-mode
-  :ensure t
-  :defer t
-  :commands (markdown-mode gfm-mode)
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
-  :init
-  (setq markdown-command "multimarkdown")
-  (add-hook 'markdown-mode-hook
-            (lambda ()
-              (turn-on-orgtbl)
-              (turn-on-orgstruct++))))
-
-(use-package projectile
-  :ensure t
-  :config
-  (defun colorize-compilation-buffer ()
-    (toggle-read-only)
-    (ansi-color-apply-on-region compilation-filter-start (point))
-    (toggle-read-only))
-  (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
-  (setq compilation-buffer-name-function #'projectile-compilation-buffer-name)
-  (setq compilation-save-buffers-predicate #'projectile-current-project-buffer-p)
-  (projectile-mode +1))
-
-(use-package rust-mode
-  :ensure t
-  :defer t
-  :init
-  (setq rust-format-on-save t)
-  (add-hook 'rust-mode-hook
-            (lambda ()
-              (show-paren-mode)
-              (eglot-ensure)
-              (company-mode)
-              (define-key evil-normal-state-local-map (kbd "SPC g g") 'xref-find-definitions)
-              (define-key evil-normal-state-local-map (kbd "SPC g p") 'pop-tag-mark)
-              (define-key evil-normal-state-local-map (kbd "SPC g r") 'eglot-rename)
-              (define-key evil-normal-state-local-map (kbd "SPC g h") 'eldoc)
-              (define-key evil-normal-state-local-map (kbd "SPC g l") 'xref-find-references))))
-
-(use-package go-mode
-  :ensure t
-  :defer t
-  :init
-  (setq gofmt-command "goimports")
-  (add-hook 'go-mode-hook
-			(lambda ()
-              (show-paren-mode)
-              (eglot-ensure)
-              (company-mode)
-              (define-key evil-normal-state-local-map (kbd "SPC g g") 'xref-find-definitions)
-              (define-key evil-normal-state-local-map (kbd "SPC g p") 'pop-tag-mark)
-              (define-key evil-normal-state-local-map (kbd "SPC g r") 'eglot-rename)
-              (define-key evil-normal-state-local-map (kbd "SPC g h") 'eldoc)
-              (define-key evil-normal-state-local-map (kbd "SPC g l") 'xref-find-references)
-              (add-hook 'before-save-hook 'gofmt-before-save nil t))))
-
-(use-package eglot
-  :ensure t)
-  
-(use-package web-mode
-  :ensure t
-  :defer t
-  :mode ("\\.html\\'" . gfm-mode))
-
-(use-package rjsx-mode
-  :ensure t
-  :defer t
-  :mode ("\\.jsx\\'" . rjsx-mode))
-
-(use-package js2-mode
-  :ensure t
-  :defer t
-  :mode ("\\.js\\'" . js2-mode))
-
-(defun my-ess-toggle-R ()
-  (interactive)
-  (let ((name (concat "*R:" (projectile-project-name) "*")))
-    (if (get-buffer name)
-        (if (and (get-buffer-window name))
-            (delete-other-windows)
-          (let ((w2 (split-window-horizontally)))
-            (set-window-buffer w2 name))))))
-
-(use-package poly-markdown
-  :ensure t
-  :defer t)
-
-(use-package poly-R
-  :ensure t
-  :defer t)
-
-(use-package ess
-  :ensure t
-  :defer t
-  :mode (("\\*\\.R" . ess-site)
-         ("\\*\\.Rmd" . ess-site))
-  :commands R
-  :hook (ess-mode-hook . subword-mode)
-  :config
-  (setq ess-ask-for-ess-directory nil)
-  (setq ess-local-process-name "R")
-  (setq scroll-down-aggressively 0.01)
-  (setq ess-fancy-comments nil)
-  :init
-  (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+R-mode))
-  (add-hook 'ess-mode-hook
-            (lambda ()
-              (define-key evil-normal-state-local-map (kbd "SPC r s") 'my-ess-toggle-R)
-              (define-key evil-normal-state-local-map (kbd "SPC r r") (lambda () (interactive) (ess-eval-function-or-paragraph-and-step))))))
-
 (use-package company
   :ensure t
   :config
@@ -338,9 +141,6 @@
   (setq company-minimum-prefix-length 1)
   (define-key company-active-map (kbd "<tab>") 'company-select-next))
 
-;;
-;; neotree
-;;
 (defun neo-open-file-hide (full-path &optional arg)
   "Open a file node and hides tree."
   (neo-global--select-mru-window arg)
@@ -369,6 +169,154 @@
 			  (define-key evil-normal-state-local-map (kbd "SPC n s") 'next-multiframe-window)
 			  (define-key evil-normal-state-local-map (kbd "SPC n p") 'neotree-change-root))))
 
+(defun kg/start-code-block ()
+  "starts a code block in org mode"
+  (interactive)
+  (insert "#+begin_src\n\n#+end_src")
+  (previous-line)
+  (previous-line))
+
+(use-package org
+  :ensure t
+  :defer t
+  :init
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((R . t)
+     (shell . t)))
+  (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+  (use-package org-present
+    :ensure t)
+    (add-hook 'org-mode-hook
+            (lambda ()
+              (org-indent-mode)
+              (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
+              (define-key evil-normal-state-local-map (kbd "SPC P") 'org-present)
+              (define-key evil-normal-state-local-map (kbd "SPC p") 'org-cycle)
+              (define-key evil-normal-state-local-map (kbd "SPC g p") 'org-global-cycle)
+              (define-key evil-normal-state-local-map (kbd "SPC s n") 'kg/start-code-block)
+              (define-key evil-normal-state-local-map (kbd "SPC s o") 'org-edit-src-code)
+              (define-key evil-normal-state-local-map (kbd "SPC u") 'org-todo)
+              (define-key evil-normal-state-local-map (kbd "SPC o") 'org-toggle-checkbox)))
+    :config
+    (setq org-todo-keyword-faces
+          '(("NOTES" . "coral")
+            ("TODO" . "dodger blue")
+            ("DOING" . "lime green")
+            ("DONE" . "dark gray")))
+    (setq org-todo-keywords
+          '((sequence "NOTES" "TODO" "DOING" "DONE")))
+    (setq org-latex-create-formula-image-program 'dvipng)
+    (setq org-preview-latex-default-process 'dvipng)
+    (eval-after-load "org-present"
+      '(progn
+         (add-hook 'org-present-mode-hook
+                   (lambda ()
+                     (local-set-key (kbd "C-c +") '(lambda () (interactive) (kg/global-font-size 10)))
+                     (local-set-key (kbd "C-c -") '(lambda () (interactive) (kg/global-font-size -10)))
+                     (turn-off-evil-mode)
+                     (org-present-big)
+                     (display-line-numbers-mode -1)
+                     (org-display-inline-images)
+                     (org-present-hide-cursor)
+                     (org-present-read-only)))
+         (add-hook 'org-present-mode-quit-hook
+                   (lambda ()
+                     (turn-on-evil-mode)
+                     (display-line-numbers-mode t)
+                     (org-present-small)
+                     (org-remove-inline-images)
+                     (org-present-show-cursor)
+                     (org-present-read-write))))))
+
+(use-package projectile
+  :ensure t
+  :config
+  (defun colorize-compilation-buffer ()
+    (toggle-read-only)
+    (ansi-color-apply-on-region compilation-filter-start (point))
+    (toggle-read-only))
+  (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+  (setq compilation-buffer-name-function #'projectile-compilation-buffer-name)
+  (setq compilation-save-buffers-predicate #'projectile-current-project-buffer-p)
+  (projectile-mode +1))
+
+(use-package eglot
+  :ensure t)
+
+(use-package dockerfile-mode
+  :ensure t
+  :defer t)
+
+(use-package yaml-mode
+  :ensure t
+  :defer t)
+
+(use-package markdown-mode
+  :ensure t
+  :defer t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init
+  (setq markdown-command "multimarkdown")
+  (add-hook 'markdown-mode-hook
+            (lambda ()
+              (turn-on-orgtbl)
+              (turn-on-orgstruct++))))
+  
+(use-package web-mode
+  :ensure t
+  :defer t
+  :mode ("\\.html\\'" . gfm-mode))
+
+(use-package rjsx-mode
+  :ensure t
+  :defer t
+  :mode ("\\.jsx\\'" . rjsx-mode))
+
+(use-package js2-mode
+  :ensure t
+  :defer t
+  :mode ("\\.js\\'" . js2-mode))
+
+(use-package poly-markdown
+  :ensure t
+  :defer t)
+
+(use-package poly-R
+  :ensure t
+  :defer t)
+
+(defun kg/toggle-ess-r ()
+  (interactive)
+  (let ((name (concat "*R:" (projectile-project-name) "*")))
+    (if (get-buffer name)
+        (if (and (get-buffer-window name))
+            (delete-other-windows)
+          (let ((w2 (split-window-horizontally)))
+            (set-window-buffer w2 name))))))
+
+(use-package ess
+  :ensure t
+  :defer t
+  :mode (("\\*\\.R" . ess-site)
+         ("\\*\\.Rmd" . ess-site))
+  :commands R
+  :hook (ess-mode-hook . subword-mode)
+  :config
+  (setq ess-ask-for-ess-directory nil)
+  (setq ess-local-process-name "R")
+  (setq scroll-down-aggressively 0.01)
+  (setq ess-fancy-comments nil)
+  :init
+  (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+R-mode))
+  (add-hook 'ess-mode-hook
+            (lambda ()
+              (define-key evil-normal-state-local-map (kbd "SPC r s") 'kg/toggle-ess-r)
+              (define-key evil-normal-state-local-map (kbd "SPC r r") (lambda () (interactive) (ess-eval-function-or-paragraph-and-step))))))
+
 (use-package elfeed
   :ensure t
   :defer t
@@ -382,12 +330,35 @@
   (setq-default elfeed-search-title-max-width 100)
   (setq-default elfeed-search-title-min-width 100))
 
-(setq my-font-size 170)
-(defun my-global-font-size (size)
+(use-package rust-mode
+  :ensure t
+  :defer t
+  :init
+  (setq rust-format-on-save t)
+  (add-hook 'rust-mode-hook
+            (lambda ()
+              (show-paren-mode)
+              (eglot-ensure)
+              (company-mode))))
+
+(use-package go-mode
+  :ensure t
+  :defer t
+  :init
+  (setq gofmt-command "goimports")
+  (add-hook 'go-mode-hook
+			(lambda ()
+              (show-paren-mode)
+              (eglot-ensure)
+              (company-mode)
+              (add-hook 'before-save-hook 'gofmt-before-save nil t))))
+
+(setq kg/font-size 170)
+(defun kg/global-font-size (size)
   (interactive)
   (set-face-attribute 'default nil
-                      :height (+ size my-font-size))
-  (setq my-font-size (+ size my-font-size)))
+                      :height (+ size kg/font-size))
+  (setq kg/font-size (+ size kg/font-size)))
 
 (use-package bind-map
   :ensure t
@@ -402,7 +373,7 @@
                "s s" 'ispell
                "s r" 'ispell-region
                ;; cli integrations
-               "t t" 'my-toggle-shell
+               "t t" 'kg/toggle-shell
                "t T" 'shell
                "v u" 'projectile-compile-project
                ;; buffer keybindings
@@ -414,7 +385,7 @@
                "n p" 'previous-buffer
                "n o" 'delete-other-windows
                "n d" 'kill-buffer-and-window
-               "n b" 'helm-buffers-list
+               "n b" 'helm-mini
                "n r" '(lambda () (interactive) (switch-to-buffer "*scratch*"))
                "n a" '(lambda () (interactive) (find-file "~/workspace/notes.org"))
                "n f" 'make-frame
@@ -429,8 +400,18 @@
                "m e" '(lambda () (interactive) (eww-browse-url (read-string "url: ")))
                ;; view
                "," 'rename-buffer
-               "=" (lambda () (interactive) (my-global-font-size 10))
-               "-" (lambda () (interactive) (my-global-font-size -10)))))
+               "=" (lambda () (interactive) (kg/global-font-size 10))
+               "-" (lambda () (interactive) (kg/global-font-size -10))))
+  (bind-map-for-mode-inherit my-eglot-map my-base-leader-map
+    :keys ("M-m")
+    :evil-keys ("SPC")
+    :evil-states (normal motion visual)
+    :major-modes (rust-mode go-mode c-mode c++-mode lisp-mode)
+    :bindings ("g g" 'xref-find-definitions
+               "g p" 'pop-tag-mark
+               "g r" 'eglot-rename
+               "g h" 'eldoc
+               "g l" 'xref-find-references)))
 
 (load-theme 'gruvbox-dark-hard t)
 ;(load-theme 'adwaita t)
@@ -438,5 +419,5 @@
 
 (set-face-attribute 'default nil
                     :family "Fira Code Retina"
-                    :height my-font-size)
+                    :height kg/font-size)
 
