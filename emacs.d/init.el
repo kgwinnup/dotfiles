@@ -64,6 +64,12 @@
 (global-hl-line-mode)
 (and (display-graphic-p) (scroll-bar-mode -1))
 
+;;;; Mouse scrolling in terminal emacs
+(unless (display-graphic-p)
+  (xterm-mouse-mode 1)
+  (global-set-key (kbd "<mouse-4>") 'scroll-down-line)
+  (global-set-key (kbd "<mouse-5>") 'scroll-up-line))
+
 (shell-command "touch ~/.emacs.d/custom.el")
 (load "~/.emacs.d/custom.el")
 
@@ -304,6 +310,7 @@
   :ensure t
   :defer t
   :init
+  (setq rust-format-on-save t)
   (add-to-list 'eglot-server-programs '(rust-mode . ("rust-analyzer")))
   (add-hook 'rust-mode-hook
             (lambda ()
