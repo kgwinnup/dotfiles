@@ -336,6 +336,7 @@
   :defer t
   :init
   (setq rust-format-on-save t)
+  (add-to-list 'eglot-server-programs '(rust-mode . ("rust-analyzer")))
   (add-hook 'rust-mode-hook (lambda () (kg/lang-std))))
 
 (use-package go-mode
