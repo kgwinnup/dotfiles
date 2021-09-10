@@ -20,9 +20,8 @@
 (setenv "PATH" (concat "~/go/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "~/.cargo/bin:" (getenv "PATH")))
-(setenv "PATH" (concat "/Library/TeX/texbin:" (getenv "PATH")))
+(setenv "PATH" (concat "/usr/local/Cellar/llvm/12.0.1/bin" (getenv "PATH")))
 (setenv "PATH" (concat "~/.local/share/nvm/v12.22.1/bin" (getenv "PATH")))
-(setenv "GTAGSLIBPATH" "~/.gtags")
 
 ;; for use when emacs it self calls out to find programs needed for
 ;; various plugin features
@@ -30,8 +29,8 @@
 (add-to-list 'exec-path "/usr/local/bin")
 (add-to-list 'exec-path "~/go/bin")
 (add-to-list 'exec-path "~/bin")
-(add-to-list 'exec-path "/Library/TeX/texbin")
 (add-to-list 'exec-path "~/.cargo/bin")
+(add-to-list 'exec-path "/usr/local/Cellar/llvm/12.0.1/bin")
 (add-to-list 'exec-path "~/.local/share/nvm/v12.22.1/bin")
 
 ;; some basic global settings
@@ -40,7 +39,6 @@
               warning-minimum-level :emergency
               comp-async-report-warnings-errors nil
               compilation-scroll-output t
-              mac-allow-anti-aliasing nil
               scroll-step 1
               scroll-conservatively  10000
               mouse-wheel-scroll-amount '(1 ((shift) . 1))
@@ -117,7 +115,7 @@
   (global-set-key (kbd "M-x") 'helm-M-x)
   (global-set-key (kbd "C-x C-f") 'helm-find-files))
 
-  (setq evil-want-keybinding nil)
+(setq evil-want-keybinding nil)
 (use-package evil
   :ensure t
   :init
@@ -255,10 +253,7 @@
 (use-package markdown-mode
   :ensure t
   :defer t
-  :commands (markdown-mode gfm-mode)
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
+  :mode ("\\.md\\'" . markdown-mode)
   :init
   (setq markdown-command "multimarkdown")
   (add-hook 'markdown-mode-hook
@@ -269,7 +264,7 @@
 (use-package web-mode
   :ensure t
   :defer t
-  :mode ("\\.html\\'" . gfm-mode))
+  :mode ("\\.html\\'" . web-mode))
 
 (use-package rjsx-mode
   :ensure t
@@ -353,6 +348,18 @@
               (company-mode)
               (add-hook 'before-save-hook 'gofmt-before-save nil t))))
 
+(add-hook 'c-mode-hook
+          (lambda ()
+            (show-paren-mode)
+            (eglot-ensure)
+            (company-mode)))
+
+(add-hook 'c++-mode-hook
+          (lambda ()
+            (show-paren-mode)
+            (eglot-ensure)
+            (company-mode)))
+
 (setq kg/font-size 170)
 (defun kg/global-font-size (size)
   (interactive)
@@ -406,7 +413,7 @@
     :keys ("M-m")
     :evil-keys ("SPC")
     :evil-states (normal motion visual)
-    :major-modes (rust-mode go-mode c-mode c++-mode lisp-mode)
+    :major-modes (rust-mode go-mode c-mode c++-mode)
     :bindings ("g g" 'xref-find-definitions
                "g p" 'pop-tag-mark
                "g r" 'eglot-rename
