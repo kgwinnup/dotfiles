@@ -362,7 +362,6 @@
 
 (add-hook 'eshell-mode-hook
           (lambda ()
-            (company-mode)
             (define-key company-active-map (kbd "RET") nil)
             (add-to-list 'eshell-visual-commands "ssh")
             (add-to-list 'eshell-visual-commands "man")
