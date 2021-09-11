@@ -338,12 +338,12 @@
 
 ;;
 ;; eshell 
-(defun my-eshell-git-info ()
+(defun kg/eshell-git-info ()
   (if (magit-get-current-branch)
       (propertize (concat " (" (magit-get-current-branch) ")") 'face `(:foreground "#ebdbb2"))
     ""))
 
-(defun my-eshell-pwd ()
+(defun kg/eshell-pwd ()
   (let ((ret (if (cl-search (getenv "HOME") (eshell/pwd))
                  (concat "~" (substring (eshell/pwd) (length (getenv "HOME")) nil))
                (eshell/pwd))))
@@ -351,14 +351,26 @@
 
 (setq eshell-prompt-function
       (lambda ()
-        (concat (my-eshell-pwd)
-                (my-eshell-git-info)
+        (concat (kg/eshell-pwd)
+                (kg/eshell-git-info)
                 (propertize " $ " 'face `(:foreground "#ebdbb2")))))
 
-(defun my-clear-eshell ()
-  "clears the eshell buffer, does not set my-last-eshell-cmd"
+(defun kg/clear-eshell ()
   (interactive)
-  (my-send-to-eshell "clear 1"))
+  (kg/eshell-send "clear 1"))
+
+(defun kg/eshell-send (cmd &optional set-last-cmd-p)
+  (interactive)
+  (with-current-buffer "*eshell*"
+    (evil-insert-state)
+    (eshell-kill-input)
+    (end-of-buffer)
+    (insert cmd)
+    (eshell-send-input)
+    (end-of-buffer)
+    (eshell-bol)
+    (if set-last-cmd-p
+        (setq my-last-shell-cmd cmd))))
 
 (add-hook 'eshell-mode-hook
           (lambda ()
