@@ -12,6 +12,7 @@
   (package-install 'use-package))
 (require 'use-package)
 (require 'ansi-color)
+(require 'ox-latex)
 
 ;; for use when running shells within emacs, this sets the path for
 ;; those shells
@@ -96,11 +97,11 @@
 (defun kg/toggle-shell ()
   (interactive)
   ;; if shell exists toggle view on/off
-  (if (get-buffer "*shell*")
-      (if (and (get-buffer-window "*shell*"))
+  (if (get-buffer "*eshell*")
+      (if (and (get-buffer-window "*eshell*"))
           (delete-other-windows)
         (let ((w2 (split-window-horizontally)))
-          (set-window-buffer w2 "*shell*")))
+          (set-window-buffer w2 "*eshell*")))
     ;; else split the screen and create shell
     (let ((w1 (selected-window))
           (w2 (split-window-horizontally)))
@@ -108,7 +109,7 @@
       (shell)
       (display-line-numbers-mode -1)
       (select-window w1)
-      (set-window-buffer w2 "*shell*"))))
+      (set-window-buffer w2 "*eshell*"))))
 
 (use-package helm
   :ensure t
@@ -128,7 +129,7 @@
   :config
   (evil-collection-init))
 
-(use-package magit :ensure t :defer t)
+(use-package magit :ensure t)
 
 (use-package company
   :ensure t
@@ -305,6 +306,13 @@
      (eglot-ensure)
      (company-mode)))
 
+(use-package yasnippet
+  :ensure
+  :config
+  (yas-reload-all)
+  (add-hook 'prog-mode-hook 'yas-minor-mode)
+  (add-hook 'text-mode-hook 'yas-minor-mode))
+
 (use-package rust-mode
   :ensure t
   :init
@@ -328,6 +336,42 @@
 (add-hook 'c++-mode-hook (lambda () (kg/lang-std)))
 (add-hook 'emacs-lisp-mode-hook (lambda () (progn (show-paren-mode) (company-mode))))
 
+;;
+;; eshell 
+(defun my-eshell-git-info ()
+  (if (magit-get-current-branch)
+      (propertize (concat " (" (magit-get-current-branch) ")") 'face `(:foreground "#ebdbb2"))
+    ""))
+
+(defun my-eshell-pwd ()
+  (let ((ret (if (cl-search (getenv "HOME") (eshell/pwd))
+                 (concat "~" (substring (eshell/pwd) (length (getenv "HOME")) nil))
+               (eshell/pwd))))
+    (propertize ret 'face `(:foreground "#b8bb26"))))
+
+(setq eshell-prompt-function
+      (lambda ()
+        (concat (my-eshell-pwd)
+                (my-eshell-git-info)
+                (propertize " $ " 'face `(:foreground "#ebdbb2")))))
+
+(defun my-clear-eshell ()
+  "clears the eshell buffer, does not set my-last-eshell-cmd"
+  (interactive)
+  (my-send-to-eshell "clear 1"))
+
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (define-key company-active-map (kbd "RET") nil)
+            (add-to-list 'eshell-visual-commands "ssh")
+            (add-to-list 'eshell-visual-commands "man")
+            (add-to-list 'eshell-visual-subcommands '("docker" "attach"))
+            (add-to-list 'eshell-visual-subcommands '("git" "log"))
+            (add-to-list 'eshell-visual-subcommands '("git" "status"))
+            (add-to-list 'eshell-visual-subcommands '("git" "diff"))
+            ;; adds color support to eshell stdout
+            (setenv "TERM" "xterm-256color")))
+
 (setq kg/font-size 170)
 (defun kg/global-font-size (size)
   (interactive)
@@ -349,7 +393,7 @@
                "s r" 'ispell-region
                ;; cli integrations
                "t t" 'kg/toggle-shell
-               "t T" 'shell
+               "t T" 'eshell
                "v u" 'projectile-compile-project
                ;; buffer keybindings
                "n k" (lambda () (interactive) (mapc 'kill-buffer (buffer-list)))
