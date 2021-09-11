@@ -106,7 +106,7 @@
     (let ((w1 (selected-window))
           (w2 (split-window-horizontally)))
       (select-window w2)
-      (shell)
+      (eshell)
       (display-line-numbers-mode -1)
       (select-window w1)
       (set-window-buffer w2 "*eshell*"))))
@@ -362,6 +362,7 @@
 
 (add-hook 'eshell-mode-hook
           (lambda ()
+            (company-mode)
             (define-key company-active-map (kbd "RET") nil)
             (add-to-list 'eshell-visual-commands "ssh")
             (add-to-list 'eshell-visual-commands "man")
