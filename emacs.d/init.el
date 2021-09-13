@@ -294,7 +294,6 @@
   (setq elfeed-feeds '(("https://lobste.rs/rss" lobsters)
                        ("https://tilde.news/rss" tildeverse)
                        ("https://lwn.net/headlines/rss" lwn)
-                       ("https://news.ycombinator.com/rss" hn)
                        ("http://rss.slashdot.org/Slashdot/slashdotMain" slashdot)))
   (setq-default elfeed-search-filter "@1-week-ago +unread")
   (setq-default elfeed-search-title-max-width 100)
@@ -316,7 +315,7 @@
 (use-package rust-mode
   :ensure t
   :init
-  (setq rust-format-on-save t)
+  ;(setq rust-format-on-save t)
   (add-to-list 'eglot-server-programs '(rust-mode . ("rust-analyzer")))
   (add-hook 'rust-mode-hook
             (lambda ()
