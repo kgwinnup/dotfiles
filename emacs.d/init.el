@@ -55,6 +55,7 @@
               auto-save-default nil
               make-backup-files nil
               shell-file-name "fish"
+              initial-major-mode 'org-mode
               backup-directory-alist '(("" . "~/.emacs.d/backup")))
 
 (tool-bar-mode -1)
