@@ -14,25 +14,11 @@
 (require 'ansi-color)
 (require 'ox-latex)
 
-;; for use when running shells within emacs, this sets the path for
-;; those shells
-(setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH")))
-(setenv "PATH" (concat "/usr/local/go/bin:" (getenv "PATH")))
-(setenv "PATH" (concat "~/go/bin:" (getenv "PATH")))
-(setenv "PATH" (concat "~/bin:" (getenv "PATH")))
-(setenv "PATH" (concat "~/.cargo/bin:" (getenv "PATH")))
-(setenv "PATH" (concat "/usr/local/Cellar/llvm/12.0.1/bin" (getenv "PATH")))
-(setenv "PATH" (concat "~/.local/share/nvm/v12.22.1/bin" (getenv "PATH")))
-
-;; for use when emacs it self calls out to find programs needed for
-;; various plugin features
-(add-to-list 'exec-path "/usr/local/go/bin")
-(add-to-list 'exec-path "/usr/local/bin")
-(add-to-list 'exec-path "~/go/bin")
-(add-to-list 'exec-path "~/bin")
-(add-to-list 'exec-path "~/.cargo/bin")
-(add-to-list 'exec-path "/usr/local/Cellar/llvm/12.0.1/bin")
-(add-to-list 'exec-path "~/.local/share/nvm/v12.22.1/bin")
+(mapcar (lambda (path)
+          (progn
+            (setenv "PATH" (concat path ":" (getenv "PATH")))
+            (add-to-list 'exec-path path)))
+        '("/usr/local/bin" "/usr/local/go/bin" "~/go/bin" "~/bin" "~/.cargo/bin"))
 
 ;; some basic global settings
 (setq-default ring-bell-function 'ignore
