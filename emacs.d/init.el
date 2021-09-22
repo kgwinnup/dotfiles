@@ -15,10 +15,12 @@
 (require 'ox-latex)
 
 (mapcar (lambda (path)
-          (progn
-            (setenv "PATH" (concat path ":" (getenv "PATH")))
-            (add-to-list 'exec-path path)))
+          (setenv "PATH" (concat path ":" (getenv "PATH")))
+          (add-to-list 'exec-path path))
         '("/usr/local/bin" "/usr/local/go/bin" "~/go/bin" "~/bin" "~/.cargo/bin"))
+
+;(connection-local-set-profile-variables 'remote-path-with-bin
+                                        ;   '((tramp-remote-path . ("~/go/bin" tramp-default-remote-path))))
 
 ;; some basic global settings
 (setq-default ring-bell-function 'ignore
@@ -42,6 +44,8 @@
               make-backup-files nil
               shell-file-name "fish"
               initial-major-mode 'org-mode
+              eldoc-echo-area-use-multiline-p 10
+              eldoc-prefer-doc-buffer t
               backup-directory-alist '(("" . "~/.emacs.d/backup")))
 
 (tool-bar-mode -1)
