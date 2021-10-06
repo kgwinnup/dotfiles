@@ -44,7 +44,7 @@
               make-backup-files nil
               shell-file-name "fish"
               initial-major-mode 'org-mode
-              eldoc-echo-area-use-multiline-p 10
+              eldoc-echo-area-use-multiline-p 0
               eldoc-prefer-doc-buffer t
               backup-directory-alist '(("" . "~/.emacs.d/backup")))
 
@@ -79,11 +79,7 @@
                   shr-use-colors nil
                   shr-indentation 2
                   eww-search-prefix "https://ddg.gg/html?q="
-                  shr-width 120)
-            (local-set-key "n" 'shr-next-link)
-            (local-set-key "p" 'shr-previous-link)
-            (local-set-key "u" 'eww-back-url)
-            (define-key evil-normal-state-local-map (kbd "SPC g p") 'eww-back-url)))
+                  shr-width 120)))
 
 (defun kg/toggle-shell ()
   (interactive)
