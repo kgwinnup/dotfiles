@@ -427,6 +427,9 @@
                "g p" 'pop-tag-mark
                "g r" 'eglot-rename
                "g h" 'eldoc
+               "g f" 'forward-sexp
+               "g b" 'backward-sexp
+               "g =" 'comment-or-uncomment-region
                "g l" 'xref-find-references)))
 
 (use-package 'plan9-theme
