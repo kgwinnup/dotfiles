@@ -9,6 +9,7 @@ call plug#begin('~/.vim/plugged')
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'morhetz/gruvbox'
+Plug 'altercation/vim-colors-solarized'
 Plug 'scrooloose/nerdtree'
 Plug 'vim-scripts/gitignore'
 Plug 'rhysd/vim-clang-format'
@@ -57,6 +58,8 @@ set t_Co=256
 syntax enable
 set background=dark
 colorscheme gruvbox
+"set background=light
+"colorscheme solarized 
 
 " ale settings
 let g:ale_linters_explicit = 1 
@@ -119,11 +122,6 @@ nnoremap <leader>mL :VimuxRunCommand('git blame -L ' . line('.') . ',' . line('.
 autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
 autocmd BufNewFile,BufRead *.rmd set syntax=r
 
-com! FormatXML :%!python3 -c "import xml.dom.minidom, sys; print(xml.dom.minidom.parse(sys.stdin).toprettyxml())"
-com! FormatJSON :%!python -m json.tool
-nnoremap = :FormatXML<Cr>
-nnoremap = :FormatJSON<Cr>
-
 " visual keybindings
 vmap <leader>t= :Tab /=<cr>
 vmap <leader>t: :Tab /:<cr>
@@ -143,12 +141,7 @@ augroup END
 augroup ft_c
 autocmd FileType c,cpp ClangFormatAutoEnable
 let g:SuperTabDefaultCompletionType = "<c-n>"
-let g:clang_format#style_options = {
-            \ "ColumnLimit" : 0,
-            \ "AccessModifierOffset" : -4,
-            \ "AllowShortIfStatementsOnASingleLine" : "true",
-            \ "AlwaysBreakTemplateDeclarations" : "true",
-            \ "Standard" : "C++11"}
+let g:clang_format#style_options = {"BasedOnStyle" : "LLVM"}
 autocmd FileType c,cpp nnoremap <buffer><leader>t g]
 autocmd FileType c,cpp nnoremap <buffer><leader>gg g] 1<cr><cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>gp :pop<cr>
@@ -166,6 +159,7 @@ let g:rustfmt_autosave = 1
 let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 autocmd FileType rust nnoremap <buffer><leader>t :ALEHover<cr>
 autocmd FileType rust nnoremap <buffer><leader>gg :ALEGoToDefinition<cr>
+autocmd FileType rust nnoremap <buffer><leader>gr :ALERename<cr>
 autocmd FileType rust nnoremap <buffer><leader>gl :ALEFindReferences<cr>
 autocmd FileType rust nnoremap <buffer><leader>gp :pop<cr>
 augroup END
@@ -178,6 +172,7 @@ let g:ale_completion_enabled = 0
 let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 autocmd FileType go nnoremap <buffer><leader>t :GoInfo<cr>
 autocmd FileType go nnoremap <buffer><leader>gg :GoDef<cr>
+autocmd FileType go nnoremap <buffer><leader>gr :GoRename<cr>
 autocmd FileType go nnoremap <buffer><leader>gl :GoReferrers<cr>
 autocmd FileType go nnoremap <buffer><leader>gc :GoCallees<cr>
 autocmd FileType go nnoremap <buffer><leader>gp <C-o><cr>
@@ -257,7 +252,7 @@ function SendToR ()
     let lines = []
 
     if getline('.') =~ 'function' || getline('.') =~ 'for'
-        call SendRFunc() 
+        call SendRFunc()
     else
         call SendRRegion()
     endif
