@@ -435,7 +435,8 @@
 (use-package 'plan9-theme
   :ensure t)
 
-(load-theme 'plan9 t)
+;(load-theme 'plan9 t)
+(load-theme 'flatland t)
 ;(load-theme 'gruvbox-dark-hard t)
 ;(load-theme 'adwaita t)
 ;(global-hl-line-mode 0)
