@@ -170,6 +170,7 @@
    '((R . t)
      (shell . t)))
   (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+  (setq org-startup-folded t)
   (use-package org-present
     :ensure t)
     (add-hook 'org-mode-hook
@@ -179,6 +180,7 @@
               (define-key evil-normal-state-local-map (kbd "SPC P") 'org-present)
               (define-key evil-normal-state-local-map (kbd "SPC p") 'org-cycle)
               (define-key evil-normal-state-local-map (kbd "SPC g p") 'org-global-cycle)
+              (define-key evil-normal-state-local-map (kbd "SPC s e") 'org-sort-entries)
               (define-key evil-normal-state-local-map (kbd "SPC s n") 'kg/start-code-block)
               (define-key evil-normal-state-local-map (kbd "SPC s o") 'org-edit-src-code)
               (define-key evil-normal-state-local-map (kbd "SPC u") 'org-todo)
@@ -370,7 +372,7 @@
             ;; adds color support to eshell stdout
             (setenv "TERM" "xterm-256color")))
 
-(setq kg/font-size 170)
+(setq kg/font-size 140)
 (defun kg/global-font-size (size)
   (interactive)
   (set-face-attribute 'default nil
@@ -437,6 +439,7 @@
 
 ;(load-theme 'plan9 t)
 (load-theme 'flatland t)
+;(load-theme 'vscode-dark-plus t)
 ;(load-theme 'gruvbox-dark-hard t)
 ;(load-theme 'adwaita t)
 ;(global-hl-line-mode 0)
