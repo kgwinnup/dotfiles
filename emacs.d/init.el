@@ -54,10 +54,10 @@
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (xterm-mouse-mode 1)
+(add-hook 'after-make-frame-functions '(lambda () (interactive) (scroll-bar-mode -1)))
 (fset 'yes-or-no-p 'y-or-n-p)
 (global-display-line-numbers-mode)
 (global-hl-line-mode)
-(and (display-graphic-p) (scroll-bar-mode -1))
 
 ;;;; Mouse scrolling in terminal emacs
 (unless (display-graphic-p)
@@ -235,8 +235,9 @@
 (use-package dockerfile-mode :ensure t :defer t)
 (use-package yaml-mode :ensure t :defer t)
 (use-package web-mode :ensure t :defer t)
-(use-package rjsx-mode :ensure t :defer t)
-(use-package js2-mode :ensure t :defer t)
+
+
+;(use-package js2-mode :ensure t :defer t)
 (use-package poly-markdown :ensure t :defer t)
 (use-package poly-R :ensure t :defer t)
 
@@ -303,6 +304,15 @@
   (yas-reload-all)
   (add-hook 'prog-mode-hook 'yas-minor-mode)
   (add-hook 'text-mode-hook 'yas-minor-mode))
+
+(use-package rjsx-mode
+  :ensure t
+  :config
+  (add-to-list 'eglot-server-programs '(rjsx-mode . ("~/bin/typescript-language-server")))
+  (add-hook 'rjsx-mode-hook
+            (lambda ()
+              (kg/lang-std)
+              (add-hook 'before-save-hook 'eglot-format nil t))))
 
 (use-package rust-mode
   :ensure t
@@ -440,7 +450,7 @@
     :keys ("M-m")
     :evil-keys ("SPC")
     :evil-states (normal motion visual)
-    :major-modes (rust-mode go-mode c-mode c++-mode)
+    :major-modes (rjsx-mode rust-mode go-mode c-mode c++-mode)
     :bindings ("g g" 'xref-find-definitions
                "g p" 'pop-tag-mark
                "g r" 'eglot-rename
