@@ -30,6 +30,7 @@
               comp-async-report-warnings-errors nil
               compilation-scroll-output t
               scroll-step 1
+              scroll-bar-mode -1
               scroll-conservatively  10000
               mouse-wheel-scroll-amount '(1 ((shift) . 1))
               mouse-wheel-progressive-speed nil
@@ -449,7 +450,7 @@
                "g =" 'comment-or-uncomment-region
                "g l" 'xref-find-references)))
 
-(use-package 'plan9-theme
+(use-package 'flatland-theme
   :ensure t)
 
 ;(load-theme 'plan9 t)
@@ -463,19 +464,3 @@
                     :family "Fira Code Retina"
                     :height kg/font-size)
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("3b8284e207ff93dfc5e5ada8b7b00a3305351a3fb222782d8033a400a48eca48" "eb122e1df607ee9364c2dfb118ae4715a49f1a9e070b9d2eb033f1cefd50a908" "aff12479ae941ea8e790abb1359c9bb21ab10acd15486e07e64e0e10d7fdab38" "6b5c518d1c250a8ce17463b7e435e9e20faa84f3f7defba8b579d4f5925f60c1" "7661b762556018a44a29477b84757994d8386d6edee909409fabe0631952dad9" default))
- '(helm-minibuffer-history-key "M-p")
- '(package-selected-packages
-   '(vscode-dark-plus-theme flatland-theme transpose-frame flatui-theme busybee-theme apropospriate-theme elpher ample-theme solarized-theme smart-mode-line spaceline yaml-mode writegood-mode web-mode vterm use-package rust-mode rjsx-mode restclient projectile prettier-js powershell poly-R ox-gfm org-present neotree magit lsp-ui helm-themes helm-lsp helm-gtags gruvbox-theme go-mode evil-collection ess esh-autosuggest elfeed dockerfile-mode docker default-text-scale bind-map)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
