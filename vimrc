@@ -9,7 +9,6 @@ call plug#begin('~/.vim/plugged')
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'morhetz/gruvbox'
-Plug 'altercation/vim-colors-solarized'
 Plug 'scrooloose/nerdtree'
 Plug 'vim-scripts/gitignore'
 Plug 'rhysd/vim-clang-format'
@@ -71,7 +70,8 @@ let g:ale_fixers = {
     \ 'rust': ['rustfmt']
     \ }
 let g:ale_linters = {
-    \ 'rust': ['rls']
+    \ 'rust': ['analyzer'],
+    \ 'java': ['eclipselsp']
     \ }
 
 " nerdtree settings
@@ -149,6 +149,19 @@ autocmd FileType c,cpp nnoremap <buffer><leader>gu :!ctags -R --extrax=+q /usr/i
 autocmd FileType c,cpp nnoremap <buffer><leader>gf :cs f t  
 autocmd FileType c,cpp nnoremap <buffer><leader>gl :cs find s <cword><cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>gc :cs add cscope.out<cr>
+augroup END
+
+"
+" Java
+"
+augroup ft_java
+let g:ale_java_eclipselsp_path=$HOME . "/workspace/jdt-language-server-1.6.0-202111261512"
+let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
+autocmd FileType java nnoremap <buffer><leader>t :ALEHover<cr>
+autocmd FileType java nnoremap <buffer><leader>gg :ALEGoToDefinition<cr>
+autocmd FileType java nnoremap <buffer><leader>gr :ALERename<cr>
+autocmd FileType java nnoremap <buffer><leader>gl :ALEFindReferences<cr>
+autocmd FileType java nnoremap <buffer><leader>gp :pop<cr>
 augroup END
 
 "
