@@ -1,5 +1,3 @@
-;;
-
 
 ;; Packages and setup stuff
 ;;
@@ -15,10 +13,24 @@
 (require 'ansi-color)
 (require 'ox-latex)
 
+
 (mapcar (lambda (path)
           (setenv "PATH" (concat path ":" (getenv "PATH")))
           (add-to-list 'exec-path path))
-        '("/usr/local/bin" "/usr/local/go/bin" "~/go/bin" "~/bin" "~/.cargo/bin"))
+        '("/usr/local/bin"
+          "/usr/local/go/bin"
+          "~/go/bin"
+          "~/bin"
+          "~/workspace/jdk-17.0.1.jdk/Contents/Home/bin"
+          "~/.cargo/bin"))
+
+(mapcar (lambda (path)
+          (setenv "JAVA_HOME" (concat path ":" (getenv "JAVA_HOME"))))
+        '("~/workspace/jdk-17.0.1.jdk/Contents/Home"))
+
+(mapcar (lambda (path)
+          (setenv "CLASSPATH" (concat path ":" (getenv "CLASSPATH"))))
+        '("/Users/kgwinnup/workspace/jdt-language-server-1.6.0-202111261512/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar"))
 
 ;(connection-local-set-profile-variables 'remote-path-with-bin
                                         ;   '((tramp-remote-path . ("~/go/bin" tramp-default-remote-path))))
@@ -30,7 +42,6 @@
               comp-async-report-warnings-errors nil
               compilation-scroll-output t
               scroll-step 1
-              scroll-bar-mode -1
               scroll-conservatively  10000
               mouse-wheel-scroll-amount '(1 ((shift) . 1))
               mouse-wheel-progressive-speed nil
@@ -100,6 +111,27 @@
       (display-line-numbers-mode -1)
       (select-window w1)
       (set-window-buffer w2 "*eshell*"))))
+
+(defun kg/persp-neo ()
+    "Make NeoTree follow the perspective"
+    (interactive)
+    (let ((cw (selected-window))
+          (path (buffer-file-name))) ;;save current window/buffer
+      (progn
+        (when (and (fboundp 'projectile-project-p)
+                   (projectile-project-p)
+                   (fboundp 'projectile-project-root))
+          (neotree-dir (projectile-project-root)))
+        (neotree-find path))
+      (select-window cw)))
+
+(use-package perspective
+  :init
+  (persp-mode)
+  :config
+  (setq projectile-switch-project-action ‘neotree-projectile-action)
+  :hook
+  (persp-switch . (lambda () (interactive) (kg/persp-neo) (persp-switch))))
 
 (use-package helm
   :ensure t
@@ -181,7 +213,7 @@
               (org-indent-mode)
               (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
               (define-key evil-normal-state-local-map (kbd "SPC P") 'org-present)
-              (define-key evil-normal-state-local-map (kbd "SPC p") 'org-cycle)
+              ;(define-key evil-normal-state-local-map (kbd "SPC p") 'org-cycle)
               (define-key evil-normal-state-local-map (kbd "SPC g p") 'org-global-cycle)
               (define-key evil-normal-state-local-map (kbd "SPC s e") 'org-sort-entries)
               (define-key evil-normal-state-local-map (kbd "SPC s n") 'kg/start-code-block)
@@ -336,6 +368,7 @@
 (add-hook 'c-mode-hook (lambda () (kg/lang-std)))
 (add-hook 'c++-mode-hook (lambda () (kg/lang-std)))
 (add-hook 'emacs-lisp-mode-hook (lambda () (progn (show-paren-mode) (company-mode))))
+(add-hook 'java-mode-hook (lambda () (kg/lang-std)))
 
 ;;
 ;; eshell 
@@ -421,12 +454,16 @@
                "v u" 'projectile-compile-project
                "v p" 'kg/eshell-input
                "v l" 'kg/eshell-send-again
+               ;; perspectives
+               "p p" 'persp-prev
+               "p n" 'persp-next
+               "p s" 'persp-switch
                ;; buffer keybindings
                "n k" (lambda () (interactive) (mapc 'kill-buffer (buffer-list)))
                "n t" 'neotree-toggle
                "n n" 'next-buffer
-               "n s" 'next-multiframe-window 
                "n p" 'previous-buffer
+               "n s" 'next-multiframe-window 
                "n o" 'delete-other-windows
                "n d" 'kill-buffer-and-window
                "n b" 'helm-mini
@@ -450,7 +487,7 @@
     :keys ("M-m")
     :evil-keys ("SPC")
     :evil-states (normal motion visual)
-    :major-modes (rjsx-mode rust-mode go-mode c-mode c++-mode)
+    :major-modes (rjsx-mode rust-mode go-mode java-mode c-mode c++-mode)
     :bindings ("g g" 'xref-find-definitions
                "g p" 'pop-tag-mark
                "g r" 'eglot-rename
@@ -474,3 +511,5 @@
                     :family "Fira Code Retina"
                     :height kg/font-size)
 
+
+(scroll-bar-mode -1)
