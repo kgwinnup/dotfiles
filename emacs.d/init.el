@@ -30,7 +30,7 @@
 
 (mapcar (lambda (path)
           (setenv "CLASSPATH" (concat path ":" (getenv "CLASSPATH"))))
-        '("/Users/kgwinnup/workspace/jdt-language-server-1.6.0-202111261512/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar"))
+        '("/home/kyle/workspace/jdt-language-server-1.6.0/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar"))
 
 ;(connection-local-set-profile-variables 'remote-path-with-bin
                                         ;   '((tramp-remote-path . ("~/go/bin" tramp-default-remote-path))))
@@ -126,6 +126,7 @@
       (select-window cw)))
 
 (use-package perspective
+  :ensure t
   :init
   (persp-mode)
   :config
@@ -368,7 +369,7 @@
 (add-hook 'c-mode-hook (lambda () (kg/lang-std)))
 (add-hook 'c++-mode-hook (lambda () (kg/lang-std)))
 (add-hook 'emacs-lisp-mode-hook (lambda () (progn (show-paren-mode) (company-mode))))
-(add-hook 'java-mode-hook (lambda () (kg/lang-std)))
+(add-hook 'java-mode-hook (lambda () (kg/lang-std) (add-hook 'before-save-hook 'eglot-format nil t)))
 
 ;;
 ;; eshell 
@@ -492,8 +493,7 @@
                "g p" 'pop-tag-mark
                "g r" 'eglot-rename
                "g h" 'eldoc
-               "g f" 'end-of-defun
-               "g b" 'beginning-of-defun
+               "g f" 'projectile-grep
                "g =" 'comment-or-uncomment-region
                "g l" 'xref-find-references)))
 
@@ -513,3 +513,5 @@
 
 
 (scroll-bar-mode -1)
+
+
