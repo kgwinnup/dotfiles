@@ -1,4 +1,6 @@
 
+(getenv "HOME")
+
 ;; Packages and setup stuff
 ;;
 
@@ -30,7 +32,7 @@
 
 (mapcar (lambda (path)
           (setenv "CLASSPATH" (concat path ":" (getenv "CLASSPATH"))))
-        '("/home/kyle/workspace/jdt-language-server-1.6.0/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar"))
+        '("/workspace/jdt-language-server-1.6.0/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar"))
 
 ;(connection-local-set-profile-variables 'remote-path-with-bin
                                         ;   '((tramp-remote-path . ("~/go/bin" tramp-default-remote-path))))
@@ -65,7 +67,7 @@
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (xterm-mouse-mode 1)
-(add-hook 'after-make-frame-functions '(lambda () (interactive) (scroll-bar-mode -1)))
+(add-hook 'after-make-frame-functions (lambda () (interactive) (scroll-bar-mode -1)))
 (fset 'yes-or-no-p 'y-or-n-p)
 (global-display-line-numbers-mode)
 (global-hl-line-mode)
@@ -130,7 +132,7 @@
   :init
   (persp-mode)
   :config
-  (setq projectile-switch-project-action ‘neotree-projectile-action)
+  (setq projectile-switch-project-action 'neotree-projectile-action)
   :hook
   (persp-switch . (lambda () (interactive) (kg/persp-neo) (persp-switch))))
 
@@ -214,8 +216,8 @@
               (org-indent-mode)
               (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
               (define-key evil-normal-state-local-map (kbd "SPC P") 'org-present)
-              ;(define-key evil-normal-state-local-map (kbd "SPC p") 'org-cycle)
-              (define-key evil-normal-state-local-map (kbd "SPC g p") 'org-global-cycle)
+              (define-key evil-normal-state-local-map (kbd "SPC g p") 'org-cycle)
+              ;(define-key evil-normal-state-local-map (kbd "SPC g p") 'org-global-cycle)
               (define-key evil-normal-state-local-map (kbd "SPC s e") 'org-sort-entries)
               (define-key evil-normal-state-local-map (kbd "SPC s n") 'kg/start-code-block)
               (define-key evil-normal-state-local-map (kbd "SPC s o") 'org-edit-src-code)
@@ -235,8 +237,8 @@
       '(progn
          (add-hook 'org-present-mode-hook
                    (lambda ()
-                     (local-set-key (kbd "C-c +") '(lambda () (interactive) (kg/global-font-size 10)))
-                     (local-set-key (kbd "C-c -") '(lambda () (interactive) (kg/global-font-size -10)))
+                     (local-set-key (kbd "C-c +") #'(lambda () (interactive) (kg/global-font-size 10)))
+                     (local-set-key (kbd "C-c -") #'(lambda () (interactive) (kg/global-font-size -10)))
                      (turn-off-evil-mode)
                      (org-present-big)
                      (display-line-numbers-mode -1)
@@ -444,8 +446,8 @@
     :keys ("M-m")
     :evil-keys ("SPC")
     :evil-states (normal motion visual)
-    :bindings ("c o" '(lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
-               "c l" '(lambda () (interactive) (load-file "~/.emacs.d/init.el"))
+    :bindings ("c o" (lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
+               "c l" (lambda () (interactive) (load-file "~/.emacs.d/init.el"))
                "c k" 'describe-function
                "s s" 'ispell
                "s r" 'ispell-region
@@ -468,8 +470,8 @@
                "n o" 'delete-other-windows
                "n d" 'kill-buffer-and-window
                "n b" 'helm-mini
-               "n r" '(lambda () (interactive) (switch-to-buffer "*scratch*"))
-               "n a" '(lambda () (interactive) (find-file "~/workspace/notes.org"))
+               "n r" (lambda () (interactive) (switch-to-buffer "*scratch*"))
+               "n a" (lambda () (interactive) (find-file "~/workspace/notes.org"))
                "n f" 'make-frame
                "n w" 'list-buffers
                ;; general movement
@@ -479,7 +481,7 @@
                "m s" 'magit
                "m b" 'magit-blame-addition
                "m l" 'elfeed
-               "m e" '(lambda () (interactive) (eww-browse-url (read-string "url: ")))
+               "m e" (lambda () (interactive) (eww-browse-url (read-string "url: ")))
                ;; view
                "," 'rename-buffer
                "=" (lambda () (interactive) (kg/global-font-size 10))
@@ -510,7 +512,6 @@
 (set-face-attribute 'default nil
                     :family "Fira Code Retina"
                     :height kg/font-size)
-
 
 (scroll-bar-mode -1)
 
