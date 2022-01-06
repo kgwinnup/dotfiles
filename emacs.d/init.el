@@ -130,15 +130,18 @@
   :init
   (persp-mode)
   :config
-  (setq projectile-switch-project-action ‘neotree-projectile-action)
+  (setq projectile-switch-project-action 'neotree-projectile-action)
   :hook
   (persp-switch . (lambda () (interactive) (kg/persp-neo) (persp-switch))))
 
 (use-package helm
   :ensure t
-  :init
+  :config
   (global-set-key (kbd "M-x") 'helm-M-x)
   (global-set-key (kbd "C-x C-f") 'helm-find-files))
+
+(use-package helm-projectile
+  :ensure t)
 
 (setq evil-want-keybinding nil)
 (use-package evil
@@ -214,8 +217,8 @@
               (org-indent-mode)
               (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
               (define-key evil-normal-state-local-map (kbd "SPC P") 'org-present)
-              ;(define-key evil-normal-state-local-map (kbd "SPC p") 'org-cycle)
-              (define-key evil-normal-state-local-map (kbd "SPC g p") 'org-global-cycle)
+              (define-key evil-normal-state-local-map (kbd "SPC g p") 'org-cycle)
+              ;(define-key evil-normal-state-local-map (kbd "SPC g p") 'org-global-cycle)
               (define-key evil-normal-state-local-map (kbd "SPC s e") 'org-sort-entries)
               (define-key evil-normal-state-local-map (kbd "SPC s n") 'kg/start-code-block)
               (define-key evil-normal-state-local-map (kbd "SPC s o") 'org-edit-src-code)
@@ -460,7 +463,7 @@
                "p n" 'persp-next
                "p s" 'persp-switch
                ;; buffer keybindings
-               "n k" (lambda () (interactive) (mapc 'kill-buffer (buffer-list)))
+               "n k" (lambda () (interactive) (mapc 'kill-buffer (buffer-list)) (switch-to-buffer "*scratch*"))
                "n t" 'neotree-toggle
                "n n" 'next-buffer
                "n p" 'previous-buffer
@@ -470,7 +473,7 @@
                "n b" 'helm-mini
                "n r" '(lambda () (interactive) (switch-to-buffer "*scratch*"))
                "n a" '(lambda () (interactive) (find-file "~/workspace/notes.org"))
-               "n f" 'make-frame
+               "n f" 'helm-projectile-find-file
                "n w" 'list-buffers
                ;; general movement
                "j" 'evil-scroll-down
@@ -513,5 +516,19 @@
 
 
 (scroll-bar-mode -1)
-
-
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("eb122e1df607ee9364c2dfb118ae4715a49f1a9e070b9d2eb033f1cefd50a908" default))
+ '(helm-minibuffer-history-key "M-p")
+ '(package-selected-packages
+   '(helm-projectile flatland-black-theme perspective yasnippet yaml-mode web-mode use-package rust-mode rjsx-mode projectile poly-R org-present neotree magit helm go-mode flatland-theme evil-collection ess elfeed eglot dockerfile-mode company bind-map)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
