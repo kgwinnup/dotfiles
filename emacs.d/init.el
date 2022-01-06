@@ -57,12 +57,18 @@
               inhibit-startup-screen t
               auto-save-default nil
               make-backup-files nil
-              shell-file-name "fish"
+              shell-file-name "bash"
               initial-major-mode 'org-mode
               eldoc-echo-area-use-multiline-p 0
               eldoc-prefer-doc-buffer t
               kg/last-shell-cmd ""
               backup-directory-alist '(("" . "~/.emacs.d/backup")))
+
+(if (eq system-type 'darwin)
+    (setq helm-locate-command
+          "glocate %s %s"
+          helm-locate-create-db-command
+          "gupdatedb --output='%s' --localpaths='%s'"))
 
 (tool-bar-mode -1)
 (menu-bar-mode -1)
