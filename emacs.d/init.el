@@ -64,17 +64,6 @@
               kg/last-shell-cmd ""
               backup-directory-alist '(("" . "~/.emacs.d/backup")))
 
-(setq mode-line-format
-      (list "%l:%c "
-        "%b "
-        "%t "
-        (message "%s" major-mode) " "
-        "[" (persp-all-names) "]"
-        ))
-
-(message "%s" major-mode)
-
-
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (xterm-mouse-mode 1)
@@ -535,3 +524,11 @@
                     :height kg/font-size)
 
 (scroll-bar-mode -1)
+
+(setq-default mode-line-format
+              '("%l:%c "
+                "%b "
+                mode-line-misc-info
+                ))
+
+
