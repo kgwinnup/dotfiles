@@ -32,7 +32,7 @@
 
 (mapcar (lambda (path)
           (setenv "CLASSPATH" (concat path ":" (getenv "CLASSPATH"))))
-        '("/workspace/jdt-language-server-1.6.0/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar"))
+        '("/Users/kgwinnup/workspace/jdt-language-server-1.6.0/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar"))
 
 ;(connection-local-set-profile-variables 'remote-path-with-bin
                                         ;   '((tramp-remote-path . ("~/go/bin" tramp-default-remote-path))))
@@ -64,11 +64,16 @@
               kg/last-shell-cmd ""
               backup-directory-alist '(("" . "~/.emacs.d/backup")))
 
-(if (eq system-type 'darwin)
-    (setq helm-locate-command
-          "glocate %s %s"
-          helm-locate-create-db-command
-          "gupdatedb --output='%s' --localpaths='%s'"))
+(setq mode-line-format
+      (list "%l:%c "
+        "%b "
+        "%t "
+        (message "%s" major-mode) " "
+        "[" (persp-all-names) "]"
+        ))
+
+(message "%s" major-mode)
+
 
 (tool-bar-mode -1)
 (menu-bar-mode -1)
@@ -77,6 +82,12 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 (global-display-line-numbers-mode)
 (global-hl-line-mode)
+
+(if (eq system-type 'darwin)
+    (setq helm-locate-command
+          "glocate %s %s"
+          helm-locate-create-db-command
+          "gupdatedb --output='%s' --localpaths='%s'"))
 
 ;;;; Mouse scrolling in terminal emacs
 (unless (display-graphic-p)
@@ -215,6 +226,7 @@
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((R . t)
+     (python . t)
      (shell . t)))
   (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
   (setq org-startup-folded t)
@@ -523,19 +535,3 @@
                     :height kg/font-size)
 
 (scroll-bar-mode -1)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("eb122e1df607ee9364c2dfb118ae4715a49f1a9e070b9d2eb033f1cefd50a908" default))
- '(helm-minibuffer-history-key "M-p")
- '(package-selected-packages
-   '(helm-projectile flatland-black-theme perspective yasnippet yaml-mode web-mode use-package rust-mode rjsx-mode projectile poly-R org-present neotree magit helm go-mode flatland-theme evil-collection ess elfeed eglot dockerfile-mode company bind-map)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
