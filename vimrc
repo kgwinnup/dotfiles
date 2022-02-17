@@ -71,7 +71,8 @@ let g:ale_fixers = {
     \ }
 let g:ale_linters = {
     \ 'rust': ['analyzer'],
-    \ 'java': ['eclipselsp']
+    \ 'java': ['eclipselsp'],
+    \ 'c': ['clangd13']
     \ }
 
 " nerdtree settings
@@ -91,10 +92,6 @@ let g:mapleader=" "
 set timeoutlen=2000
 
 let g:jsx_ext_required = 0
-
-if !empty("./cscope.out") && filereadable("./cscope.out")
-    exe "cs add ./cscope.out"
-endif
 
 " global keybinds
 nnoremap <leader>np :bprevious<cr>
@@ -142,26 +139,25 @@ augroup ft_c
 autocmd FileType c,cpp ClangFormatAutoEnable
 let g:SuperTabDefaultCompletionType = "<c-n>"
 let g:clang_format#style_options = {"BasedOnStyle" : "LLVM"}
-autocmd FileType c,cpp nnoremap <buffer><leader>t g]
-autocmd FileType c,cpp nnoremap <buffer><leader>gg g] 1<cr><cr>
+autocmd FileType c,cpp nnoremap <buffer><leader>t :ALEHover<cr>
+autocmd FileType c,cpp nnoremap <buffer><leader>gg :ALEGoToDefinition<cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>gp :pop<cr>
-autocmd FileType c,cpp nnoremap <buffer><leader>gu :!ctags -R --extrax=+q /usr/include*<cr><cr>
-autocmd FileType c,cpp nnoremap <buffer><leader>gf :cs f t  
-autocmd FileType c,cpp nnoremap <buffer><leader>gl :cs find s <cword><cr>
-autocmd FileType c,cpp nnoremap <buffer><leader>gc :cs add cscope.out<cr>
+autocmd FileType c,cpp nnoremap <buffer><leader>gr :ALERename<cr>
+autocmd FileType c,cpp nnoremap <buffer><leader>gl :ALEFindReferences<cr>
 augroup END
 
 "
 " Java
 "
 augroup ft_java
-let g:ale_java_eclipselsp_path=$HOME . "/workspace/jdt-language-server-1.6.0-202111261512"
+let g:ale_java_eclipselsp_path=$HOME . "/workspace/jdt-language-server-1.6.0"
 let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 autocmd FileType java nnoremap <buffer><leader>t :ALEHover<cr>
 autocmd FileType java nnoremap <buffer><leader>gg :ALEGoToDefinition<cr>
 autocmd FileType java nnoremap <buffer><leader>gr :ALERename<cr>
 autocmd FileType java nnoremap <buffer><leader>gl :ALEFindReferences<cr>
 autocmd FileType java nnoremap <buffer><leader>gp :pop<cr>
+" autocmd FileType java ClangFormatAutoEnable
 augroup END
 
 "
