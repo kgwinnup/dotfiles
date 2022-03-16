@@ -63,6 +63,7 @@ vim.g.rust_recommended_style = 1
 vim.g.rustfmt_autosave = 1
 vim.g.rustfmt_command = 'rustfmt --force'
 
+-- tmux operations
 vim.g.tmux_last_command = ""
 
 function tmux_window_exists()
@@ -94,7 +95,7 @@ function tmux_send_command(txt)
         if tmux_window_exists() then
             vim.fn.system("tmux send-keys -t 1 " .. "'" .. txt .. "\n'") 
         else
-            toggle_tmux()
+            tmux_toggle()
             vim.fn.system("tmux send-keys -t 1 " .. "'" .. txt .. "\n'") 
         end
     end
@@ -109,6 +110,8 @@ local opts = { noremap=true, silent=true }
 local on_attach = function(client, bufnr)
   -- Enable completion triggered by <c-x><c-o>
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+  
+  vim.cmd("autocmd BufWritePre *.rs lua vim.lsp.buf.formatting_sync(nil, 1000)")
 
   -- Mappings.
   -- See `:help vim.lsp.*` for documentation on any of the below functions
@@ -123,7 +126,7 @@ end
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
-local servers = { 'rust_analyzer' }
+local servers = { 'rust_analyzer', 'clangd' }
 for _, lsp in pairs(servers) do
   require('lspconfig')[lsp].setup {
     on_attach = on_attach,
