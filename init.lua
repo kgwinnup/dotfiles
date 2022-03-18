@@ -144,7 +144,9 @@ local function tmux_send_block()
     _end = vim.fn.search("^$")
     lines = vim.fn.getbufline(vim.fn.bufnr("%"), start, _end-1)
     for k,v in pairs(lines) do
-        tmux_send_command(v)
+        if v ~= "" then
+            tmux_send_command(v)
+        end
     end
     vim.fn.execute("normal! :" .. _end)
 end
