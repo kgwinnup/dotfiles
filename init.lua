@@ -3,15 +3,13 @@ local use = require('packer').use
 require('packer').startup(function()
   use 'wbthomason/packer.nvim' -- Package manager
   use 'neovim/nvim-lspconfig' -- Collection of configurations for the built-in LSP client
+  use 'vim-airline/vim-airline'
   use 'morhetz/gruvbox'
   use 'ervandew/supertab'
   use 'scrooloose/nerdtree'
-  use 'rust-lang/rust.vim'
+  -- this is more up to date than the default rust.vim that comes with neovim
+  use 'rust-lang/rust.vim' 
 end)
-
--- vim.fn.system("mkdir -p ~/.config/nvim/backups")
--- vim.opt.backupdir = vim.env.HOME .. "/.config/nvim/backups"
--- vim.opt.dir = vim.env.HOME .. "/.config/nvim/backups/"
 
 vim.mapleader = " "
 vim.g.mapleader = " "
@@ -63,6 +61,10 @@ vim.api.nvim_set_keymap("n", "<leader>vl", ":lua tmux_send_last_command()<cr>", 
 vim.api.nvim_set_keymap("n", "<leader>mb", ":lua tmux_send_command('git blame -L ' .. vim.fn.line('.') .. ',' .. vim.fn.line('.') .. ' ' .. vim.fn.expand('%:p'))<cr>", opts)
 vim.api.nvim_set_keymap('n', '<leader>dd', '<cmd>lua vim.diagnostic.open_float()<cr>', opts)
 
+-- airline
+vim.cmd("let g:airline#extensions#tabline#enabled = 1")
+vim.cmd("let g:airline#extensions#tabline#show_buffers=1")
+vim.cmd("let g:airline_powerline_fonts=1")
 
 -- supertab for lsp tab completion
 vim.g.SuperTabDefaultCompletionType = "<c-x><c-o>"
