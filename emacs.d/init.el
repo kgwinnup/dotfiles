@@ -36,6 +36,11 @@
 
 ;(connection-local-set-profile-variables 'remote-path-with-bin
                                         ;   '((tramp-remote-path . ("~/go/bin" tramp-default-remote-path))))
+(setq-default mode-line-format
+              '("%l:%c "
+                "%b "
+                mode-line-misc-info
+                ))
 
 ;; some basic global settings
 (setq-default ring-bell-function 'ignore
@@ -131,6 +136,7 @@
                    (fboundp 'projectile-project-root))
           (neotree-dir (projectile-project-root)))
         (neotree-find path))
+      (neotree-hide)
       (select-window cw)))
 
 (use-package perspective
@@ -219,6 +225,7 @@
      (shell . t)))
   (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
   (setq org-startup-folded t)
+  (setq org-src-preserve-indentation t)
   (use-package org-present
     :ensure t)
     (add-hook 'org-mode-hook
@@ -524,11 +531,5 @@
                     :height kg/font-size)
 
 (scroll-bar-mode -1)
-
-(setq-default mode-line-format
-              '("%l:%c "
-                "%b "
-                mode-line-misc-info
-                ))
 
 
