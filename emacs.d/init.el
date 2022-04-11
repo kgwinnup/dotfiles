@@ -9,13 +9,12 @@
                          ("elpa" . "https://elpa.gnu.org/packages/")))
 (package-initialize)
 
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
+(unless (package-installed-p 'use-package) (package-install 'use-package))
 (require 'use-package)
 (require 'ansi-color)
 (require 'ox-latex)
 
-
+;; set up all the PATH and other environment variables
 (mapcar (lambda (path)
           (setenv "PATH" (concat path ":" (getenv "PATH")))
           (add-to-list 'exec-path path))
@@ -34,8 +33,7 @@
           (setenv "CLASSPATH" (concat path ":" (getenv "CLASSPATH"))))
         '("/Users/kgwinnup/workspace/jdt-language-server-1.6.0/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar"))
 
-;(connection-local-set-profile-variables 'remote-path-with-bin
-                                        ;   '((tramp-remote-path . ("~/go/bin" tramp-default-remote-path))))
+;; make modeline less noisy
 (setq-default mode-line-format
               '("%l:%c "
                 "%b "
@@ -64,11 +62,13 @@
               make-backup-files nil
               shell-file-name "bash"
               initial-major-mode 'org-mode
-              eldoc-echo-area-use-multiline-p 0
+              eldoc-echo-area-use-multiline-p t
+              semantic-idle-truncate-long-summaries t
               eldoc-prefer-doc-buffer t
               kg/last-shell-cmd ""
               backup-directory-alist '(("" . "~/.emacs.d/backup")))
 
+;; other settings that are not global variables
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (xterm-mouse-mode 1)
@@ -77,6 +77,7 @@
 (global-display-line-numbers-mode)
 (global-hl-line-mode)
 
+;; locate for the OS X 
 (if (eq system-type 'darwin)
     (setq helm-locate-command
           "glocate %s %s"
@@ -226,9 +227,8 @@
   (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
   (setq org-startup-folded t)
   (setq org-src-preserve-indentation t)
-  (use-package org-present
-    :ensure t)
-    (add-hook 'org-mode-hook
+  (use-package org-present :ensure t)
+  (add-hook 'org-mode-hook
             (lambda ()
               (org-indent-mode)
               (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
@@ -288,7 +288,6 @@
 (use-package yaml-mode :ensure t :defer t)
 (use-package web-mode :ensure t :defer t)
 
-
 ;(use-package js2-mode :ensure t :defer t)
 (use-package poly-markdown :ensure t :defer t)
 (use-package poly-R :ensure t :defer t)
@@ -331,18 +330,6 @@
             (lambda ()
               (define-key evil-normal-state-local-map (kbd "SPC r s") 'kg/toggle-ess-r)
               (define-key evil-normal-state-local-map (kbd "SPC r r") (lambda () (interactive) (ess-eval-function-or-paragraph-and-step))))))
-
-(use-package elfeed
-  :ensure t
-  :defer t
-  :config
-  (setq elfeed-feeds '(("https://lobste.rs/rss" lobsters)
-                       ("https://tilde.news/rss" tildeverse)
-                       ("https://lwn.net/headlines/rss" lwn)
-                       ("http://rss.slashdot.org/Slashdot/slashdotMain" slashdot)))
-  (setq-default elfeed-search-filter "@1-week-ago +unread")
-  (setq-default elfeed-search-title-max-width 100)
-  (setq-default elfeed-search-title-min-width 100))
 
 (defmacro kg/lang-std ()
   `(progn
