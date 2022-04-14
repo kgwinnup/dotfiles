@@ -11,7 +11,6 @@
 
 (unless (package-installed-p 'use-package) (package-install 'use-package))
 (require 'use-package)
-(require 'ansi-color)
 (require 'ox-latex)
 
 ;; set up all the PATH and other environment variables
@@ -62,7 +61,7 @@
               make-backup-files nil
               shell-file-name "bash"
               initial-major-mode 'org-mode
-              eldoc-echo-area-use-multiline-p t
+              eldoc-echo-area-use-multiline-p 4
               semantic-idle-truncate-long-summaries t
               eldoc-prefer-doc-buffer t
               kg/last-shell-cmd ""
@@ -233,8 +232,7 @@
               (org-indent-mode)
               (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
               (define-key evil-normal-state-local-map (kbd "SPC P") 'org-present)
-              (define-key evil-normal-state-local-map (kbd "SPC g p") 'org-cycle)
-              ;(define-key evil-normal-state-local-map (kbd "SPC g p") 'org-global-cycle)
+              (define-key evil-normal-state-local-map (kbd "SPC g i") 'org-toggle-inline-images)
               (define-key evil-normal-state-local-map (kbd "SPC s e") 'org-sort-entries)
               (define-key evil-normal-state-local-map (kbd "SPC s n") 'kg/start-code-block)
               (define-key evil-normal-state-local-map (kbd "SPC s o") 'org-edit-src-code)
@@ -377,6 +375,13 @@
 (add-hook 'emacs-lisp-mode-hook (lambda () (progn (show-paren-mode) (company-mode))))
 (add-hook 'java-mode-hook (lambda () (kg/lang-std) (add-hook 'before-save-hook 'eglot-format nil t)))
 
+(require 'ansi-color)
+(defun kg/colorize-compilation-buffer ()
+  (toggle-read-only)
+  (ansi-color-apply-on-region compilation-filter-start (point))
+  (toggle-read-only))
+(add-hook 'compilation-filter-hook 'kg/colorize-compilation-buffer)
+
 ;;
 ;; eshell 
 (defun kg/eshell-git-info ()
@@ -484,7 +489,6 @@
                ;; magit
                "m s" 'magit
                "m b" 'magit-blame-addition
-               "m l" 'elfeed
                "m e" (lambda () (interactive) (eww-browse-url (read-string "url: ")))
                ;; view
                "," 'rename-buffer
