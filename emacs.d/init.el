@@ -114,11 +114,11 @@
   (if (get-buffer "*eshell*")
       (if (and (get-buffer-window "*eshell*"))
           (delete-other-windows)
-        (let ((w2 (split-window-horizontally)))
+        (let ((w2 (split-window-sensibly)))
           (set-window-buffer w2 "*eshell*")))
     ;; else split the screen and create shell
     (let ((w1 (selected-window))
-          (w2 (split-window-horizontally)))
+          (w2 (split-window-sensibly)))
       (select-window w2)
       (eshell)
       (display-line-numbers-mode -1)
@@ -284,9 +284,6 @@
 (use-package eglot :ensure t)
 (use-package dockerfile-mode :ensure t :defer t)
 (use-package yaml-mode :ensure t :defer t)
-(use-package web-mode :ensure t :defer t)
-
-;(use-package js2-mode :ensure t :defer t)
 (use-package poly-markdown :ensure t :defer t)
 (use-package poly-R :ensure t :defer t)
 
@@ -341,15 +338,6 @@
   (yas-reload-all)
   (add-hook 'prog-mode-hook 'yas-minor-mode)
   (add-hook 'text-mode-hook 'yas-minor-mode))
-
-(use-package rjsx-mode
-  :ensure t
-  :config
-  (add-to-list 'eglot-server-programs '(rjsx-mode . ("~/bin/typescript-language-server")))
-  (add-hook 'rjsx-mode-hook
-            (lambda ()
-              (kg/lang-std)
-              (add-hook 'before-save-hook 'eglot-format nil t))))
 
 (use-package rust-mode
   :ensure t
@@ -510,17 +498,11 @@
 (use-package 'flatland-theme
   :ensure t)
 
-;(load-theme 'plan9 t)
 (load-theme 'flatland t)
-;(load-theme 'vscode-dark-plus t)
-;(load-theme 'gruvbox-dark-hard t)
-;(load-theme 'adwaita t)
-;(global-hl-line-mode 0)
 
 (set-face-attribute 'default nil
                     :family "Fira Code Retina"
                     :height kg/font-size)
 
 (scroll-bar-mode -1)
-
 
