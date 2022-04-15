@@ -325,7 +325,7 @@
 
 (defun kg/advice-compilation-filter (f proc string)
   (funcall f proc (xterm-color-filter string)))
-(advice-add 'compilation-filter :around #'my/advice-compilation-filter)
+(advice-add 'compilation-filter :around #'kg/advice-compilation-filter)
 
 ;;
 ;; eshell 
