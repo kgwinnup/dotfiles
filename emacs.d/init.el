@@ -230,6 +230,7 @@
     (toggle-read-only)
     (ansi-color-apply-on-region compilation-filter-start (point))
     (toggle-read-only))
+  (setq projectile-project-search-path '("~/workspace/"))
   (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
   (setq compilation-buffer-name-function #'projectile-compilation-buffer-name)
   (setq compilation-save-buffers-predicate #'projectile-current-project-buffer-p)
@@ -414,6 +415,7 @@
                "p p" 'persp-prev
                "p n" 'persp-next
                "p s" 'persp-switch
+               "p r" 'persp-rename
                ;; buffer keybindings
                "n k" (lambda () (interactive) (mapc 'kill-buffer (buffer-list)) (switch-to-buffer "*scratch*"))
                "n n" 'next-buffer
