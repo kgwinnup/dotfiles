@@ -125,28 +125,10 @@
       (select-window w1)
       (set-window-buffer w2 "*eshell*"))))
 
-(defun kg/persp-neo ()
-    "Make NeoTree follow the perspective"
-    (interactive)
-    (let ((cw (selected-window))
-          (path (buffer-file-name))) ;;save current window/buffer
-      (progn
-        (when (and (fboundp 'projectile-project-p)
-                   (projectile-project-p)
-                   (fboundp 'projectile-project-root))
-          (neotree-dir (projectile-project-root)))
-        (neotree-find path))
-      (neotree-hide)
-      (select-window cw)))
-
 (use-package perspective
   :ensure t
   :init
-  (persp-mode)
-  :config
-  (setq projectile-switch-project-action 'neotree-projectile-action)
-  :hook
-  (persp-switch . (lambda () (interactive) (kg/persp-neo) (persp-switch))))
+  (persp-mode))
 
 (use-package helm
   :ensure t
@@ -178,34 +160,6 @@
   (setq company-tooltip-align-annotations t)
   (setq company-minimum-prefix-length 1)
   (define-key company-active-map (kbd "<tab>") 'company-select-next))
-
-(defun neo-open-file-hide (full-path &optional arg)
-  "Open a file node and hides tree."
-  (neo-global--select-mru-window arg)
-  (find-file full-path)
-  (neotree-hide))
-
-(defun neotree-enter-hide (&optional arg)
-  "Enters file and hides neotree directly"
-  (interactive "P")
-  (neo-buffer--execute arg 'neo-open-file-hide 'neo-open-dir))
-
-(use-package neotree
-  :ensure t
-  :config
-  (setq neo-theme 'arrow)
-  (setq neo-window-fixed-size nil)
-  :init
-  (display-line-numbers-mode -1)
-  (add-hook 'neotree-mode-hook
-			(lambda ()
-              (display-line-numbers-mode -1)
-			  (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter-hide)
-			  (define-key evil-normal-state-local-map (kbd "SPC n t") 'neotree-hide)
-			  (define-key evil-normal-state-local-map (kbd "SPC n h") 'neotree-hidden-file-toggle)
-			  (define-key evil-normal-state-local-map (kbd "SPC n r") 'neotree-refresh)
-			  (define-key evil-normal-state-local-map (kbd "SPC n s") 'next-multiframe-window)
-			  (define-key evil-normal-state-local-map (kbd "SPC n p") 'neotree-change-root))))
 
 (defun kg/start-code-block ()
   "starts a code block in org mode"
@@ -462,7 +416,6 @@
                "p s" 'persp-switch
                ;; buffer keybindings
                "n k" (lambda () (interactive) (mapc 'kill-buffer (buffer-list)) (switch-to-buffer "*scratch*"))
-               "n t" 'neotree-toggle
                "n n" 'next-buffer
                "n p" 'previous-buffer
                "n s" 'next-multiframe-window 
@@ -508,19 +461,3 @@
 
 (scroll-bar-mode -1)
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("aff12479ae941ea8e790abb1359c9bb21ab10acd15486e07e64e0e10d7fdab38" "6b5c518d1c250a8ce17463b7e435e9e20faa84f3f7defba8b579d4f5925f60c1" "7661b762556018a44a29477b84757994d8386d6edee909409fabe0631952dad9" default))
- '(helm-minibuffer-history-key "M-p")
- '(package-selected-packages
-   '(xterm-color transpose-frame flatui-theme busybee-theme apropospriate-theme elpher ample-theme solarized-theme smart-mode-line spaceline yaml-mode writegood-mode web-mode vterm use-package rust-mode rjsx-mode restclient projectile prettier-js powershell poly-R ox-gfm org-present neotree magit lsp-ui helm-themes helm-lsp helm-gtags gruvbox-theme go-mode evil-collection ess esh-autosuggest elfeed dockerfile-mode docker default-text-scale bind-map)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
