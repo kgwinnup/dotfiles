@@ -65,6 +65,7 @@
               semantic-idle-truncate-long-summaries t
               eldoc-prefer-doc-buffer t
               kg/last-shell-cmd ""
+              compilation-environment '("TERM=xterm-256color")
               backup-directory-alist '(("" . "~/.emacs.d/backup")))
 
 ;; other settings that are not global variables
@@ -236,6 +237,7 @@
   (setq compilation-save-buffers-predicate #'projectile-current-project-buffer-p)
   (projectile-mode +1))
 
+
 (use-package eglot :ensure t)
 (use-package dockerfile-mode :ensure t :defer t)
 (use-package yaml-mode :ensure t :defer t)
@@ -317,12 +319,7 @@
 (add-hook 'c++-mode-hook (lambda () (kg/lang-std)))
 (add-hook 'emacs-lisp-mode-hook (lambda () (progn (show-paren-mode) (company-mode))))
 (add-hook 'java-mode-hook (lambda () (kg/lang-std) (add-hook 'before-save-hook 'eglot-format nil t)))
-
-(use-package xterm-color
-  :ensure t
-  :config
-  (setq compilation-environment '("TERM=xterm-256color")))
-
+      
 (defun kg/advice-compilation-filter (f proc string)
   (funcall f proc (xterm-color-filter string)))
 (advice-add 'compilation-filter :around #'kg/advice-compilation-filter)
@@ -345,10 +342,6 @@
         (concat (kg/eshell-pwd)
                 (kg/eshell-git-info)
                 (propertize " $ " 'face `(:foreground "#ebdbb2")))))
-
-(defun kg/clear-eshell ()
-  (interactive)
-  (kg/eshell-send "clear 1"))
 
 (defun kg/eshell-send (cmd &optional set-last-cmd-p)
   (interactive)
@@ -373,18 +366,25 @@
   (interactive)
   (kg/eshell-send (read-string "CMD: ") t))
 
-(add-hook 'eshell-mode-hook
-          (setq eshell-scroll-to-bottom-on-output t)
-          (lambda ()
-            (define-key company-active-map (kbd "RET") nil)
-            (add-to-list 'eshell-visual-commands "ssh")
-            (add-to-list 'eshell-visual-commands "man")
-            (add-to-list 'eshell-visual-subcommands '("docker" "attach"))
-            (add-to-list 'eshell-visual-subcommands '("git" "log"))
-            (add-to-list 'eshell-visual-subcommands '("git" "status"))
-            (add-to-list 'eshell-visual-subcommands '("git" "diff"))
-            ;; adds color support to eshell stdout
-            (setenv "TERM" "xterm-256color")))
+(use-package eshell
+  :ensure t
+  :init
+  (setq eshell-prefer-lisp-functions nil)
+  (setq eshell-scroll-to-bottom-on-output t)
+  (setq xterm-color-preserve-properties t)
+  (add-hook 'eshell-before-prompt-hook (setq xterm-color-preserve-properties t))
+  (add-hook 'eshell-mode-hook
+            (lambda ()
+              (define-key company-active-map (kbd "RET") nil)
+              (add-to-list 'eshell-visual-commands "ssh")
+              (add-to-list 'eshell-visual-commands "man")
+              (add-to-list 'eshell-visual-subcommands '("docker" "attach"))
+              (add-to-list 'eshell-visual-subcommands '("git" "log"))
+              (add-to-list 'eshell-visual-subcommands '("git" "status"))
+              (add-to-list 'eshell-visual-subcommands '("git" "diff"))
+              ;; adds color support to eshell stdout
+              (setenv "TERM" "xterm-256color")
+              (add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter))))
 
 (setq kg/font-size 140)
 (defun kg/global-font-size (size)
@@ -416,10 +416,12 @@
                "p n" 'persp-next
                "p s" 'persp-switch
                "p r" 'persp-rename
+               "p k" 'persp-kill
                ;; buffer keybindings
                "n k" (lambda () (interactive) (mapc 'kill-buffer (buffer-list)) (switch-to-buffer "*scratch*"))
                "n n" 'next-buffer
                "n p" 'previous-buffer
+               "n t" (lambda () (interactive) (dired (projectile-acquire-root)))
                "n s" 'next-multiframe-window 
                "n o" 'delete-other-windows
                "n d" 'kill-buffer-and-window
@@ -452,7 +454,7 @@
                "g =" 'comment-or-uncomment-region
                "g l" 'xref-find-references)))
 
-(use-package 'flatland-theme
+(use-package flatland-theme
   :ensure t)
 
 (load-theme 'flatland t)
@@ -463,3 +465,19 @@
 
 (scroll-bar-mode -1)
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("eb122e1df607ee9364c2dfb118ae4715a49f1a9e070b9d2eb033f1cefd50a908" "fc48cc3bb3c90f7761adf65858921ba3aedba1b223755b5924398c666e78af8b" "aff12479ae941ea8e790abb1359c9bb21ab10acd15486e07e64e0e10d7fdab38" "6b5c518d1c250a8ce17463b7e435e9e20faa84f3f7defba8b579d4f5925f60c1" "7661b762556018a44a29477b84757994d8386d6edee909409fabe0631952dad9" default))
+ '(helm-minibuffer-history-key "M-p")
+ '(package-selected-packages
+   '(zenburn-theme zenburn xterm-color transpose-frame flatui-theme busybee-theme apropospriate-theme elpher ample-theme solarized-theme smart-mode-line spaceline yaml-mode writegood-mode web-mode vterm use-package rust-mode rjsx-mode restclient projectile prettier-js powershell poly-R ox-gfm org-present neotree magit lsp-ui helm-themes helm-lsp helm-gtags gruvbox-theme go-mode evil-collection ess esh-autosuggest elfeed dockerfile-mode docker default-text-scale bind-map)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
