@@ -32,12 +32,14 @@
           (setenv "CLASSPATH" (concat path ":" (getenv "CLASSPATH"))))
         '("/Users/kgwinnup/workspace/jdt-language-server-1.6.0/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar"))
 
+
+(nyan-mode)
 ;; make modeline less noisy
 (setq-default mode-line-format
               '("%l:%c "
                 "%b "
                 mode-line-misc-info
-                ))
+                (:eval (list (nyan-create)))))
 
 ;; some basic global settings
 (setq-default ring-bell-function 'ignore
@@ -197,10 +199,9 @@
     (setq org-todo-keyword-faces
           '(("NOTES" . "coral")
             ("TODO" . "dodger blue")
-            ("DOING" . "lime green")
-            ("DONE" . "dark gray")))
+            ("IDEA" . "lime green")))
     (setq org-todo-keywords
-          '((sequence "NOTES" "TODO" "DOING" "DONE")))
+          '((sequence "NOTES" "TODO" "IDEA")))
     (setq org-latex-create-formula-image-program 'dvipng)
     (setq org-preview-latex-default-process 'dvipng)
     (eval-after-load "org-present"
@@ -236,7 +237,6 @@
   (setq compilation-buffer-name-function #'projectile-compilation-buffer-name)
   (setq compilation-save-buffers-predicate #'projectile-current-project-buffer-p)
   (projectile-mode +1))
-
 
 (use-package eglot :ensure t)
 (use-package dockerfile-mode :ensure t :defer t)
@@ -402,7 +402,6 @@
     :evil-states (normal motion visual)
     :bindings ("c o" (lambda () (interactive) (find-file "~/.emacs.d/init.el")) 
                "c l" (lambda () (interactive) (load-file "~/.emacs.d/init.el"))
-               "c k" 'describe-function
                "s s" 'ispell
                "s r" 'ispell-region
                ;; cli integrations
@@ -438,7 +437,6 @@
                "m b" 'magit-blame-addition
                "m e" (lambda () (interactive) (eww-browse-url (read-string "url: ")))
                ;; view
-               "," 'rename-buffer
                "=" (lambda () (interactive) (kg/global-font-size 10))
                "-" (lambda () (interactive) (kg/global-font-size -10))))
   (bind-map-for-mode-inherit my-eglot-map my-base-leader-map
@@ -451,7 +449,6 @@
                "g r" 'eglot-rename
                "g h" 'eldoc
                "g f" 'projectile-grep
-               "g =" 'comment-or-uncomment-region
                "g l" 'xref-find-references)))
 
 (use-package flatland-theme
@@ -464,17 +461,16 @@
                     :height kg/font-size)
 
 (scroll-bar-mode -1)
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("eb122e1df607ee9364c2dfb118ae4715a49f1a9e070b9d2eb033f1cefd50a908" "fc48cc3bb3c90f7761adf65858921ba3aedba1b223755b5924398c666e78af8b" "aff12479ae941ea8e790abb1359c9bb21ab10acd15486e07e64e0e10d7fdab38" "6b5c518d1c250a8ce17463b7e435e9e20faa84f3f7defba8b579d4f5925f60c1" "7661b762556018a44a29477b84757994d8386d6edee909409fabe0631952dad9" default))
+   '("aff12479ae941ea8e790abb1359c9bb21ab10acd15486e07e64e0e10d7fdab38" "6b5c518d1c250a8ce17463b7e435e9e20faa84f3f7defba8b579d4f5925f60c1" "7661b762556018a44a29477b84757994d8386d6edee909409fabe0631952dad9" default))
  '(helm-minibuffer-history-key "M-p")
  '(package-selected-packages
-   '(zenburn-theme zenburn xterm-color transpose-frame flatui-theme busybee-theme apropospriate-theme elpher ample-theme solarized-theme smart-mode-line spaceline yaml-mode writegood-mode web-mode vterm use-package rust-mode rjsx-mode restclient projectile prettier-js powershell poly-R ox-gfm org-present neotree magit lsp-ui helm-themes helm-lsp helm-gtags gruvbox-theme go-mode evil-collection ess esh-autosuggest elfeed dockerfile-mode docker default-text-scale bind-map)))
+   '(transpose-frame flatui-theme busybee-theme apropospriate-theme elpher ample-theme solarized-theme smart-mode-line spaceline yaml-mode writegood-mode web-mode vterm use-package rust-mode rjsx-mode restclient projectile prettier-js powershell poly-R ox-gfm org-present neotree magit lsp-ui helm-themes helm-lsp helm-gtags gruvbox-theme go-mode evil-collection ess esh-autosuggest elfeed dockerfile-mode docker default-text-scale bind-map)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
