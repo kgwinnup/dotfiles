@@ -114,19 +114,20 @@
 (defun kg/toggle-shell ()
   (interactive)
   ;; if shell exists toggle view on/off
-  (if (get-buffer "*eshell*")
-      (if (and (get-buffer-window "*eshell*"))
-          (delete-other-windows)
-        (let ((w2 (split-window-sensibly)))
-          (set-window-buffer w2 "*eshell*")))
-    ;; else split the screen and create shell
-    (let ((w1 (selected-window))
-          (w2 (split-window-sensibly)))
-      (select-window w2)
-      (eshell)
-      (display-line-numbers-mode -1)
-      (select-window w1)
-      (set-window-buffer w2 "*eshell*"))))
+  (let ((eshell-name (concat "*eshell " (projectile-project-name))))
+    (if (get-buffer eshell-name)
+        (if (and (get-buffer-window eshell-name))
+            (delete-other-windows)
+          (let ((w2 (split-window-sensibly)))
+            (set-window-buffer w2 eshell-name)))
+      ;; else split the screen and create shell
+      (let ((w1 (selected-window))
+            (w2 (split-window-sensibly)))
+        (select-window w2)
+        (projectile-run-eshell)
+        (display-line-numbers-mode -1)
+        (select-window w1)
+        (set-window-buffer w2 eshell-name)))))
 
 (use-package perspective
   :ensure t
@@ -454,7 +455,8 @@
 (use-package flatland-theme
   :ensure t)
 
-(load-theme 'flatland t)
+;(load-theme 'flatland t)
+(load-theme 'gruvbox-dark-medium t)
 
 (set-face-attribute 'default nil
                     :family "Fira Code Retina"
