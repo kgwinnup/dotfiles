@@ -1,4 +1,3 @@
-
 (getenv "HOME")
 
 ;; Packages and setup stuff
@@ -32,14 +31,11 @@
           (setenv "CLASSPATH" (concat path ":" (getenv "CLASSPATH"))))
         '("/Users/kgwinnup/workspace/jdt-language-server-1.6.0/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar"))
 
-
-(nyan-mode)
 ;; make modeline less noisy
 (setq-default mode-line-format
               '("%l:%c "
                 "%b "
-                mode-line-misc-info
-                (:eval (list (nyan-create)))))
+                mode-line-misc-info))
 
 ;; some basic global settings
 (setq-default ring-bell-function 'ignore
@@ -114,7 +110,7 @@
 (defun kg/toggle-shell ()
   (interactive)
   ;; if shell exists toggle view on/off
-  (let ((eshell-name (concat "*eshell " (projectile-project-name))))
+  (let ((eshell-name (concat "*eshell " (projectile-project-name) "*")))
     (if (get-buffer eshell-name)
         (if (and (get-buffer-window eshell-name))
             (delete-other-windows)
@@ -128,6 +124,16 @@
         (display-line-numbers-mode -1)
         (select-window w1)
         (set-window-buffer w2 eshell-name)))))
+
+(use-package elfeed
+  :ensure t
+  :defer t
+  :config
+  (setq elfeed-feeds '(("https://lobste.rs/rss" lobsters)
+                       ("https://tilde.news/rss" tildeverse)))
+  (setq-default elfeed-search-filter "@1-week-ago +unread")
+  (setq-default elfeed-search-title-max-width 100)
+  (setq-default elfeed-search-title-min-width 100))
 
 (use-package perspective
   :ensure t
@@ -436,6 +442,7 @@
                ;; magit
                "m s" 'magit
                "m b" 'magit-blame-addition
+               "m l" 'elfeed
                "m e" (lambda () (interactive) (eww-browse-url (read-string "url: ")))
                ;; view
                "=" (lambda () (interactive) (kg/global-font-size 10))
