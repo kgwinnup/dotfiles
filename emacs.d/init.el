@@ -130,6 +130,7 @@
   :defer t
   :config
   (setq elfeed-feeds '(("https://lobste.rs/rss" lobsters)
+                       ("https://lwn.net/headlines/rss" lwn)
                        ("https://tilde.news/rss" tildeverse)))
   (setq-default elfeed-search-filter "@1-week-ago +unread")
   (setq-default elfeed-search-title-max-width 100)
@@ -468,6 +469,8 @@
 (set-face-attribute 'default nil
                     :family "Fira Code Retina"
                     :height kg/font-size)
+
+(set-frame-font "Fira Code Retina")
 
 (scroll-bar-mode -1)
 (custom-set-variables
