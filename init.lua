@@ -82,7 +82,7 @@ local on_attach = function(client, bufnr)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gh', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
 end
 
-local servers = { 'rust_analyzer', 'clangd' }
+local servers = { 'rust_analyzer', 'clangd', 'gopls' }
 for _, lsp in pairs(servers) do
   require('lspconfig')[lsp].setup {
     on_attach = on_attach,
@@ -129,9 +129,11 @@ function tmux_send_command(txt)
         end 
     else
         if tmux_window_exists() then
+            vim.fn.system("tmux send-keys -t 1 " .. "'\n'") 
             vim.fn.system("tmux send-keys -t 1 " .. "'" .. txt .. "\n'") 
         else
             tmux_toggle()
+            vim.fn.system("tmux send-keys -t 1 " .. "'\n'") 
             vim.fn.system("tmux send-keys -t 1 " .. "'" .. txt .. "\n'") 
         end
     end

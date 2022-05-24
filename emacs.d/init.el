@@ -207,9 +207,11 @@
     (setq org-todo-keyword-faces
           '(("NOTES" . "coral")
             ("TODO" . "dodger blue")
+            ("DONE" . "systemGrayColor")
+            ("1-1" . "systemRedColor")
             ("IDEA" . "lime green")))
     (setq org-todo-keywords
-          '((sequence "NOTES" "TODO" "IDEA")))
+          '((sequence "NOTES" "TODO" "DONE" "1-1" "IDEA")))
     (setq org-latex-create-formula-image-program 'dvipng)
     (setq org-preview-latex-default-process 'dvipng)
     (eval-after-load "org-present"
@@ -401,6 +403,16 @@
                       :height (+ size kg/font-size))
   (setq kg/font-size (+ size kg/font-size)))
 
+(use-package dired-sidebar
+  :ensure t
+  :init
+  (setq dired-sidebar-close-sidebar-on-file-open t)
+  (add-hook 'dired-sidebar-mode-hook
+            (lambda ()
+              (display-line-numbers-mode -1)
+              (unless (file-remote-p default-directory)
+                (auto-revert-mode)))))
+
 (use-package bind-map
   :ensure t
   :init
@@ -428,7 +440,8 @@
                "n k" (lambda () (interactive) (mapc 'kill-buffer (buffer-list)) (switch-to-buffer "*scratch*"))
                "n n" 'next-buffer
                "n p" 'previous-buffer
-               "n t" (lambda () (interactive) (dired (projectile-acquire-root)))
+               ; "n t" (lambda () (interactive) (dired (projectile-acquire-root)))
+               "n t" (lambda () (interactive) (dired-sidebar-toggle-sidebar))
                "n s" 'next-multiframe-window 
                "n o" 'delete-other-windows
                "n d" 'kill-buffer-and-window
@@ -473,6 +486,8 @@
 (set-frame-font "Fira Code Retina")
 
 (scroll-bar-mode -1)
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -482,7 +497,7 @@
    '("aff12479ae941ea8e790abb1359c9bb21ab10acd15486e07e64e0e10d7fdab38" "6b5c518d1c250a8ce17463b7e435e9e20faa84f3f7defba8b579d4f5925f60c1" "7661b762556018a44a29477b84757994d8386d6edee909409fabe0631952dad9" default))
  '(helm-minibuffer-history-key "M-p")
  '(package-selected-packages
-   '(transpose-frame flatui-theme busybee-theme apropospriate-theme elpher ample-theme solarized-theme smart-mode-line spaceline yaml-mode writegood-mode web-mode vterm use-package rust-mode rjsx-mode restclient projectile prettier-js powershell poly-R ox-gfm org-present neotree magit lsp-ui helm-themes helm-lsp helm-gtags gruvbox-theme go-mode evil-collection ess esh-autosuggest elfeed dockerfile-mode docker default-text-scale bind-map)))
+   '(dired-sidebar transpose-frame flatui-theme busybee-theme apropospriate-theme elpher ample-theme solarized-theme smart-mode-line spaceline yaml-mode writegood-mode web-mode vterm use-package rust-mode rjsx-mode restclient projectile prettier-js powershell poly-R ox-gfm org-present neotree magit lsp-ui helm-themes helm-lsp helm-gtags gruvbox-theme go-mode evil-collection ess esh-autosuggest elfeed dockerfile-mode docker default-text-scale bind-map)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
