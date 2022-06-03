@@ -9,6 +9,9 @@ require('packer').startup(function()
   use 'scrooloose/nerdtree'
   -- this is more up to date than the default rust.vim that comes with neovim
   use 'rust-lang/rust.vim' 
+  -- tabular is required for vim-markdown
+  use 'godlygeek/tabular'
+  use 'preservim/vim-markdown'
 end)
 
 vim.mapleader = " "
@@ -60,6 +63,11 @@ vim.api.nvim_set_keymap("n", "<leader>vp", ":lua tmux_send_command('')<cr>", opt
 vim.api.nvim_set_keymap("n", "<leader>vl", ":lua tmux_send_last_command()<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>mb", ":lua tmux_send_command('git blame -L ' .. vim.fn.line('.') .. ',' .. vim.fn.line('.') .. ' ' .. vim.fn.expand('%:p'))<cr>", opts)
 vim.api.nvim_set_keymap('n', '<leader>dd', '<cmd>lua vim.diagnostic.open_float()<cr>', opts)
+
+-- markdown
+vim.g.vim_markdown_folding_disabled = 1
+-- this concels the ticks in code snippets
+-- vim.opt.conceallevel = 2
 
 -- airline
 vim.cmd("let g:airline#extensions#tabline#enabled = 1")
