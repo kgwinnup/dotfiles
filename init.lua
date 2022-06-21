@@ -12,6 +12,8 @@ require('packer').startup(function()
   -- tabular is required for vim-markdown
   use 'godlygeek/tabular'
   use 'preservim/vim-markdown'
+  -- golang
+  use 'fatih/vim-go'
 end)
 
 vim.mapleader = " "
