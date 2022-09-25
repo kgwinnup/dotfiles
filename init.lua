@@ -14,11 +14,15 @@ require('packer').startup(function()
   use 'preservim/vim-markdown'
   -- golang
   use 'fatih/vim-go'
+  use 'nvim-treesitter/nvim-treesitter'
+  use 'ido-nvim/ido.nvim'
+  use 'tpope/vim-fugitive'
 end)
 
 vim.mapleader = " "
 vim.g.mapleader = " "
 
+vim.opt.ttimeoutlen = 2000
 vim.opt.timeoutlen = 2000
 vim.opt.shortmess = "at"
 vim.opt.ruler = true
@@ -39,8 +43,9 @@ vim.opt.backspace = "indent,eol,start"
 vim.opt.clipboard = "unnamedplus"
 vim.opt.background = "dark"
 vim.cmd("colorscheme gruvbox")
-vim.opt.colorcolumn = "0"
-
+vim.opt.cursorline = true
+vim.opt.guicursor = ""
+--
 local opts = { noremap=true, silent=true }
 
 vim.api.nvim_set_keymap("n", "<leader>np", ":bprevious<cr>", opts)
@@ -55,7 +60,7 @@ vim.api.nvim_set_keymap("n", "<leader>-", ":res -5<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>+", ":res +5<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>nt", ":NERDTreeToggle<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>ss", ":setlocal spell spelllang=en_us<cr>", opts)
-vim.api.nvim_set_keymap("n", "<leader>sf", ":setlocal nospell", opts)
+vim.api.nvim_set_keymap("n", "<leader>sf", ":setlocal nospell<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>sn", "]s", opts)
 vim.api.nvim_set_keymap("n", "<leader>sp", "[s", opts)
 vim.api.nvim_set_keymap("n", "<leader>sr", "z=", opts)
@@ -63,7 +68,12 @@ vim.api.nvim_set_keymap("n", "<leader>sa", "zg", opts)
 vim.api.nvim_set_keymap("n", "<leader>rr", ":lua tmux_send_buf()<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>vp", ":lua tmux_send_command('')<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>vl", ":lua tmux_send_last_command()<cr>", opts)
-vim.api.nvim_set_keymap("n", "<leader>mb", ":lua tmux_send_command('git blame -L ' .. vim.fn.line('.') .. ',' .. vim.fn.line('.') .. ' ' .. vim.fn.expand('%:p'))<cr>", opts)
+vim.api.nvim_set_keymap("n", "<leader>ml", ":lua git_log2()<cr>", opts)
+vim.api.nvim_set_keymap("n", "<leader>ms", ":Git<cr>", opts)
+vim.api.nvim_set_keymap("n", "<leader>mp", ":Git push<cr>", opts)
+vim.api.nvim_set_keymap("n", "<leader>mb", ":Git blame<cr>", opts)
+vim.api.nvim_set_keymap("n", "<leader>nb", ":Ido std.git_files<cr>", opts)
+vim.api.nvim_set_keymap("n", "<leader>ng", ":Ido std.git_grep<cr>", opts)
 vim.api.nvim_set_keymap('n', '<leader>dd', '<cmd>lua vim.diagnostic.open_float()<cr>', opts)
 
 -- markdown
@@ -103,6 +113,49 @@ for _, lsp in pairs(servers) do
   }
 end
 
+require('lspconfig')['solargraph'].setup{
+  settings = {
+    solargraph = {
+      commandPath = 'solargraph',
+      diagnostics = false,
+      completion = true
+    }
+  },
+
+  on_attach = on_attach
+}
+
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = { "go", "rust" },
+  sync_install = false,
+  auto_install = true,
+  ignore_install = { "ruby", "javascript" },
+
+  highlight = {
+    -- `false` will disable the whole extension
+    enable = true,
+
+    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+    -- Using this option may slow down your editor, and you may see some duplicate highlights.
+    -- Instead of true it can also be a list of languages
+    additional_vim_regex_highlighting = false,
+  },
+}
+
+local ido = require("ido")
+ido.setup {
+    prompt = "Ido: ",
+    render = require('ido.render').vertical,
+    ignorecase = true,
+    mappings = {
+        ["<c-k>"] = ido.delete.line.backward,
+        ["<c-g>"] = ido.stop,
+        ["<up>"] = ido.prev,
+        ["<down>"] = ido.next
+    }
+}
+
 -- nerd tree settings
 vim.g.NERDTreeQuitOnOpen = 1
 
@@ -112,6 +165,14 @@ vim.g.rustfmt_autosave = 1
 
 -- tmux operations
 vim.g.tmux_last_command = ""
+
+function git_log2()
+    local commit = ido.start(vim.fn.systemlist("git log --format='%h%d %an %s %cr'"), {prompt = "Git Log: "})
+    if commit then
+        commit = commit:gsub(" .*", "")
+        vim.cmd("edit "..vim.fn.FugitiveFind(commit))
+    end
+end
 
 function tmux_window_exists()
     output = vim.fn.system("tmux list-panes |grep 1:")
@@ -124,7 +185,11 @@ end
 
 function tmux_toggle() 
     if not tmux_window_exists() then
-        vim.g.tmux_session = vim.fn.system("tmux split-window -h")
+        if vim.fn.winwidth(0) > 200 or vim.fn.winheight(0) * 2 > vim.fn.winwidth(0) then
+            vim.g.tmux_session = vim.fn.system("tmux split-window -h")
+        else
+            vim.g.tmux_session = vim.fn.system("tmux split-window")
+        end
         vim.fn.system("tmux select-pane -L")
     end
 end
@@ -187,8 +252,4 @@ function tmux_send_buf()
         tmux_send_block()
     end
 end
-
-
-
-
 
