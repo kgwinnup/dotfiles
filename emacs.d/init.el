@@ -1,5 +1,3 @@
-(getenv "HOME")
-
 ;; Packages and setup stuff
 ;;
 
@@ -19,19 +17,17 @@
         '("/usr/local/bin"
           "/usr/local/go/bin"
           "~/go/bin"
+          "~/.asdf/shims"
+          "~/.asdf/bin"
           "~/bin"
-          "~/workspace/jdk-17.0.1.jdk/Contents/Home/bin"
+          "~/.local/bin"
           "~/.cargo/bin"))
 
-(mapcar (lambda (path)
-          (setenv "JAVA_HOME" (concat path ":" (getenv "JAVA_HOME"))))
-        '("~/workspace/jdk-17.0.1.jdk/Contents/Home"))
+(add-to-list 'load-path "/Users/kylegwinnup/.emacs.d/asdf.el")
+(load "~/.emacs.d/asdf.el")
+(asdf-enable)
 
-(mapcar (lambda (path)
-          (setenv "CLASSPATH" (concat path ":" (getenv "CLASSPATH"))))
-        '("/Users/kgwinnup/workspace/jdt-language-server-1.6.0/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar"))
-
-;; make modeline less noisy
+; make modeline less noisy
 (setq-default mode-line-format
               '("%l:%c "
                 "%b "
@@ -57,7 +53,7 @@
               inhibit-startup-screen t
               auto-save-default nil
               make-backup-files nil
-              shell-file-name "bash"
+              shell-file-name "fish"
               initial-major-mode 'org-mode
               eldoc-echo-area-use-multiline-p 4
               semantic-idle-truncate-long-summaries t
@@ -91,12 +87,6 @@
 (shell-command "touch ~/.emacs.d/custom.el")
 (load "~/.emacs.d/custom.el")
 
-;; this is for shell and R shells, will move cursor to bottom of
-;; buffer after sending command
-(eval-after-load "comint"
-  '(progn
-     (setq comint-move-point-for-output 'others)))
-
 ;; eww-mode browser keybinding
 (add-hook 'eww-mode-hook
           (lambda ()
@@ -107,37 +97,18 @@
                   eww-search-prefix "https://ddg.gg/html?q="
                   shr-width 120)))
 
-(defun kg/toggle-shell ()
-  (interactive)
-  ;; if shell exists toggle view on/off
-  (let ((eshell-name (concat "*eshell " (projectile-project-name) "*")))
-    (if (get-buffer eshell-name)
-        (if (and (get-buffer-window eshell-name))
-            (delete-other-windows)
-          (let ((w2 (split-window-sensibly)))
-            (set-window-buffer w2 eshell-name)))
-      ;; else split the screen and create shell
-      (let ((w1 (selected-window))
-            (w2 (split-window-sensibly)))
-        (select-window w2)
-        (projectile-run-eshell)
-        (display-line-numbers-mode -1)
-        (select-window w1)
-        (set-window-buffer w2 eshell-name)))))
+(use-package vterm
+  :ensure t)
 
-(use-package elfeed
+(use-package eldoc-box
   :ensure t
-  :defer t
   :config
-  (setq elfeed-feeds '(("https://lobste.rs/rss" lobsters)
-                       ("https://lwn.net/headlines/rss" lwn)
-                       ("https://tilde.news/rss" tildeverse)))
-  (setq-default elfeed-search-filter "@1-week-ago +unread")
-  (setq-default elfeed-search-title-max-width 100)
-  (setq-default elfeed-search-title-min-width 100))
+  (set-face-attribute 'eldoc-box-border nil :background (face-attribute 'mode-line-inactive :background)))
 
 (use-package perspective
   :ensure t
+  :custom
+  (persp-mode-prefix-key (kbd "C-c M-p"))
   :init
   (persp-mode))
 
@@ -198,6 +169,7 @@
               (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
               (define-key evil-normal-state-local-map (kbd "SPC P") 'org-present)
               (define-key evil-normal-state-local-map (kbd "SPC g i") 'org-toggle-inline-images)
+              (define-key evil-normal-state-local-map (kbd "SPC g s") 'org-sort)
               (define-key evil-normal-state-local-map (kbd "SPC s e") 'org-sort-entries)
               (define-key evil-normal-state-local-map (kbd "SPC s n") 'kg/start-code-block)
               (define-key evil-normal-state-local-map (kbd "SPC s o") 'org-edit-src-code)
@@ -207,11 +179,12 @@
     (setq org-todo-keyword-faces
           '(("NOTES" . "coral")
             ("TODO" . "dodger blue")
+            ("IN-PROGRESS" . "orange")
             ("DONE" . "systemGrayColor")
             ("1-1" . "systemRedColor")
             ("IDEA" . "lime green")))
     (setq org-todo-keywords
-          '((sequence "NOTES" "TODO" "DONE" "1-1" "IDEA")))
+          '((sequence "NOTES" "TODO" "IN-PROGRESS" "DONE" "1-1" "IDEA")))
     (setq org-latex-create-formula-image-program 'dvipng)
     (setq org-preview-latex-default-process 'dvipng)
     (eval-after-load "org-present"
@@ -238,6 +211,7 @@
 (use-package projectile
   :ensure t
   :config
+  (setq projectile-indexing-method 'alien)
   (defun colorize-compilation-buffer ()
     (toggle-read-only)
     (ansi-color-apply-on-region compilation-filter-start (point))
@@ -309,12 +283,18 @@
 (use-package rust-mode
   :ensure t
   :init
-  ;(setq rust-format-on-save t)
   (add-to-list 'eglot-server-programs '(rust-mode . ("rust-analyzer")))
   (add-hook 'rust-mode-hook
             (lambda ()
               (kg/lang-std)
               (add-hook 'before-save-hook 'eglot-format nil t))))
+
+(use-package ruby-mode
+  :ensure t
+  :init
+  (add-hook 'ruby-mode-hook
+            (lambda ()
+              (show-paren-mode))))
 
 (use-package go-mode
   :ensure t
@@ -328,73 +308,49 @@
 (add-hook 'c-mode-hook (lambda () (kg/lang-std)))
 (add-hook 'c++-mode-hook (lambda () (kg/lang-std)))
 (add-hook 'emacs-lisp-mode-hook (lambda () (progn (show-paren-mode) (company-mode))))
-(add-hook 'java-mode-hook (lambda () (kg/lang-std) (add-hook 'before-save-hook 'eglot-format nil t)))
       
 (defun kg/advice-compilation-filter (f proc string)
   (funcall f proc (xterm-color-filter string)))
 (advice-add 'compilation-filter :around #'kg/advice-compilation-filter)
 
-;;
-;; eshell 
-(defun kg/eshell-git-info ()
-  (if (magit-get-current-branch)
-      (propertize (concat " (" (magit-get-current-branch) ")") 'face `(:foreground "#ebdbb2"))
-    ""))
-
-(defun kg/eshell-pwd ()
-  (let ((ret (if (cl-search (getenv "HOME") (eshell/pwd))
-                 (concat "~" (substring (eshell/pwd) (length (getenv "HOME")) nil))
-               (eshell/pwd))))
-    (propertize ret 'face `(:foreground "#b8bb26"))))
-
-(setq eshell-prompt-function
-      (lambda ()
-        (concat (kg/eshell-pwd)
-                (kg/eshell-git-info)
-                (propertize " $ " 'face `(:foreground "#ebdbb2")))))
-
-(defun kg/eshell-send (cmd &optional set-last-cmd-p)
+(defun kg/toggle-shell ()
   (interactive)
-  (with-current-buffer "*eshell*"
-    (evil-insert-state)
-    (eshell-kill-input)
+  ;; if shell exists toggle view on/off
+  (let ((shell-name (concat "*vterm " (projectile-project-name) "*")))
+    (if (get-buffer shell-name)
+        (if (and (get-buffer-window shell-name))
+            (delete-other-windows)
+          (let ((w2 (split-window-sensibly)))
+            (set-window-buffer w2 shell-name)))
+      ;; else split the screen and create shell
+      (let ((w1 (selected-window))
+            (w2 (split-window-sensibly)))
+        (select-window w2)
+        (projectile-run-vterm)
+        (display-line-numbers-mode -1)
+        (select-window w1)
+        (set-window-buffer w2 shell-name)))))
+
+(defun kg/shell-send (cmd &optional set-last-cmd-p)
+  (interactive)
+  (with-current-buffer (concat "*vterm " (projectile-project-name) "*")
+    (read-only-mode -1)
+    (message cmd)
+    (vterm-send-string cmd)
+    (vterm-send-return)
     (end-of-buffer)
-    (insert cmd)
-    (eshell-send-input)
-    (end-of-buffer)
-    (eshell-bol)
     (if set-last-cmd-p
         (setq kg/last-shell-cmd cmd))))
 
-(defun kg/eshell-send-again ()
+(defun kg/shell-send-again ()
   "sends the previous command to the active shell"
   (interactive)
-  (kg/eshell-send kg/last-shell-cmd t))
+  (kg/shell-send kg/last-shell-cmd t))
 
-(defun kg/eshell-input ()
+(defun kg/shell-input ()
   "gets the user command and sends to the buffer containing an active shell"
   (interactive)
-  (kg/eshell-send (read-string "CMD: ") t))
-
-(use-package eshell
-  :ensure t
-  :init
-  (setq eshell-prefer-lisp-functions nil)
-  (setq eshell-scroll-to-bottom-on-output t)
-  (setq xterm-color-preserve-properties t)
-  (add-hook 'eshell-before-prompt-hook (setq xterm-color-preserve-properties t))
-  (add-hook 'eshell-mode-hook
-            (lambda ()
-              (define-key company-active-map (kbd "RET") nil)
-              (add-to-list 'eshell-visual-commands "ssh")
-              (add-to-list 'eshell-visual-commands "man")
-              (add-to-list 'eshell-visual-subcommands '("docker" "attach"))
-              (add-to-list 'eshell-visual-subcommands '("git" "log"))
-              (add-to-list 'eshell-visual-subcommands '("git" "status"))
-              (add-to-list 'eshell-visual-subcommands '("git" "diff"))
-              ;; adds color support to eshell stdout
-              (setenv "TERM" "xterm-256color")
-              (add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter))))
+  (kg/shell-send (read-string "CMD: ") t))
 
 (setq kg/font-size 140)
 (defun kg/global-font-size (size)
@@ -425,11 +381,10 @@
                "s s" 'ispell
                "s r" 'ispell-region
                ;; cli integrations
-               "t t" 'kg/toggle-shell
-               "t T" 'eshell
+               "v s" 'kg/toggle-shell
                "v u" 'projectile-compile-project
-               "v p" 'kg/eshell-input
-               "v l" 'kg/eshell-send-again
+               "v p" 'kg/shell-input
+               "v l" 'kg/shell-send-again
                ;; perspectives
                "p p" 'persp-prev
                "p n" 'persp-next
@@ -447,8 +402,9 @@
                "n d" 'kill-buffer-and-window
                "n b" 'helm-mini
                "n r" (lambda () (interactive) (switch-to-buffer "*scratch*"))
-               "n a" (lambda () (interactive) (find-file "~/workspace/notes.org"))
+               "n a" (lambda () (interactive) (find-file "~/workspace/org/notes.org"))
                "n f" 'helm-projectile-find-file
+               "n g" 'projectile-grep
                "n w" 'list-buffers
                ;; general movement
                "j" 'evil-scroll-down
@@ -470,13 +426,10 @@
                "g p" 'pop-tag-mark
                "g r" 'eglot-rename
                "g h" 'eldoc
-               "g f" 'projectile-grep
+               "t"   'eldoc-box-eglot-help-at-point
+               "g u" 'eglot-reconnect
                "g l" 'xref-find-references)))
 
-(use-package flatland-theme
-  :ensure t)
-
-;(load-theme 'flatland t)
 (load-theme 'gruvbox-dark-medium t)
 
 (set-face-attribute 'default nil
@@ -485,22 +438,6 @@
 
 (set-frame-font "Fira Code Retina")
 
+
 (scroll-bar-mode -1)
 
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("aff12479ae941ea8e790abb1359c9bb21ab10acd15486e07e64e0e10d7fdab38" "6b5c518d1c250a8ce17463b7e435e9e20faa84f3f7defba8b579d4f5925f60c1" "7661b762556018a44a29477b84757994d8386d6edee909409fabe0631952dad9" default))
- '(helm-minibuffer-history-key "M-p")
- '(package-selected-packages
-   '(dired-sidebar transpose-frame flatui-theme busybee-theme apropospriate-theme elpher ample-theme solarized-theme smart-mode-line spaceline yaml-mode writegood-mode web-mode vterm use-package rust-mode rjsx-mode restclient projectile prettier-js powershell poly-R ox-gfm org-present neotree magit lsp-ui helm-themes helm-lsp helm-gtags gruvbox-theme go-mode evil-collection ess esh-autosuggest elfeed dockerfile-mode docker default-text-scale bind-map)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
