@@ -43,6 +43,7 @@ vim.opt.backspace = "indent,eol,start"
 vim.opt.clipboard = "unnamedplus"
 vim.opt.background = "dark"
 vim.cmd("colorscheme gruvbox")
+vim.cmd("hi SpellBad cterm=underline,bold ctermfg=red")
 vim.opt.cursorline = true
 vim.opt.guicursor = ""
 --
@@ -68,11 +69,12 @@ vim.api.nvim_set_keymap("n", "<leader>sa", "zg", opts)
 vim.api.nvim_set_keymap("n", "<leader>rr", ":lua tmux_send_buf()<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>vp", ":lua tmux_send_command('')<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>vl", ":lua tmux_send_last_command()<cr>", opts)
+vim.api.nvim_set_keymap("n", "<leader>vu", ":lua send_command()<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>ml", ":lua git_log2()<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>ms", ":Git<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>mp", ":Git push<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>mb", ":Git blame<cr>", opts)
-vim.api.nvim_set_keymap("n", "<leader>nb", ":Ido std.git_files<cr>", opts)
+vim.api.nvim_set_keymap("n", "<leader>nf", ":Ido std.git_files<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>ng", ":Ido std.git_grep<cr>", opts)
 vim.api.nvim_set_keymap('n', '<leader>dd', '<cmd>lua vim.diagnostic.open_float()<cr>', opts)
 
@@ -88,6 +90,7 @@ vim.cmd("let g:airline_powerline_fonts=1")
 
 -- supertab for lsp tab completion
 vim.g.SuperTabDefaultCompletionType = "<c-x><c-o>"
+vim.g.SuperTabCrMapping = 1
 
 local on_attach = function(client, bufnr)
   -- Enable completion triggered by <c-x><c-o>
@@ -125,8 +128,9 @@ require('lspconfig')['solargraph'].setup{
   on_attach = on_attach
 }
 
+
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = { "go", "rust" },
+  ensure_installed = { "go", "rust", "markdown" },
   sync_install = false,
   auto_install = true,
   ignore_install = { "ruby", "javascript" },
@@ -165,6 +169,7 @@ vim.g.rustfmt_autosave = 1
 
 -- tmux operations
 vim.g.tmux_last_command = ""
+vim.g.compile_last_command = ""
 
 function git_log2()
     local commit = ido.start(vim.fn.systemlist("git log --format='%h%d %an %s %cr'"), {prompt = "Git Log: "})
@@ -185,7 +190,7 @@ end
 
 function tmux_toggle() 
     if not tmux_window_exists() then
-        if vim.fn.winwidth(0) > 200 or vim.fn.winheight(0) * 2 > vim.fn.winwidth(0) then
+        if vim.fn.winwidth(0) > 180 or vim.fn.winheight(0) * 2 > vim.fn.winwidth(0) then
             vim.g.tmux_session = vim.fn.system("tmux split-window -h")
         else
             vim.g.tmux_session = vim.fn.system("tmux split-window")
@@ -253,3 +258,15 @@ function tmux_send_buf()
     end
 end
 
+function send_command()
+    last = vim.g.compile_last_command
+    input = vim.fn.input("cmd: ", last)
+    vim.fn.execute("echon ''")
+
+    if input ~= "" then
+        vim.g.compile_last_command = input
+        vim.fn.execute("split")
+        vim.fn.execute("terminal " .. input)
+        vim.fn.execute("wincmd k")
+    end
+end
