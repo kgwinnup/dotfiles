@@ -42,6 +42,7 @@ vim.opt.mouse = "a"
 vim.opt.backspace = "indent,eol,start"
 vim.opt.clipboard = "unnamedplus"
 vim.opt.background = "dark"
+vim.opt.textwidth = 72
 vim.cmd("colorscheme gruvbox")
 vim.cmd("hi SpellBad cterm=underline,bold ctermfg=red")
 vim.opt.cursorline = true
