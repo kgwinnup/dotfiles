@@ -17,11 +17,11 @@
         '("/usr/local/bin"
           "/usr/local/go/bin"
           "~/go/bin"
-          "~/.asdf/shims"
-          "~/.asdf/bin"
           "~/bin"
           "~/.local/bin"
           "~/.cargo/bin"))
+
+;(add-to-list 'tramp-remote-path 'tramp-own-remote-path)
 
 ; make modeline less noisy
 (setq-default mode-line-format
@@ -94,13 +94,22 @@
                   eww-search-prefix "https://ddg.gg/html?q="
                   shr-width 120)))
 
-(use-package vterm
+(use-package xterm-color
   :ensure t)
 
-(use-package langtool
+(use-package gruvbox-theme
+  :ensure t)
+
+(use-package elfeed
   :ensure t
+  :defer t
   :config
-  (setq langtool-language-tool-jar "/usr/local/Cellar/languagetool/5.9/libexec/languagetool-commandline.jar"))
+  (setq elfeed-feeds '(("https://lobste.rs/rss" lobsters)
+                       ("https://lwn.net/headlines/rss" lwn)
+                       ("https://tilde.news/rss" tildeverse)))
+  (setq-default elfeed-search-filter "@1-week-ago +unread")
+  (setq-default elfeed-search-title-max-width 100)
+  (setq-default elfeed-search-title-min-width 100))
 
 (use-package eldoc-box
   :ensure t
@@ -318,29 +327,50 @@
 (defun kg/toggle-shell ()
   (interactive)
   ;; if shell exists toggle view on/off
-  (let ((shell-name (concat "*vterm " (projectile-project-name) "*")))
-    (if (get-buffer shell-name)
-        (if (and (get-buffer-window shell-name))
+  (let ((eshell-name (concat "*eshell " (projectile-project-name) "*")))
+    (if (get-buffer eshell-name)
+        (if (and (get-buffer-window eshell-name))
             (delete-other-windows)
           (let ((w2 (split-window-sensibly)))
-            (set-window-buffer w2 shell-name)))
+            (set-window-buffer w2 eshell-name)))
       ;; else split the screen and create shell
       (let ((w1 (selected-window))
             (w2 (split-window-sensibly)))
         (select-window w2)
-        (projectile-run-vterm)
+        (projectile-run-eshell)
         (display-line-numbers-mode -1)
         (select-window w1)
-        (set-window-buffer w2 shell-name)))))
+        (set-window-buffer w2 eshell-name)))))
 
-(defun kg/shell-send (cmd &optional set-last-cmd-p)
+;;
+;; eshell 
+(defun kg/eshell-git-info ()
+  (if (magit-get-current-branch)
+      (propertize (concat " (" (magit-get-current-branch) ")") 'face `(:foreground "#ebdbb2"))
+    ""))
+
+(defun kg/eshell-pwd ()
+  (let ((ret (if (cl-search (getenv "HOME") (eshell/pwd))
+                 (concat "~" (substring (eshell/pwd) (length (getenv "HOME")) nil))
+               (eshell/pwd))))
+    (propertize ret 'face `(:foreground "#b8bb26"))))
+
+(setq eshell-prompt-function
+      (lambda ()
+        (concat (kg/eshell-pwd)
+                (kg/eshell-git-info)
+                (propertize " $ " 'face `(:foreground "#ebdbb2")))))
+
+(defun kg/eshell-send (cmd &optional set-last-cmd-p)
   (interactive)
-  (with-current-buffer (concat "*vterm " (projectile-project-name) "*")
-    (read-only-mode -1)
-    (message cmd)
-    (vterm-send-string cmd)
-    (vterm-send-return)
+  (with-current-buffer "*eshell*"
+    (evil-insert-state)
+    (eshell-kill-input)
     (end-of-buffer)
+    (insert cmd)
+    (eshell-send-input)
+    (end-of-buffer)
+    (eshell-bol)
     (if set-last-cmd-p
         (setq kg/last-shell-cmd cmd))))
 
@@ -353,6 +383,26 @@
   "gets the user command and sends to the buffer containing an active shell"
   (interactive)
   (kg/shell-send (read-string "CMD: ") t))
+
+(use-package eshell
+  :ensure t
+  :init
+  (setq eshell-prefer-lisp-functions nil)
+  (setq eshell-scroll-to-bottom-on-output t)
+  (setq xterm-color-preserve-properties t)
+  (add-hook 'eshell-before-prompt-hook (setq xterm-color-preserve-properties t))
+  (add-hook 'eshell-mode-hook
+            (lambda ()
+              (define-key company-active-map (kbd "RET") nil)
+              (add-to-list 'eshell-visual-commands "ssh")
+              (add-to-list 'eshell-visual-commands "man")
+              (add-to-list 'eshell-visual-subcommands '("docker" "attach"))
+              (add-to-list 'eshell-visual-subcommands '("git" "log"))
+              (add-to-list 'eshell-visual-subcommands '("git" "status"))
+              (add-to-list 'eshell-visual-subcommands '("git" "diff"))
+              ;; adds color support to eshell stdout
+              (setenv "TERM" "xterm-256color")
+              (add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter))))
 
 (setq kg/font-size 140)
 (defun kg/global-font-size (size)
@@ -544,6 +594,6 @@
 
 (set-frame-font "Fira Code Retina")
 
-
 (scroll-bar-mode -1)
+
 
