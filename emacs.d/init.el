@@ -9,6 +9,7 @@
 (unless (package-installed-p 'use-package) (package-install 'use-package))
 (require 'use-package)
 (require 'ox-latex)
+(require 'jsonrpc)
 
 ;; set up all the PATH and other environment variables
 (mapcar (lambda (path)
@@ -21,7 +22,8 @@
           "~/.local/bin"
           "~/.cargo/bin"))
 
-;(add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+(with-eval-after-load "tramp"
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 
 ; make modeline less noisy
 (setq-default mode-line-format
@@ -114,6 +116,8 @@
 (use-package eldoc-box
   :ensure t
   :config
+  (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t)
+  (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
   (set-face-attribute 'eldoc-box-border nil :background (face-attribute 'mode-line-inactive :background)))
 
 (use-package perspective
@@ -247,8 +251,7 @@
   (setq markdown-command "multimarkdown")
   (add-hook 'markdown-mode-hook
             (lambda ()
-              (turn-on-orgtbl)
-              (turn-on-orgstruct++))))
+              (turn-on-orgtbl))))
   
 (defun kg/toggle-ess-r ()
   (interactive)
@@ -384,9 +387,11 @@
   (interactive)
   (kg/shell-send (read-string "CMD: ") t))
 
+
 (use-package eshell
   :ensure t
-  :init
+  :config
+  (require 'xterm-color)
   (setq eshell-prefer-lisp-functions nil)
   (setq eshell-scroll-to-bottom-on-output t)
   (setq xterm-color-preserve-properties t)
@@ -402,7 +407,7 @@
               (add-to-list 'eshell-visual-subcommands '("git" "diff"))
               ;; adds color support to eshell stdout
               (setenv "TERM" "xterm-256color")
-              (add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter))))
+              (add-to-list 'shell-preoutput-filter-functions 'xterm-color-filter))))
 
 (setq kg/font-size 140)
 (defun kg/global-font-size (size)
@@ -595,5 +600,4 @@
 (set-frame-font "Fira Code Retina")
 
 (scroll-bar-mode -1)
-
 
