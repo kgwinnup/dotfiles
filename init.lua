@@ -1,4 +1,3 @@
-
 local use = require('packer').use
 require('packer').startup(function()
   use 'wbthomason/packer.nvim' -- Package manager
@@ -8,7 +7,7 @@ require('packer').startup(function()
   use 'ervandew/supertab'
   use 'scrooloose/nerdtree'
   -- this is more up to date than the default rust.vim that comes with neovim
-  use 'rust-lang/rust.vim' 
+  use 'rust-lang/rust.vim'
   -- tabular is required for vim-markdown
   use 'godlygeek/tabular'
   use 'preservim/vim-markdown'
@@ -55,12 +54,14 @@ vim.api.nvim_set_keymap("n", "<leader>nn", ":bnext<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>nd", ":bdelete<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>no", ":only<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>ns", "<C-W><C-W>", opts)
+vim.api.nvim_set_keymap("n", "<leader>nf", ":Ido std.git_files<cr>", opts)
+vim.api.nvim_set_keymap("n", "<leader>ng", ":Ido std.git_grep<cr>", opts)
+vim.api.nvim_set_keymap("n", "<leader>nt", ":NERDTreeToggle<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>j", "<C-d>", opts)
 vim.api.nvim_set_keymap("n", "<leader>k", "<C-u>", opts)
 vim.api.nvim_set_keymap("n", "<leader>=", "<C-w>=", opts)
 vim.api.nvim_set_keymap("n", "<leader>-", ":res -5<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>+", ":res +5<cr>", opts)
-vim.api.nvim_set_keymap("n", "<leader>nt", ":NERDTreeToggle<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>ss", ":setlocal spell spelllang=en_us<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>sf", ":setlocal nospell<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>sn", "]s", opts)
@@ -75,9 +76,7 @@ vim.api.nvim_set_keymap("n", "<leader>ml", ":lua git_log2()<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>ms", ":Git<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>mp", ":Git push<cr>", opts)
 vim.api.nvim_set_keymap("n", "<leader>mb", ":Git blame<cr>", opts)
-vim.api.nvim_set_keymap("n", "<leader>nf", ":Ido std.git_files<cr>", opts)
-vim.api.nvim_set_keymap("n", "<leader>ng", ":Ido std.git_grep<cr>", opts)
-vim.api.nvim_set_keymap('n', '<leader>dd', '<cmd>lua vim.diagnostic.open_float()<cr>', opts)
+vim.api.nvim_set_keymap('n', '<leader>dd', ':lua vim.diagnostic.open_float()<cr>', opts)
 
 -- markdown
 vim.g.vim_markdown_folding_disabled = 1
@@ -89,14 +88,19 @@ vim.cmd("let g:airline#extensions#tabline#enabled = 1")
 vim.cmd("let g:airline#extensions#tabline#show_buffers=1")
 vim.cmd("let g:airline_powerline_fonts=1")
 
+-- table mode
+vim.cmd("let g:table_mode_disable_mappings = 1")
+-- vim.cmd("let g:table_mode_disable_tableize_mappings = 1")
+
 -- supertab for lsp tab completion
 vim.g.SuperTabDefaultCompletionType = "<c-x><c-o>"
 vim.g.SuperTabCrMapping = 1
+vim.g.SuperTabClosePreviewOnPopupClose = 1
 
 local on_attach = function(client, bufnr)
   -- Enable completion triggered by <c-x><c-o>
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-  
+
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>t', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gg', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gp', ':pop<cr>', opts)
@@ -117,28 +121,16 @@ for _, lsp in pairs(servers) do
   }
 end
 
-require('lspconfig')['solargraph'].setup{
-  settings = {
-    solargraph = {
-      commandPath = 'solargraph',
-      diagnostics = false,
-      completion = true
-    }
-  },
-
-  on_attach = on_attach
-}
-
-
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = { "go", "rust", "markdown" },
+  ensure_installed = { "go" },
   sync_install = false,
   auto_install = true,
-  ignore_install = { "ruby", "javascript" },
+  ignore_install = { "javascript" },
 
   highlight = {
     -- `false` will disable the whole extension
     enable = true,
+    disable = { "rust", "markdown", "lua" },
 
     -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
     -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
@@ -189,7 +181,7 @@ function tmux_window_exists()
     end
 end
 
-function tmux_toggle() 
+function tmux_toggle()
     if not tmux_window_exists() then
         if vim.fn.winwidth(0) > 180 or vim.fn.winheight(0) * 2 > vim.fn.winwidth(0) then
             vim.g.tmux_session = vim.fn.system("tmux split-window -h")
@@ -207,24 +199,24 @@ function tmux_send_command(txt)
         input = vim.fn.input("tmux input: ")
         if input ~= "" then
             tmux_send_command(input)
-        end 
+        end
     else
         if tmux_window_exists() then
-            vim.fn.system("tmux send-keys -t 1 " .. "'\n'") 
-            vim.fn.system("tmux send-keys -t 1 " .. "'" .. txt .. "\n'") 
+            vim.fn.system("tmux send-keys -t 1 " .. "'\n'")
+            vim.fn.system("tmux send-keys -t 1 " .. "'" .. txt .. "\n'")
         else
             tmux_toggle()
-            vim.fn.system("tmux send-keys -t 1 " .. "'\n'") 
-            vim.fn.system("tmux send-keys -t 1 " .. "'" .. txt .. "\n'") 
+            vim.fn.system("tmux send-keys -t 1 " .. "'\n'")
+            vim.fn.system("tmux send-keys -t 1 " .. "'" .. txt .. "\n'")
         end
     end
 end
 
-function tmux_send_last_command() 
-    tmux_send_command(vim.g.tmux_last_command) 
+function tmux_send_last_command()
+    tmux_send_command(vim.g.tmux_last_command)
 end
 
-local function tmux_send_block() 
+local function tmux_send_block()
     start = vim.fn.line(".")
     _end = vim.fn.search("^$")
     lines = vim.fn.getbufline(vim.fn.bufnr("%"), start, _end-1)
@@ -236,7 +228,7 @@ local function tmux_send_block()
     vim.fn.execute("normal! :" .. _end)
 end
 
-local function tmux_send_function() 
+local function tmux_send_function()
     start = vim.fn.line(".")
     vim.fn.execute("normal! ][")
     _end = vim.fn.line(".")
@@ -244,7 +236,7 @@ local function tmux_send_function()
     for k,v in pairs(lines) do
         if v == "" then
             tmux_send_command("\n")
-        else 
+        else
             tmux_send_command(v)
         end
     end
@@ -261,13 +253,21 @@ end
 
 function send_command()
     last = vim.g.compile_last_command
-    input = vim.fn.input("cmd: ", last)
+    input = vim.fn.input("cmd: ", last, "file")
     vim.fn.execute("echon ''")
+
+    name = vim.fn.expand('%')
+    if name:find('^term') ~= nil then
+        vim.cmd(':bdelete')
+    else
+        vim.cmd(':only')
+    end
 
     if input ~= "" then
         vim.g.compile_last_command = input
         vim.fn.execute("split")
         vim.fn.execute("terminal " .. input)
+        vim.fn.execute("normal G")
         vim.fn.execute("wincmd k")
     end
 end
