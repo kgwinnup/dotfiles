@@ -3,7 +3,8 @@ require('packer').startup(function()
   use 'wbthomason/packer.nvim' -- Package manager
   use 'neovim/nvim-lspconfig' -- Collection of configurations for the built-in LSP client
   use 'vim-airline/vim-airline'
-  use 'morhetz/gruvbox'
+  -- use 'morhetz/gruvbox'
+  use "ellisonleao/gruvbox.nvim"
   use 'ervandew/supertab'
   use 'scrooloose/nerdtree'
   -- this is more up to date than the default rust.vim that comes with neovim
@@ -174,6 +175,7 @@ end
 
 function tmux_window_exists()
     output = vim.fn.system("tmux list-panes |grep 1:")
+    print(output)
     if output == "" then
         return false
     else
