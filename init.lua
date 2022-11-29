@@ -19,9 +19,18 @@ require('packer').startup(function()
   use 'tpope/vim-fugitive'
 end)
 
+require("gruvbox").setup({
+    -- contrast = "soft",
+    overrides = {
+        Function = { fg = "#fabd2f" },
+        Type = { fg = "#d3869b" },
+    }
+})
+
 vim.mapleader = " "
 vim.g.mapleader = " "
 
+vim.opt.showtabline = 0
 vim.opt.ttimeoutlen = 2000
 vim.opt.timeoutlen = 2000
 vim.opt.shortmess = "at"
@@ -69,15 +78,15 @@ vim.api.nvim_set_keymap("n", "<leader>sn", "]s", opts)
 vim.api.nvim_set_keymap("n", "<leader>sp", "[s", opts)
 vim.api.nvim_set_keymap("n", "<leader>sr", "z=", opts)
 vim.api.nvim_set_keymap("n", "<leader>sa", "zg", opts)
-vim.api.nvim_set_keymap("n", "<leader>rr", ":lua tmux_send_buf()<cr>", opts)
-vim.api.nvim_set_keymap("n", "<leader>vp", ":lua tmux_send_command('')<cr>", opts)
-vim.api.nvim_set_keymap("n", "<leader>vl", ":lua tmux_send_last_command()<cr>", opts)
-vim.api.nvim_set_keymap("n", "<leader>vu", ":lua send_command()<cr>", opts)
-vim.api.nvim_set_keymap("n", "<leader>ml", ":lua git_log2()<cr>", opts)
-vim.api.nvim_set_keymap("n", "<leader>ms", ":Git<cr>", opts)
-vim.api.nvim_set_keymap("n", "<leader>mp", ":Git push<cr>", opts)
-vim.api.nvim_set_keymap("n", "<leader>mb", ":Git blame<cr>", opts)
-vim.api.nvim_set_keymap('n', '<leader>dd', ':lua vim.diagnostic.open_float()<cr>', opts)
+vim.api.nvim_set_keymap("n", "<leader>rr", ":silent lua tmux_send_buf()<cr>", opts)
+vim.api.nvim_set_keymap("n", "<leader>vp", ":silent lua tmux_send_command('')<cr>", opts)
+vim.api.nvim_set_keymap("n", "<leader>vl", ":silent lua tmux_send_last_command()<cr>", opts)
+vim.api.nvim_set_keymap("n", "<leader>vu", ":silent lua send_command()<cr>", opts)
+vim.api.nvim_set_keymap("n", "<leader>ml", ":silent lua git_log2()<cr>", opts)
+vim.api.nvim_set_keymap("n", "<leader>ms", ":silent Git<cr>", opts)
+vim.api.nvim_set_keymap("n", "<leader>mp", ":silent Git push<cr>", opts)
+vim.api.nvim_set_keymap("n", "<leader>mb", ":silent Git blame<cr>", opts)
+vim.api.nvim_set_keymap('n', '<leader>dd', ':silent source ~/.config/nvim/init.lua<cr>', opts)
 
 -- markdown
 vim.g.vim_markdown_folding_disabled = 1
@@ -85,7 +94,7 @@ vim.g.vim_markdown_folding_disabled = 1
 -- vim.opt.conceallevel = 2
 
 -- airline
-vim.cmd("let g:airline#extensions#tabline#enabled = 1")
+vim.cmd("let g:airline#extensions#tabline#enabled = 0")
 vim.cmd("let g:airline#extensions#tabline#show_buffers=1")
 vim.cmd("let g:airline_powerline_fonts=1")
 
@@ -211,6 +220,7 @@ function tmux_send_command(txt)
             vim.fn.system("tmux send-keys -t 1 " .. "'\n'")
             vim.fn.system("tmux send-keys -t 1 " .. "'" .. txt .. "\n'")
         end
+        vim.fn.execute("normal <cr>")
     end
 end
 
@@ -256,7 +266,7 @@ end
 function send_command()
     last = vim.g.compile_last_command
     input = vim.fn.input("cmd: ", last, "file")
-    vim.fn.execute("echon ''")
+    vim.fn.execute("echon ''\n")
 
     name = vim.fn.expand('%')
     if name:find('^term') ~= nil then
@@ -266,6 +276,7 @@ function send_command()
     end
 
     if input ~= "" then
+        kill_all_terms()
         vim.g.compile_last_command = input
         vim.fn.execute("split")
         vim.fn.execute("terminal " .. input)
@@ -273,3 +284,14 @@ function send_command()
         vim.fn.execute("wincmd k")
     end
 end
+
+function kill_all_terms() 
+    list = vim.fn.execute("ls")
+    for s in list:gmatch("[^\r\n]+") do
+        if s:find('term://') ~= nil then
+            id = string.sub(s, s:find('[0-9]+'))
+            vim.fn.execute(id .. "bw")
+        end
+    end
+end
+
