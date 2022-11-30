@@ -22,8 +22,8 @@ end)
 require("gruvbox").setup({
     -- contrast = "soft",
     overrides = {
-        Function = { fg = "#fabd2f" },
-        Type = { fg = "#d3869b" },
+        -- Function = { fg = "#fabd2f" },
+        -- Type = { fg = "#d3869b" },
     }
 })
 
