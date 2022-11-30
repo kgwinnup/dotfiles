@@ -268,20 +268,17 @@ function send_command()
     input = vim.fn.input("cmd: ", last, "file")
     vim.fn.execute("echon ''\n")
 
-    name = vim.fn.expand('%')
-    if name:find('^term') ~= nil then
-        vim.cmd(':bdelete')
-    else
-        vim.cmd(':only')
-    end
-
     if input ~= "" then
         kill_all_terms()
         vim.g.compile_last_command = input
-        vim.fn.execute("split")
+        if vim.fn.winwidth(0) > 180 or vim.fn.winheight(0) * 2 > vim.fn.winwidth(0) then
+            vim.fn.execute("vsplit")
+        else
+            vim.fn.execute("split")
+        end
         vim.fn.execute("terminal " .. input)
         vim.fn.execute("normal G")
-        vim.fn.execute("wincmd k")
+        vim.fn.execute("wincmd w")
     end
 end
 
