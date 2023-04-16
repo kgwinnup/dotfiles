@@ -1,17 +1,88 @@
-;; Packages and setup stuff
+;;
+;; Basic init stuff
 ;;
 
+;; No scrollbar by default.
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
+
+;; No nenubar by default.
+(when (fboundp 'menu-bar-mode)
+  (menu-bar-mode -1))
+
+;; No toolbar by default.
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
+
+;; No Alarms by default.
+(setq ring-bell-function 'ignore)
+
+(setq gc-cons-threshold (* 384 1024 1024)
+      gc-cons-percentage 0.6)
+
+;; Do not load outdated byte code files.
+(setq load-prefer-newer t)
+
+;; Default was too low.
+;; Increase for better lsp performance.
+(setq read-process-output-max (* 3 1024 1024)) ;; 3mb
+
+;; https://github.com/hlissner/doom-emacs/blob/58af4aef56469f3f495129b4e7d947553f420fca/core/core.el#L184
+(setq auto-mode-case-fold nil)
+
 (require 'package)
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                         ("elpa" . "https://elpa.gnu.org/packages/")))
-(package-initialize)
 
-(unless (package-installed-p 'use-package) (package-install 'use-package))
+;; Don't auto-initialize.
+(setq package-enable-at-startup nil)
+
+;; Don't add that `custom-set-variables' block to init.
+(setq package--init-file-ensured t)
+
+;; Save custom vars to separate file from init.el.
+(setq custom-file "~/.emacs.d/custom.el")
+(when (file-exists-p custom-file)
+  (load custom-file))
+
+;; From https://irreal.org/blog/?p=8243
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+
+;; From https://github.com/hlissner/doom-emacs/blob/5dacbb7cb1c6ac246a9ccd15e6c4290def67757c/core/core-packages.el#L102
+(setq gnutls-verify-error (not (getenv "INSECURE")) ; you shouldn't use this
+      tls-checktrust gnutls-verify-error
+      tls-program (list "gnutls-cli --x509cafile %t -p %p %h"
+                        ;; compatibility fallbacks
+                        "gnutls-cli -p %p %h"
+                        "openssl s_client -connect %h:%p -no_ssl2 -no_ssl3 -ign_eof"))
+
+(setq package-archives
+      '(("melpa" . "https://melpa.org/packages/")
+        ("melpa-stable" . "https://stable.melpa.org/packages/")
+        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+        ("gnu" . "https://elpa.gnu.org/packages/")))
+
+(setq package-archive-priorities
+      '(("melpa" .  4)
+        ("melpa-stable" . 3)
+        ("org" . 2)
+        ("gnu" . 1)))
+
+(when (< emacs-major-version 27)
+  (unless package--initialized
+    (package-initialize)))
+
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+;; use-package-enable-imenu-support must be
+;; set before requiring use-package.
+(setq use-package-enable-imenu-support t)
 (require 'use-package)
-(require 'ox-latex)
-(require 'jsonrpc)
 
-;; set up all the PATH and other environment variables
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+(add-to-list 'default-frame-alist '(ns-appearance . dark))
+
+;; Set up the PATH and other environment variables
 (mapcar (lambda (path)
           (setenv "PATH" (concat path ":" (getenv "PATH")))
           (add-to-list 'exec-path path))
@@ -25,13 +96,17 @@
 (with-eval-after-load "tramp"
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 
-; make modeline less noisy
+;; Make modeline less noisy
 (setq-default mode-line-format
               '("%l:%c "
                 "%b "
                 mode-line-misc-info))
 
-;; some basic global settings
+;; Disable line numbers in compile-mode
+(add-hook 'compilation-mode-hook (lambda ()
+                                   (display-line-numbers-mode -1)))
+
+;; Various settings
 (setq-default ring-bell-function 'ignore
               require-final-newline t
               warning-minimum-level :emergency
@@ -52,25 +127,24 @@
               inhibit-startup-screen t
               auto-save-default nil
               make-backup-files nil
-              shell-file-name "fish"
+              shell-file-name "bash"
               initial-major-mode 'org-mode
               eldoc-echo-area-use-multiline-p 4
               semantic-idle-truncate-long-summaries t
               eldoc-prefer-doc-buffer t
               kg/last-shell-cmd ""
               compilation-environment '("TERM=xterm-256color")
-              backup-directory-alist '(("" . "~/.emacs.d/backup")))
+              backup-directory-alist '(("" . "~/.emacs.d/backup"))
+              vscode-dark-plus-box-org-todo nil
+              vscode-dark-plus-scale-org-faces nil
+              )
 
 ;; other settings that are not global variables
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(xterm-mouse-mode 1)
-(add-hook 'after-make-frame-functions (lambda () (interactive) (scroll-bar-mode -1)))
 (fset 'yes-or-no-p 'y-or-n-p)
 (global-display-line-numbers-mode)
 (global-hl-line-mode)
 
-;; locate for the OS X 
+;; Locate for the OS X 
 (if (eq system-type 'darwin)
     (setq helm-locate-command
           "glocate %s %s"
@@ -83,8 +157,9 @@
   (global-set-key (kbd "<mouse-4>") 'scroll-down-line)
   (global-set-key (kbd "<mouse-5>") 'scroll-up-line))
 
-(shell-command "touch ~/.emacs.d/custom.el")
-(load "~/.emacs.d/custom.el")
+;;
+;; Packages and settings
+;;
 
 ;; eww-mode browser keybinding
 (add-hook 'eww-mode-hook
@@ -96,17 +171,28 @@
                   eww-search-prefix "https://ddg.gg/html?q="
                   shr-width 120)))
 
+(use-package moody
+  :config
+  (moody-replace-mode-line-buffer-identification)
+  (moody-replace-vc-mode))
+
 (use-package xterm-color
   :ensure t)
 
-(use-package gruvbox-theme
-  :ensure t)
+(use-package chatgpt-shell
+  :straight (:host github :repo "xenodium/chatgpt-shell")
+  :config
+  (setq chatgpt-shell-openai-key
+        ;; .authinfo: machine openai.com password OPENAI_KEY
+        (lambda ()
+          (auth-source-pick-first-password :host "api.openai.com"))))
 
 (use-package elfeed
   :ensure t
   :defer t
   :config
   (setq elfeed-feeds '(("https://lobste.rs/rss" lobsters)
+                       ("https://hnrss.org/frontpage" hackernews)
                        ("https://lwn.net/headlines/rss" lwn)
                        ("https://tilde.news/rss" tildeverse)))
   (setq-default elfeed-search-filter "@1-week-ago +unread")
@@ -161,7 +247,8 @@
 (defun kg/start-code-block ()
   "starts a code block in org mode"
   (interactive)
-  (insert "#+begin_src\n\n#+end_src")
+  (insert "#+begin_src R :session :results output\n\n#+end_src")
+  ;(insert "#+begin_src\n\n#+end_src")
   (previous-line)
   (previous-line))
 
@@ -181,6 +268,7 @@
   (add-hook 'org-mode-hook
             (lambda ()
               (org-indent-mode)
+              (local-set-key (kbd "C-c C-r") 'org-babel-remove-result)
               (define-key evil-normal-state-local-map (kbd "SPC F") 'org-table-toggle-coordinate-overlays)
               (define-key evil-normal-state-local-map (kbd "SPC P") 'org-present)
               (define-key evil-normal-state-local-map (kbd "SPC g i") 'org-toggle-inline-images)
@@ -200,8 +288,6 @@
             ("IDEA" . "lime green")))
     (setq org-todo-keywords
           '((sequence "NOTES" "TODO" "IN-PROGRESS" "DONE" "1-1" "IDEA")))
-    (setq org-latex-create-formula-image-program 'dvipng)
-    (setq org-preview-latex-default-process 'dvipng)
     (eval-after-load "org-present"
       '(progn
          (add-hook 'org-present-mode-hook
@@ -228,9 +314,7 @@
   :config
   (setq projectile-indexing-method 'alien)
   (defun colorize-compilation-buffer ()
-    (toggle-read-only)
-    (ansi-color-apply-on-region compilation-filter-start (point))
-    (toggle-read-only))
+    (ansi-color-apply-on-region compilation-filter-start (point)))
   (setq projectile-project-search-path '("~/workspace/"))
   (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
   (setq compilation-buffer-name-function #'projectile-compilation-buffer-name)
@@ -241,7 +325,6 @@
 (use-package dockerfile-mode :ensure t :defer t)
 (use-package yaml-mode :ensure t :defer t)
 (use-package poly-markdown :ensure t :defer t)
-(use-package poly-R :ensure t :defer t)
 
 (use-package markdown-mode
   :ensure t
@@ -253,34 +336,6 @@
             (lambda ()
               (turn-on-orgtbl))))
   
-(defun kg/toggle-ess-r ()
-  (interactive)
-  (let ((name (concat "*R:" (projectile-project-name) "*")))
-    (if (get-buffer name)
-        (if (and (get-buffer-window name))
-            (delete-other-windows)
-          (let ((w2 (split-window-horizontally)))
-            (set-window-buffer w2 name))))))
-
-(use-package ess
-  :ensure t
-  :defer t
-  :mode (("\\*\\.R" . ess-site)
-         ("\\*\\.Rmd" . ess-site))
-  :commands R
-  :hook (ess-mode-hook . subword-mode)
-  :config
-  (setq ess-ask-for-ess-directory nil)
-  (setq ess-local-process-name "R")
-  (setq scroll-down-aggressively 0.01)
-  (setq ess-fancy-comments nil)
-  :init
-  (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . poly-markdown+R-mode))
-  (add-hook 'ess-mode-hook
-            (lambda ()
-              (define-key evil-normal-state-local-map (kbd "SPC r s") 'kg/toggle-ess-r)
-              (define-key evil-normal-state-local-map (kbd "SPC r r") (lambda () (interactive) (ess-eval-function-or-paragraph-and-step))))))
-
 (defmacro kg/lang-std ()
   `(progn
      (show-paren-mode)
@@ -294,6 +349,12 @@
   (add-hook 'prog-mode-hook 'yas-minor-mode)
   (add-hook 'text-mode-hook 'yas-minor-mode))
 
+(use-package web-mode
+  :ensure t
+  :config
+  (add-hook 'web-mode-hook  (lambda ()
+                              (setq web-mode-markup-indent-offset 4))))
+
 (use-package rust-mode
   :ensure t
   :init
@@ -302,13 +363,6 @@
             (lambda ()
               (kg/lang-std)
               (add-hook 'before-save-hook 'eglot-format nil t))))
-
-(use-package ruby-mode
-  :ensure t
-  :init
-  (add-hook 'ruby-mode-hook
-            (lambda ()
-              (show-paren-mode))))
 
 (use-package go-mode
   :ensure t
@@ -346,7 +400,8 @@
         (set-window-buffer w2 eshell-name)))))
 
 ;;
-;; eshell 
+;; Eshell
+;;
 (defun kg/eshell-git-info ()
   (if (magit-get-current-branch)
       (propertize (concat " (" (magit-get-current-branch) ")") 'face `(:foreground "#ebdbb2"))
@@ -387,17 +442,18 @@
   (interactive)
   (kg/shell-send (read-string "CMD: ") t))
 
-
 (use-package eshell
   :ensure t
+  :hook ((eshell-mode . turn-on-hide-mode-line-mode))
   :config
   (require 'xterm-color)
   (setq eshell-prefer-lisp-functions nil)
   (setq eshell-scroll-to-bottom-on-output t)
   (setq xterm-color-preserve-properties t)
-  (add-hook 'eshell-before-prompt-hook (setq xterm-color-preserve-properties t))
+  (setq-local global-hl-line-mode nil)
   (add-hook 'eshell-mode-hook
             (lambda ()
+              (display-line-numbers-mode -1)
               (define-key company-active-map (kbd "RET") nil)
               (add-to-list 'eshell-visual-commands "ssh")
               (add-to-list 'eshell-visual-commands "man")
@@ -405,9 +461,7 @@
               (add-to-list 'eshell-visual-subcommands '("git" "log"))
               (add-to-list 'eshell-visual-subcommands '("git" "status"))
               (add-to-list 'eshell-visual-subcommands '("git" "diff"))
-              ;; adds color support to eshell stdout
-              (setenv "TERM" "xterm-256color")
-              (add-to-list 'shell-preoutput-filter-functions 'xterm-color-filter))))
+              (setenv "TERM" "xterm-256color"))))
 
 (setq kg/font-size 140)
 (defun kg/global-font-size (size)
@@ -415,99 +469,6 @@
   (set-face-attribute 'default nil
                       :height (+ size kg/font-size))
   (setq kg/font-size (+ size kg/font-size)))
-
-(defun kg/magit-show-with-difftastic (rev)
-  "Show the result of \"git show REV\" with GIT_EXTERNAL_DIFF=difft."
-  (interactive
-   (list (or
-          ;; If REV is given, just use it.
-          (when (boundp 'rev) rev)
-          ;; If not invoked with prefix arg, try to guess the REV from
-          ;; point's position.
-          (and (not current-prefix-arg)
-               (or (magit-thing-at-point 'git-revision t)
-                   (magit-branch-or-commit-at-point)))
-          ;; Otherwise, query the user.
-          (magit-read-branch-or-commit "Revision"))))
-  (if (not rev)
-      (error "No revision specified")
-    (kg/magit--with-difftastic
-     (get-buffer-create (concat "*git show difftastic " rev "*"))
-     (list "git" "--no-pager" "show" "--ext-diff" rev))))
-
-(defun kg/magit--with-difftastic (buffer command)
-  "Run COMMAND with GIT_EXTERNAL_DIFF=difft then show result in BUFFER."
-  (let ((process-environment
-         (cons (concat "GIT_EXTERNAL_DIFF=difft --width="
-                       (number-to-string (frame-width)))
-               process-environment)))
-    ;; Clear the result buffer (we might regenerate a diff, e.g., for
-    ;; the current changes in our working directory).
-    (with-current-buffer buffer
-      (setq buffer-read-only nil)
-      (erase-buffer))
-    ;; Now spawn a process calling the git COMMAND.
-    (make-process
-     :name (buffer-name buffer)
-     :buffer buffer
-     :command command
-     ;; Don't query for running processes when emacs is quit.
-     :noquery t
-     ;; Show the result buffer once the process has finished.
-     :sentinel (lambda (proc event)
-                 (when (eq (process-status proc) 'exit)
-                   (with-current-buffer (process-buffer proc)
-                     (goto-char (point-min))
-                     (ansi-color-apply-on-region (point-min) (point-max))
-                     (setq buffer-read-only t)
-                     (view-mode)
-                     (end-of-line)
-                     ;; difftastic diffs are usually 2-column side-by-side,
-                     ;; so ensure our window is wide enough.
-                     (let ((width (current-column)))
-                       (while (zerop (forward-line 1))
-                         (end-of-line)
-                         (setq width (max (current-column) width)))
-                       ;; Add column size of fringes
-                       (setq width (+ width
-                                      (fringe-columns 'left)
-                                      (fringe-columns 'right)))
-                       (goto-char (point-min))
-                       (pop-to-buffer
-                        (current-buffer)
-                        `(;; If the buffer is that wide that splitting the frame in
-                          ;; two side-by-side windows would result in less than
-                          ;; 80 columns left, ensure it's shown at the bottom.
-                          ,(when (> 80 (- (frame-width) width))
-                             #'display-buffer-at-bottom)
-                          (window-width
-                           . ,(min width (frame-width))))))))))))
-
-(defun kg/magit-diff-with-difftastic (arg)
-  "Show the result of \"git diff ARG\" with GIT_EXTERNAL_DIFF=difft."
-  (interactive
-   (list (or
-          ;; If RANGE is given, just use it.
-          (when (boundp 'range) range)
-          ;; If prefix arg is given, query the user.
-          (and current-prefix-arg
-               (magit-diff-read-range-or-commit "Range"))
-          ;; Otherwise, auto-guess based on position of point, e.g., based on
-          ;; if we are in the Staged or Unstaged section.
-          (pcase (magit-diff--dwim)
-            ('unmerged (error "unmerged is not yet implemented"))
-            ('unstaged nil)
-            ('staged "--cached")
-            (`(stash . ,value) (error "stash is not yet implemented"))
-            (`(commit . ,value) (format "%s^..%s" value value))
-            ((and range (pred stringp)) range)
-            (_ (magit-diff-read-range-or-commit "Range/Commit"))))))
-  (let ((name (concat "*git diff difftastic"
-                      (if arg (concat " " arg) "")
-                      "*")))
-    (kg/magit--with-difftastic
-     (get-buffer-create name)
-     `("git" "--no-pager" "diff" "--ext-diff" ,@(when arg (list arg))))))
 
 (use-package dired-sidebar
   :ensure t
@@ -518,17 +479,6 @@
               (display-line-numbers-mode -1)
               (unless (file-remote-p default-directory)
                 (auto-revert-mode)))))
-
-(transient-define-prefix kg/magit-aux-commands ()
-  "My personal auxiliary magit commands."
-  ["Auxiliary commands"
-   ("d" "Difftastic Diff (dwim)" kg/magit-diff-with-difftastic)
-   ("s" "Difftastic Show" kg/magit-show-with-difftastic)])
-
-(transient-append-suffix 'magit-dispatch "!"
-  '("#" "My Magit Cmds" kg/magit-aux-commands))
-
-(define-key magit-status-mode-map (kbd "#") #'kg/magit-aux-commands)
 
 (use-package bind-map
   :ensure t
@@ -564,9 +514,12 @@
                "n b" 'helm-mini
                "n r" (lambda () (interactive) (switch-to-buffer "*scratch*"))
                "n a" (lambda () (interactive) (find-file "~/workspace/org/notes.org"))
+               "n m" (lambda () (interactive) (helm-find-files-1 "~/workspace/org/"))
                "n f" 'helm-projectile-find-file
                "n g" 'projectile-grep
                "n w" 'list-buffers
+               "_" 'split-window-vertically
+               "|" 'split-window-horizontally
                ;; general movement
                "j" 'evil-scroll-down
                "k" 'evil-scroll-up
@@ -582,7 +535,7 @@
     :keys ("M-m")
     :evil-keys ("SPC")
     :evil-states (normal motion visual)
-    :major-modes (rjsx-mode rust-mode go-mode java-mode c-mode c++-mode)
+    :major-modes (rust-mode go-mode c-mode c++-mode)
     :bindings ("g g" 'xref-find-definitions
                "g p" 'pop-tag-mark
                "g r" 'eglot-rename
@@ -591,13 +544,32 @@
                "g u" 'eglot-reconnect
                "g l" 'xref-find-references)))
 
-(load-theme 'gruvbox-dark-medium t)
+(use-package gruvbox-theme
+  :config
+  (load-theme 'gruvbox-dark-hard t))
+
+;(use-package vscode-dark-plus-theme
+;  :config
+;  (load-theme 'vscode-dark-plus t))
 
 (set-face-attribute 'default nil
-                    :family "Fira Code Retina"
+                    ;:family "Fira Code Retina"
+                    :family "JetBrains Mono"
                     :height kg/font-size)
 
-(set-frame-font "Fira Code Retina")
+(set-frame-font "JetBrains Mono")
 
-(scroll-bar-mode -1)
-
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(helm-minibuffer-history-key "M-p")
+ '(package-selected-packages
+   '(vscode-dark-plus-theme bind-map dired-sidebar go-mode rust-mode web-mode yasnippet poly-markdown yaml-mode dockerfile-mode eglot org-present company magit evil-collection evil helm-projectile helm perspective eldoc-box elfeed gruvbox-theme xterm-color use-package)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
