@@ -6,92 +6,74 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 endif
 
 call plug#begin('~/.vim/plugged')
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
 Plug 'morhetz/gruvbox'
 Plug 'scrooloose/nerdtree'
-Plug 'vim-scripts/gitignore'
-Plug 'rhysd/vim-clang-format'
-Plug 'ervandew/supertab'
-Plug 'elzr/vim-json'
-Plug 'godlygeek/tabular'
-Plug 'plasticboy/vim-markdown'
-Plug 'MaxMEllon/vim-jsx-pretty'
-Plug 'nvie/vim-flake8'
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
-Plug 'rust-lang/rust.vim'
-Plug 'jalvesaq/Nvim-R', {'branch': 'stable'}
 Plug 'benmills/vimux'
-Plug 'dense-analysis/ale'
+Plug 'ervandew/supertab'
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'ludovicchabant/vim-gutentags'
+" Plug 'dense-analysis/ale'
+" Plug 'rust-lang/rust.vim'
+" Plug 'vim-airline/vim-airline'
+" Plug 'vim-airline/vim-airline-themes'
+" Plug 'vim-scripts/gitignore'
+" Plug 'elzr/vim-json'
+" Plug 'godlygeek/tabular'
+" Plug 'plasticboy/vim-markdown'
+" Plug 'MaxMEllon/vim-jsx-pretty'
+" Plug 'nvie/vim-flake8'
+" Plug 'jalvesaq/Nvim-R', {'branch': 'stable'}
 call plug#end()
 
-" various settings
-call system('mkdir -p ~/.vim/backups')
-set backupdir=~/.vim/backups
-set dir=~/.vim/backups//
-filetype plugin indent on 
-set shortmess=at
-set nocompatible              " be iMproved, required
-filetype off                  " required
-set ruler
+filetype off
+syntax on
+filetype plugin indent on
+colorscheme gruvbox
+
+set nocompatible
+set modelines=0
 set number
-"set foldcolumn=2
-set autoindent              	" Copy indent from current line
+set ruler
+set encoding=utf-8
+set wrap
+set textwidth=79
 set tabstop=4
-set shiftwidth=4
-set autoread                 	" Automatically reload changed files
-set expandtab               	" Use spaces not tabs
-set exrc                        " Read ./.vimrc
-set fileformats=unix,dos,mac    " Choose line ending sanely
-set showmatch                 	" Highlight matching brackets
-set splitbelow                	" Put new splits down
-set splitright                 	" Put new vsplits right
-set wildmenu                	" Show the completion menu when tab completing
-set wildmode=list:longest,full  " Configure wildmenu
-set cursorline
-set colorcolumn=110
+set softtabstop=4
+set expandtab
+set noshiftround
+set hidden
+set ttyfast
+set laststatus=2
+set showmode
+set showcmd
+set t_Co=256
+set background=dark
+set autoindent
 set mouse=a
 set backspace=indent,eol,start
 set clipboard=unnamed,autoselect
-set t_Co=256
-syntax enable
-set background=dark
-colorscheme gruvbox
-"set background=light
-"colorscheme solarized 
+" Show the completion menu when tab completing
+set wildmenu
+" Configure wildmenu
+set wildmode=list:longest,full
+" disable scratch/preview pane
+set completeopt-=preview
+" while the completion menu is open, map enter key to C-Y instead of return,
+" this will select the item without adding a new line
+inoremap <expr> <CR> pumvisible() ? "\<C-Y>" : "\<CR>"
 
-" ale settings
-let g:ale_linters_explicit = 1 
-let g:ale_completion_enabled = 1
-let g:ale_list_window_size = 1
-let g:ale_close_preview_on_insert = 1
-set omnifunc=ale#completion#OmniFunc
-let g:ale_fixers = {
-    \ 'rust': ['rustfmt']
-    \ }
-let g:ale_linters = {
-    \ 'rust': ['analyzer'],
-    \ 'java': ['eclipselsp'],
-    \ 'c': ['clangd13']
-    \ }
+" vimux
+let g:VimuxOrientation = "h"
 
 " nerdtree settings
 let g:NERDTreeQuitOnOpen=1
 let NERDTreeIgnore = ['\.pyc$', '^__pycache__$', '^node_modules']
 let NERDTreeShowHidden=1
 
-" airline settings
-let g:airline_powerline_fonts=1
-let g:airline#extensions#tabline#enabled=1
-let g:airline#extensions#tabline#show_buffers=1
-set laststatus=2
-
 " leader key
 let mapleader=" "
 let g:mapleader=" "
 set timeoutlen=2000
-
-let g:jsx_ext_required = 0
 
 " global keybinds
 nnoremap <leader>np :bprevious<cr>
@@ -116,157 +98,92 @@ nnoremap <leader>vl :VimuxRunLastCommand<cr>
 nnoremap <leader>mb :VimuxRunCommand('git blame -L ' . line('.') . ',' . line('.') . ' ' . expand('%:p'))<cr><cr>
 nnoremap <leader>ml :VimuxRunCommand('git blame -L ' . line('.') . ',' . line('.') . ' ' . expand('%:p') . "\| awk '{print $1}' \| xargs git --no-pager log -n 1 --decorate")<cr><cr>
 nnoremap <leader>mL :VimuxRunCommand('git blame -L ' . line('.') . ',' . line('.') . ' ' . expand('%:p') . "\| awk '{print $1}' \| xargs git --no-pager log -p -n 1 --decorate")<cr><cr>
-autocmd FileType c,cpp,javascript nnoremap <buffer><leader>rf :ClangFormat<cr>
-autocmd BufNewFile,BufRead *.rmd set syntax=r
 
-" visual keybindings
-vmap <leader>t= :Tab /=<cr>
-vmap <leader>t: :Tab /:<cr>
-vmap <leader>t, :Tab /,<cr>
-
-"
-" markdown
-"
-augroup ft_markdown
-let g:vim_markdown_folding_disabled = 1
-autocmd FileType markdown nnoremap <buffer><leader>go gx<cr>
-augroup END
-
-"
-" C
-"
-augroup ft_c
-autocmd FileType c,cpp ClangFormatAutoEnable
-let g:SuperTabDefaultCompletionType = "<c-n>"
-let g:clang_format#style_options = {"BasedOnStyle" : "LLVM"}
-autocmd FileType c,cpp nnoremap <buffer><leader>t :ALEHover<cr>
-autocmd FileType c,cpp nnoremap <buffer><leader>gg :ALEGoToDefinition<cr>
-autocmd FileType c,cpp nnoremap <buffer><leader>gp :pop<cr>
-autocmd FileType c,cpp nnoremap <buffer><leader>gr :ALERename<cr>
-autocmd FileType c,cpp nnoremap <buffer><leader>gl :ALEFindReferences<cr>
-augroup END
-
-"
-" Java
-"
-augroup ft_java
-let g:ale_java_eclipselsp_path=$HOME . "/workspace/jdt-language-server-1.6.0"
+" supertab
 let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
-autocmd FileType java nnoremap <buffer><leader>t :ALEHover<cr>
-autocmd FileType java nnoremap <buffer><leader>gg :ALEGoToDefinition<cr>
-autocmd FileType java nnoremap <buffer><leader>gr :ALERename<cr>
-autocmd FileType java nnoremap <buffer><leader>gl :ALEFindReferences<cr>
-autocmd FileType java nnoremap <buffer><leader>gp :pop<cr>
-" autocmd FileType java ClangFormatAutoEnable
-augroup END
 
-"
-" Rust
-"
-augroup ft_rust
-let g:rustfmt_autosave = 1
-let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
-autocmd FileType rust nnoremap <buffer><leader>t :ALEHover<cr>
-autocmd FileType rust nnoremap <buffer><leader>gg :ALEGoToDefinition<cr>
-autocmd FileType rust nnoremap <buffer><leader>gr :ALERename<cr>
-autocmd FileType rust nnoremap <buffer><leader>gl :ALEFindReferences<cr>
-autocmd FileType rust nnoremap <buffer><leader>gp :pop<cr>
-augroup END
-
-"
 " Go
-"
 augroup ft_go
-let g:ale_completion_enabled = 0
-let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
+let g:gutentags_enabled = 0
+let g:go_fmt_command = "goimports"
+let g:go_highlight_functions = 1
+let g:go_highlight_functions_calls = 1
 autocmd FileType go nnoremap <buffer><leader>t :GoInfo<cr>
 autocmd FileType go nnoremap <buffer><leader>gg :GoDef<cr>
 autocmd FileType go nnoremap <buffer><leader>gr :GoRename<cr>
 autocmd FileType go nnoremap <buffer><leader>gl :GoReferrers<cr>
 autocmd FileType go nnoremap <buffer><leader>gc :GoCallees<cr>
 autocmd FileType go nnoremap <buffer><leader>gp <C-o><cr>
-let g:go_fmt_command = "goimports"
 augroup END
 
+" C
+augroup ft_c
+let g:gutentags_enabled = 1
 
-"
-" R 
-"
+if filereadable("cscope.out")
+    cs add cscope.out
+endif
+
+function! MyClangFormat()
+    let l:current_pos = getpos('.')
+    execute '%!clang-format'
+    call setpos('.', l:current_pos)
+endfunction
+
+set omnifunc=syntaxcomplete#Complete
+
+" on file save, re-run the ctags command silently and in the background
+autocmd BufWritePost *.c,*.h,*.cpp,*.hpp silent! !cscope -Rbq
+autocmd BufWritePre *.c,*.h,*.cpp,*.hpp call MyClangFormat()
+" autocmd FileType c,cpp ClangFormatAutoEnable
+autocmd FileType c,cpp nnoremap <buffer><leader>gg <C-]>
+autocmd FileType c,cpp nnoremap <buffer><leader>gp :pop<cr>
+autocmd FileType c,cpp nnoremap <buffer><leader>gl :cs find s <cword><cr>
+augroup END
+
+" R
 augroup ft_r
+function! MySendRBlock()
+    
+    call VimuxSendKeys('Enter')
+    let cur = getline('.')
 
-let R_assign = 0
-let R_in_buffer = 1
-let R_applescript = 0
-let r_indent_comment_column = 0
+    if stridx(cur, 'function') != -1 || stridx(cur, 'list(') != -1
+        normal! V
+        normal! ][
+        normal! y
+            
+        let lines = split(@", "\n")
+        for line in lines
+            if len(line) > 0
+                call VimuxTmux('send-keys -t '. g:VimuxRunnerIndex . ' ' . '"' . escape(line, '"') . '"')
+                call VimuxSendKeys('Enter')
+            else
+                call VimuxSendKeys('Enter')
+            endif
+        endfor
 
-function SendRFunc () 
-    let lines = []
-    let leftbracket = 0
-
-    " find first opening bracket
-    while line('.') <= line('$') 
-        let cur = getline(".")
-        execute "normal! j"
-        let lines = add(lines, cur)
-
-        if cur =~ '{$'
-            break
-        endif
-    endwhile
-
-    let leftbracket += 1
-
-    while leftbracket > 0 && line('.') <= line('$')
-        let cur = getline(".")
-        execute "normal! j"
-        let lines = add(lines, cur)
-
-        if cur =~ '}$'
-            let leftbracket -= 1
-        endif
-
-        if cur =~ '{$'
-            let leftbracket += 1
-        endif
-
-    endwhile
-
-    for line in lines
-        VimuxRunCommand(line)
-    endfor
-
-endfunction
-
-function SendRRegion() 
-    let lines = []
-
-    while line('.') <= line('$')
-        let cur = getline(".")
-        execute "normal! j"
-        let lines = add(lines, cur)
-
-        if cur =~ '^$'
-            break
-        endif
-
-    endwhile
-
-    for line in lines
-        VimuxRunCommand(line)
-    endfor
-
-endfunction
-
-function SendToR ()
-    let lines = []
-
-    if getline('.') =~ 'function' || getline('.') =~ 'for'
-        call SendRFunc()
+        normal! ][
+        normal! j
     else
-        call SendRRegion()
+        normal! V
+        normal! }
+        normal! y
+
+        let lines = split(@", "\n")
+        for line in lines
+            if len(line) > 0
+                call VimuxTmux('send-keys -t '. g:VimuxRunnerIndex . ' ' . '"' . escape(line, '"') . '"')
+                call VimuxSendKeys('Enter')
+            else
+                call VimuxSendKeys('Enter')
+            endif
+        endfor
+
+        normal! }
+        normal! j
     endif
 endfunction
 
-autocmd FileType r,rmd nnoremap <buffer><leader>rr :call SendToR()<cr>
+autocmd FileType r,rmd nnoremap <buffer><leader>rr :call MySendRBlock()<cr>
 augroup END
-
