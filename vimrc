@@ -12,17 +12,8 @@ Plug 'benmills/vimux'
 Plug 'ervandew/supertab'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'ludovicchabant/vim-gutentags'
-" Plug 'dense-analysis/ale'
-" Plug 'rust-lang/rust.vim'
-" Plug 'vim-airline/vim-airline'
-" Plug 'vim-airline/vim-airline-themes'
-" Plug 'vim-scripts/gitignore'
-" Plug 'elzr/vim-json'
-" Plug 'godlygeek/tabular'
-" Plug 'plasticboy/vim-markdown'
-" Plug 'MaxMEllon/vim-jsx-pretty'
-" Plug 'nvie/vim-flake8'
-" Plug 'jalvesaq/Nvim-R', {'branch': 'stable'}
+Plug 'davidhalter/jedi-vim'
+Plug 'ctrlpvim/ctrlp.vim'
 call plug#end()
 
 filetype off
@@ -62,25 +53,44 @@ set completeopt-=preview
 " this will select the item without adding a new line
 inoremap <expr> <CR> pumvisible() ? "\<C-Y>" : "\<CR>"
 
+call system('mkdir -p ~/.vim/backups')
+set backupdir=~/.vim/backups
+set dir=~/.vim/backups/
+
+"
+" Ctrlp
+"
+let g:ctrlp_working_path_mode = 'r'
+let g:ctrlp_by_filename = 1
+
+"
 " vimux
+" 
 let g:VimuxOrientation = "h"
 
+"
 " nerdtree settings
+"
 let g:NERDTreeQuitOnOpen=1
 let NERDTreeIgnore = ['\.pyc$', '^__pycache__$', '^node_modules']
 let NERDTreeShowHidden=1
 
+"
 " leader key
+"
 let mapleader=" "
 let g:mapleader=" "
 set timeoutlen=2000
 
+"
 " global keybinds
+"
 nnoremap <leader>np :bprevious<cr>
 nnoremap <leader>nn :bnext<cr>
 nnoremap <leader>nd :bdelete<cr>
 nnoremap <leader>no :only<cr>
 nnoremap <leader>ns <C-W><C-W>
+nnoremap <leader>nf :CtrlP<cr>
 nnoremap <leader>j <C-d>
 nnoremap <leader>k <C-u>
 nnoremap <leader>= <C-w>=
@@ -99,12 +109,14 @@ nnoremap <leader>mb :VimuxRunCommand('git blame -L ' . line('.') . ',' . line('.
 nnoremap <leader>ml :VimuxRunCommand('git blame -L ' . line('.') . ',' . line('.') . ' ' . expand('%:p') . "\| awk '{print $1}' \| xargs git --no-pager log -n 1 --decorate")<cr><cr>
 nnoremap <leader>mL :VimuxRunCommand('git blame -L ' . line('.') . ',' . line('.') . ' ' . expand('%:p') . "\| awk '{print $1}' \| xargs git --no-pager log -p -n 1 --decorate")<cr><cr>
 
+"
 " supertab
+"
 let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 
+"
 " Go
-augroup ft_go
-let g:gutentags_enabled = 0
+"
 let g:go_fmt_command = "goimports"
 let g:go_highlight_functions = 1
 let g:go_highlight_functions_calls = 1
@@ -114,12 +126,10 @@ autocmd FileType go nnoremap <buffer><leader>gr :GoRename<cr>
 autocmd FileType go nnoremap <buffer><leader>gl :GoReferrers<cr>
 autocmd FileType go nnoremap <buffer><leader>gc :GoCallees<cr>
 autocmd FileType go nnoremap <buffer><leader>gp <C-o><cr>
-augroup END
 
+"
 " C
-augroup ft_c
-let g:gutentags_enabled = 1
-
+"
 if filereadable("cscope.out")
     cs add cscope.out
 endif
@@ -139,10 +149,48 @@ autocmd BufWritePre *.c,*.h,*.cpp,*.hpp call MyClangFormat()
 autocmd FileType c,cpp nnoremap <buffer><leader>gg <C-]>
 autocmd FileType c,cpp nnoremap <buffer><leader>gp :pop<cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>gl :cs find s <cword><cr>
-augroup END
 
+"
+" Python
+"
+let g:jedi#goto_command = ""
+let g:jedi#goto_assignments_command = ""
+let g:jedi#goto_stubs_command = ""
+let g:jedi#goto_definitions_command = ""
+let g:jedi#documentation_command = ""
+let g:jedi#usages_command = ""
+let g:jedi#completions_command = ""
+let g:jedi#rename_command = ""
+let g:jedi#rename_command_keep_name = ""
+
+let g:vimux_temp_file = tempname()
+
+function! MySendPyBlock()
+    let cur = getline('.')
+
+    normal! V
+    normal ]M
+    normal! y
+   
+    let output = system("cat > " . shellescape(g:vimux_temp_file), @")
+    call VimuxTmux('load-buffer ' . g:vimux_temp_file)
+    call VimuxTmux('paste-buffer -d -p -t' . g:VimuxRunnerIndex)
+    call VimuxSendKeys('Enter')
+
+    normal! ]M
+    normal! j
+endfunction
+
+
+autocmd FileType python nnoremap <buffer><leader>gp :pop<cr>
+autocmd FileType python nnoremap <buffer><leader>gg :call jedi#goto_definitions()<cr>
+autocmd FileType python nnoremap <buffer><leader>gl :call jedi#usages()<cr>
+autocmd FileType python nnoremap <buffer><leader>gr :call jedi#rename()<cr>
+autocmd FileType python nnoremap <buffer><leader>rr :call MySendPyBlock()<cr>
+
+"
 " R
-augroup ft_r
+"
 function! MySendRBlock()
     
     call VimuxSendKeys('Enter')
@@ -152,16 +200,12 @@ function! MySendRBlock()
         normal! V
         normal! ][
         normal! y
-            
-        let lines = split(@", "\n")
-        for line in lines
-            if len(line) > 0
-                call VimuxTmux('send-keys -t '. g:VimuxRunnerIndex . ' ' . '"' . escape(line, '"') . '"')
-                call VimuxSendKeys('Enter')
-            else
-                call VimuxSendKeys('Enter')
-            endif
-        endfor
+       
+        let output = system("cat > " . shellescape(g:vimux_temp_file), @")
+        call VimuxTmux('load-buffer ' . g:vimux_temp_file)
+        call VimuxTmux('paste-buffer -d -p -t' . g:VimuxRunnerIndex)
+        call VimuxSendKeys('Enter')
+        echo g:vimux_temp_file
 
         normal! ][
         normal! j
@@ -170,15 +214,10 @@ function! MySendRBlock()
         normal! }
         normal! y
 
-        let lines = split(@", "\n")
-        for line in lines
-            if len(line) > 0
-                call VimuxTmux('send-keys -t '. g:VimuxRunnerIndex . ' ' . '"' . escape(line, '"') . '"')
-                call VimuxSendKeys('Enter')
-            else
-                call VimuxSendKeys('Enter')
-            endif
-        endfor
+        let output = system("cat > " . shellescape(g:vimux_temp_file), @")
+        call VimuxTmux('load-buffer ' . g:vimux_temp_file)
+        call VimuxTmux('paste-buffer -d -p -t' . g:VimuxRunnerIndex)
+        call VimuxSendKeys('Enter')
 
         normal! }
         normal! j
@@ -186,4 +225,3 @@ function! MySendRBlock()
 endfunction
 
 autocmd FileType r,rmd nnoremap <buffer><leader>rr :call MySendRBlock()<cr>
-augroup END
