@@ -14,6 +14,7 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'davidhalter/jedi-vim'
 Plug 'ctrlpvim/ctrlp.vim'
+Plug 'dense-analysis/ale'
 call plug#end()
 
 filetype off
@@ -115,6 +116,17 @@ nnoremap <leader>mL :VimuxRunCommand('git blame -L ' . line('.') . ',' . line('.
 let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 
 "
+" Ale
+"
+let g:ale_linters_explicit = 1
+let g:ale_sign_column_always = 0
+let g:ale_warn_about_trailing_whitespace = 0
+let g:ale_fixers = {
+\   'r': ['R', '--slave', '-e', 'langaugeserver::run()'],
+\}
+
+
+"
 " Go
 "
 let g:go_fmt_command = "goimports"
@@ -177,7 +189,7 @@ function! MySendPyBlock()
     call VimuxTmux('paste-buffer -d -p -t' . g:VimuxRunnerIndex)
     call VimuxSendKeys('Enter')
 
-    normal! ]M
+    normal ]M
     normal! j
 endfunction
 
@@ -205,7 +217,6 @@ function! MySendRBlock()
         call VimuxTmux('load-buffer ' . g:vimux_temp_file)
         call VimuxTmux('paste-buffer -d -p -t' . g:VimuxRunnerIndex)
         call VimuxSendKeys('Enter')
-        echo g:vimux_temp_file
 
         normal! ][
         normal! j
@@ -223,5 +234,6 @@ function! MySendRBlock()
         normal! j
     endif
 endfunction
+
 
 autocmd FileType r,rmd nnoremap <buffer><leader>rr :call MySendRBlock()<cr>
