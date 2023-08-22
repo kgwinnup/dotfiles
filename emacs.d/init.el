@@ -2,6 +2,8 @@
 ;; Basic init stuff
 ;;
 
+
+
 ;; No scrollbar by default.
 (when (fboundp 'scroll-bar-mode)
   (scroll-bar-mode -1))
@@ -171,21 +173,8 @@
                   eww-search-prefix "https://ddg.gg/html?q="
                   shr-width 120)))
 
-(use-package moody
-  :config
-  (moody-replace-mode-line-buffer-identification)
-  (moody-replace-vc-mode))
-
 (use-package xterm-color
   :ensure t)
-
-(use-package chatgpt-shell
-  :straight (:host github :repo "xenodium/chatgpt-shell")
-  :config
-  (setq chatgpt-shell-openai-key
-        ;; .authinfo: machine openai.com password OPENAI_KEY
-        (lambda ()
-          (auth-source-pick-first-password :host "api.openai.com"))))
 
 (use-package elfeed
   :ensure t
@@ -198,6 +187,9 @@
   (setq-default elfeed-search-filter "@1-week-ago +unread")
   (setq-default elfeed-search-title-max-width 100)
   (setq-default elfeed-search-title-min-width 100))
+
+(use-package ess
+  :ensure t)
 
 (use-package eldoc-box
   :ensure t
@@ -264,7 +256,6 @@
   (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
   (setq org-startup-folded t)
   (setq org-src-preserve-indentation t)
-  (use-package org-present :ensure t)
   (add-hook 'org-mode-hook
             (lambda ()
               (org-indent-mode)
@@ -287,28 +278,8 @@
             ("1-1" . "systemRedColor")
             ("IDEA" . "lime green")))
     (setq org-todo-keywords
-          '((sequence "NOTES" "TODO" "IN-PROGRESS" "DONE" "1-1" "IDEA")))
-    (eval-after-load "org-present"
-      '(progn
-         (add-hook 'org-present-mode-hook
-                   (lambda ()
-                     (local-set-key (kbd "C-c +") #'(lambda () (interactive) (kg/global-font-size 10)))
-                     (local-set-key (kbd "C-c -") #'(lambda () (interactive) (kg/global-font-size -10)))
-                     (turn-off-evil-mode)
-                     (org-present-big)
-                     (display-line-numbers-mode -1)
-                     (org-display-inline-images)
-                     (org-present-hide-cursor)
-                     (org-present-read-only)))
-         (add-hook 'org-present-mode-quit-hook
-                   (lambda ()
-                     (turn-on-evil-mode)
-                     (display-line-numbers-mode t)
-                     (org-present-small)
-                     (org-remove-inline-images)
-                     (org-present-show-cursor)
-                     (org-present-read-write))))))
-
+          '((sequence "NOTES" "TODO" "IN-PROGRESS" "DONE" "1-1" "IDEA"))))
+    
 (use-package projectile
   :ensure t
   :config
@@ -463,6 +434,12 @@
               (add-to-list 'eshell-visual-subcommands '("git" "diff"))
               (setenv "TERM" "xterm-256color"))))
 
+(defun kg/kill-eshell-on-exit() 
+  (when (not (one-window-p))
+    (delete-window)))
+
+(advice-add 'eshell-life-is-too-much :after 'kg/kill-eshell-on-exit)
+
 (setq kg/font-size 140)
 (defun kg/global-font-size (size)
   (interactive)
@@ -544,20 +521,12 @@
                "g u" 'eglot-reconnect
                "g l" 'xref-find-references)))
 
-(use-package gruvbox-theme
+
+(use-package darcula-theme
+  :ensure t
   :config
-  (load-theme 'gruvbox-dark-hard t))
-
-;(use-package vscode-dark-plus-theme
-;  :config
-;  (load-theme 'vscode-dark-plus t))
-
-(set-face-attribute 'default nil
-                    ;:family "Fira Code Retina"
-                    :family "JetBrains Mono"
-                    :height kg/font-size)
-
-(set-frame-font "JetBrains Mono")
+  (load-theme 'darcula t)
+  (set-frame-font "Fira Code"))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
