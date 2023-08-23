@@ -90,6 +90,7 @@
         '("/usr/local/bin"
           "/usr/local/go/bin"
           "~/go/bin"
+          "/opt/homebrew/bin"
           "~/bin"
           "~/.local/bin"
           "~/.cargo/bin"))
@@ -306,7 +307,10 @@
   (add-hook 'markdown-mode-hook
             (lambda ()
               (turn-on-orgtbl))))
-  
+
+(use-package tide
+  :ensure t)
+
 (defmacro kg/lang-std ()
   `(progn
      (show-paren-mode)
@@ -320,11 +324,22 @@
   (add-hook 'prog-mode-hook 'yas-minor-mode)
   (add-hook 'text-mode-hook 'yas-minor-mode))
 
+(defclass eglot-deno (eglot-lsp-server) ()
+  :documentation "A custom class for deno lsp.")
+
+(cl-defmethod eglot-initialization-options ((server eglot-deno))
+  "Passes through required deno initialization options"
+  (list :enable t))
+
 (use-package web-mode
   :ensure t
   :config
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.ts\\'" . web-mode))
+  (add-to-list 'eglot-server-programs '((js-mode typescript-mode web-mode) . (eglot-deno "deno" "lsp")))
   (add-hook 'web-mode-hook  (lambda ()
-                              (setq web-mode-markup-indent-offset 4))))
+                              (kg/lang-std)
+                              (add-hook 'before-save-hook 'eglot-format nil t))))
 
 (use-package rust-mode
   :ensure t
