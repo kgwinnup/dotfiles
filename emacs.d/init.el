@@ -3,7 +3,6 @@
 ;;
 
 
-
 ;; No scrollbar by default.
 (when (fboundp 'scroll-bar-mode)
   (scroll-bar-mode -1))
@@ -103,6 +102,7 @@
               '("%l:%c "
                 "%b "
                 mode-line-misc-info))
+
 
 ;; Disable line numbers in compile-mode
 (add-hook 'compilation-mode-hook (lambda ()
@@ -525,8 +525,13 @@
 (use-package darcula-theme
   :ensure t
   :config
+  ;; for whatever reason, the darcula theme doesn't set this value
+  ;; correctly and the default value for the foreground color is Blue
+  ;; which is kind of out of place.
+  (custom-set-faces '(persp-selected-face ((t (:weight bold :background "#cc7832")))))
   (load-theme 'darcula t)
   (set-frame-font "Fira Code"))
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
