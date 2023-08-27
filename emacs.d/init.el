@@ -93,6 +93,7 @@
           "/opt/homebrew/bin"
           "~/bin"
           "~/.local/bin"
+          "~/.opam/default/bin"
           "~/.cargo/bin"))
 
 (with-eval-after-load "tramp"
@@ -138,9 +139,10 @@
               kg/last-shell-cmd ""
               compilation-environment '("TERM=xterm-256color")
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
-              vscode-dark-plus-box-org-todo nil
-              vscode-dark-plus-scale-org-faces nil
-              )
+              comint-prompt-read-only t
+              comint-scroll-to-bottom-on-input t
+              comint-scroll-to-bottom-on-output t
+              comint-move-point-for-output t)
 
 ;; other settings that are not global variables
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -195,7 +197,7 @@
 (use-package eldoc-box
   :ensure t
   :config
-  (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t)
+  ;(add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t)
   (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
   (set-face-attribute 'eldoc-box-border nil :background (face-attribute 'mode-line-inactive :background)))
 
@@ -358,6 +360,28 @@
             (lambda ()
               (kg/lang-std)
               (add-hook 'before-save-hook 'gofmt-before-save nil t))))
+
+(use-package dune
+  :ensure t)
+
+(load "~/.emacs.d/opam-user-setup.el")
+(use-package tuareg
+  :ensure t
+  :config
+  (setq tuareg-match-patterns-aligned t)
+  (add-hook 'tuareg-mode-hook
+            (lambda ()
+              (kg/lang-std)))
+  (let ((opam-share (ignore-errors (car (process-lines "opam" "var" "share")))))
+    (when (and opam-share (file-directory-p opam-share))
+      ;; Register Merlin
+      (add-to-list 'load-path (expand-file-name "emacs/site-lisp" opam-share))
+      (autoload 'merlin-mode "merlin" nil t nil)
+      ;; Automatically start it in OCaml buffers
+      (add-hook 'tuareg-mode-hook 'merlin-mode t)
+      (add-hook 'caml-mode-hook 'merlin-mode t)
+      ;; Use opam switch to lookup ocamlmerlin binary
+      (setq merlin-command 'opam))))
 
 (add-hook 'c-mode-hook (lambda () (kg/lang-std)))
 (add-hook 'c++-mode-hook (lambda () (kg/lang-std)))
@@ -527,7 +551,7 @@
     :keys ("M-m")
     :evil-keys ("SPC")
     :evil-states (normal motion visual)
-    :major-modes (rust-mode go-mode c-mode c++-mode)
+    :major-modes (rust-mode go-mode c-mode c++-mode web-mode tuareg-mode js-mode)
     :bindings ("g g" 'xref-find-definitions
                "g p" 'pop-tag-mark
                "g r" 'eglot-rename
@@ -537,6 +561,16 @@
                "g l" 'xref-find-references)))
 
 
+;(use-package gruvbox-theme
+;  :ensure t
+;  :config
+;  ;; for whatever reason, the darcula theme doesn't set this value
+;  ;; correctly and the default value for the foreground color is Blue
+;  ;; which is kind of out of place.
+;  (custom-set-faces '(persp-selected-face ((t (:weight bold :foreground "#cc7832")))))
+;  (load-theme 'gruvbox-dark-medium t)
+;  (set-frame-font "JetBrains Mono"))
+
 (use-package darcula-theme
   :ensure t
   :config
@@ -545,7 +579,7 @@
   ;; which is kind of out of place.
   (custom-set-faces '(persp-selected-face ((t (:weight bold :background "#cc7832")))))
   (load-theme 'darcula t)
-  (set-frame-font "Fira Code"))
+  (set-frame-font "JetBrains Mono"))
 
 
 (custom-set-variables
@@ -562,3 +596,6 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
+;; (require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
+;; ## end of OPAM user-setup addition for emacs / base ## keep this line
