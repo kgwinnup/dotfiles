@@ -2,7 +2,6 @@
 ;; Basic init stuff
 ;;
 
-
 ;; No scrollbar by default.
 (when (fboundp 'scroll-bar-mode)
   (scroll-bar-mode -1))
@@ -371,6 +370,7 @@
   (setq tuareg-match-patterns-aligned t)
   (add-hook 'tuareg-mode-hook
             (lambda ()
+              (add-hook 'before-save-hook 'eglot-format nil t)
               (kg/lang-std)))
   (let ((opam-share (ignore-errors (car (process-lines "opam" "var" "share")))))
     (when (and opam-share (file-directory-p opam-share))
@@ -578,6 +578,7 @@
   ;; correctly and the default value for the foreground color is Blue
   ;; which is kind of out of place.
   (custom-set-faces '(persp-selected-face ((t (:weight bold :background "#cc7832")))))
+  (custom-set-faces '(company-tooltip-selection ((t (:weight bold :foreground "#9876aa")))))
   (load-theme 'darcula t)
   (set-frame-font "JetBrains Mono"))
 
