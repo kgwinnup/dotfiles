@@ -165,6 +165,7 @@
 ;; Packages and settings
 ;;
 
+(setq browse-url-browser-function 'eww-browse-url)
 ;; eww-mode browser keybinding
 (add-hook 'eww-mode-hook
           (lambda ()
@@ -182,8 +183,10 @@
   :ensure t
   :defer t
   :config
-  (setq elfeed-feeds '(("https://lobste.rs/rss" lobsters)
-                       ("https://hnrss.org/frontpage" hackernews)
+  (setq elfeed-feeds '(; ("https://lobste.rs/rss" lobsters)
+                       ; ("https://hnrss.org/frontpage" hackernews)
+                       ("https://drewdevault.com/blog/index.xml" devault)
+                       ("https://danluu.com/atom.xml" danluu)
                        ("https://lwn.net/headlines/rss" lwn)
                        ("https://tilde.news/rss" tildeverse)))
   (setq-default elfeed-search-filter "@1-week-ago +unread")
@@ -332,11 +335,20 @@
   "Passes through required deno initialization options"
   (list :enable t))
 
+(defadvice js-jsx-indent-line (after js-jsx-indent-line-after-hack activate)
+  "Workaround sgml-mode and follow airbnb component style."
+  (save-excursion
+    (beginning-of-line)
+    (if (looking-at-p "^ +\/?> *$")
+        (delete-char sgml-basic-offset))))
+
 (use-package web-mode
   :ensure t
+  :mode (("\\.js\\'" . web-mode)
+         ("\\.tsx\\'" . web-mode)
+         ("\\.ts\\'" . web-mode)
+         ("\\.jsx\\'" . web-mode))
   :config
-  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.ts\\'" . web-mode))
   (add-to-list 'eglot-server-programs '((js-mode typescript-mode web-mode) . (eglot-deno "deno" "lsp")))
   (add-hook 'web-mode-hook  (lambda ()
                               (kg/lang-std)
@@ -371,17 +383,18 @@
   (add-hook 'tuareg-mode-hook
             (lambda ()
               (add-hook 'before-save-hook 'eglot-format nil t)
-              (kg/lang-std)))
-  (let ((opam-share (ignore-errors (car (process-lines "opam" "var" "share")))))
-    (when (and opam-share (file-directory-p opam-share))
-      ;; Register Merlin
-      (add-to-list 'load-path (expand-file-name "emacs/site-lisp" opam-share))
-      (autoload 'merlin-mode "merlin" nil t nil)
-      ;; Automatically start it in OCaml buffers
-      (add-hook 'tuareg-mode-hook 'merlin-mode t)
-      (add-hook 'caml-mode-hook 'merlin-mode t)
-      ;; Use opam switch to lookup ocamlmerlin binary
-      (setq merlin-command 'opam))))
+              (kg/lang-std))))
+
+;  (let ((opam-share (ignore-errors (car (process-lines "opam" "var" "share")))))
+;    (when (and opam-share (file-directory-p opam-share))
+;      ;; Register Merlin
+;      (add-to-list 'load-path (expand-file-name "emacs/site-lisp" opam-share))
+;      (autoload 'merlin-mode "merlin" nil t nil)
+;      ;; Automatically start it in OCaml buffers
+;      (add-hook 'tuareg-mode-hook 'merlin-mode t)
+;      (add-hook 'caml-mode-hook 'merlin-mode t)
+;      ;; Use opam switch to lookup ocamlmerlin binary
+;      (setq merlin-command 'opam))))
 
 (add-hook 'c-mode-hook (lambda () (kg/lang-std)))
 (add-hook 'c++-mode-hook (lambda () (kg/lang-std)))
@@ -559,6 +572,17 @@
                "t"   'eldoc-box-eglot-help-at-point
                "g u" 'eglot-reconnect
                "g l" 'xref-find-references)))
+
+
+;(use-package vscode-dark-plus-theme
+;  :ensure t
+;  :config
+;  ;; for whatever reason, the darcula theme doesn't set this value
+;  ;; correctly and the default value for the foreground color is Blue
+;  ;; which is kind of out of place.
+;  (load-theme 'vscode-dark-plus t)
+;  (set-frame-font "JetBrains Mono"))
+
 
 
 ;(use-package gruvbox-theme
