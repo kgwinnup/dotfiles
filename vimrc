@@ -6,12 +6,13 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 endif
 
 call plug#begin('~/.vim/plugged')
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 Plug 'morhetz/gruvbox'
 Plug 'scrooloose/nerdtree'
 Plug 'benmills/vimux'
 Plug 'ervandew/supertab'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
-Plug 'ludovicchabant/vim-gutentags'
 Plug 'davidhalter/jedi-vim'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'dense-analysis/ale'
@@ -20,6 +21,7 @@ call plug#end()
 filetype off
 syntax on
 filetype plugin indent on
+" colorscheme gruvbox
 colorscheme gruvbox
 
 set nocompatible
@@ -43,6 +45,9 @@ set background=dark
 set autoindent
 set mouse=a
 set backspace=indent,eol,start
+" always show the column left of the line numbers so lsp errors/warnings don't
+" constantly shift the width
+" set scl=yes
 set clipboard=unnamed,autoselect
 " Show the completion menu when tab completing
 set wildmenu
@@ -57,6 +62,12 @@ inoremap <expr> <CR> pumvisible() ? "\<C-Y>" : "\<CR>"
 call system('mkdir -p ~/.vim/backups')
 set backupdir=~/.vim/backups
 set dir=~/.vim/backups/
+
+" airline settings
+let g:airline_powerline_fonts=1
+let g:airline#extensions#tabline#enabled=1
+let g:airline#extensions#tabline#show_buffers=1
+set laststatus=2
 
 "
 " Ctrlp
@@ -120,9 +131,17 @@ let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 "
 let g:ale_linters_explicit = 1
 let g:ale_sign_column_always = 0
+let g:ale_lint_on_save = 1
+let g:ale_fix_on_save = 1
 let g:ale_warn_about_trailing_whitespace = 0
+let g:ale_linters = {
+\   'ocaml': ['merlin']
+\}  
 let g:ale_fixers = {
 \   'r': ['R', '--slave', '-e', 'langaugeserver::run()'],
+\   'c': ['clangd'],
+\   'cpp': ['clangd'],
+\   'ocaml': ['ocamlformat']
 \}
 
 
@@ -142,10 +161,6 @@ autocmd FileType go nnoremap <buffer><leader>gp <C-o><cr>
 "
 " C
 "
-if filereadable("cscope.out")
-    cs add cscope.out
-endif
-
 function! MyClangFormat()
     let l:current_pos = getpos('.')
     execute '%!clang-format'
@@ -154,13 +169,22 @@ endfunction
 
 set omnifunc=syntaxcomplete#Complete
 
-" on file save, re-run the ctags command silently and in the background
-autocmd BufWritePost *.c,*.h,*.cpp,*.hpp silent! !cscope -Rbq
 autocmd BufWritePre *.c,*.h,*.cpp,*.hpp call MyClangFormat()
 " autocmd FileType c,cpp ClangFormatAutoEnable
-autocmd FileType c,cpp nnoremap <buffer><leader>gg <C-]>
+autocmd FileType c,cpp nnoremap <buffer><leader>t :ALEHover<cr>
+autocmd FileType c,cpp nnoremap <buffer><leader>gg :ALEGoToDefinition<cr>
 autocmd FileType c,cpp nnoremap <buffer><leader>gp :pop<cr>
-autocmd FileType c,cpp nnoremap <buffer><leader>gl :cs find s <cword><cr>
+autocmd FileType c,cpp nnoremap <buffer><leader>gl :ALEFindReferences<cr>
+
+"
+" Ocaml
+"
+autocmd FileType ocaml nnoremap <buffer><leader>t :ALEHover<cr>
+autocmd FileType ocaml nnoremap <buffer><leader>gg :ALEGoToDefinition<cr>
+autocmd FileType ocaml nnoremap <buffer><leader>gp :pop<cr>
+autocmd FileType ocaml nnoremap <buffer><leader>gl :ALEFindReferences<cr>
+
+
 
 "
 " Python
@@ -234,6 +258,5 @@ function! MySendRBlock()
         normal! j
     endif
 endfunction
-
 
 autocmd FileType r,rmd nnoremap <buffer><leader>rr :call MySendRBlock()<cr>
