@@ -259,4 +259,5 @@ function! MySendRBlock()
     endif
 endfunction
 
+autocmd FileType r setlocal shiftwidth=4 softtabstop=4 expandtab
 autocmd FileType r,rmd nnoremap <buffer><leader>rr :call MySendRBlock()<cr>
