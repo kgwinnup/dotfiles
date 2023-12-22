@@ -90,6 +90,7 @@
           "/usr/local/go/bin"
           "~/go/bin"
           "/opt/homebrew/bin"
+          "/usr/local/texlive/2023/bin/universal-darwin/"
           "~/bin"
           "~/.local/bin"
           "~/.opam/default/bin"
@@ -167,15 +168,14 @@
 
 (setq browse-url-browser-function 'eww-browse-url)
 ;; eww-mode browser keybinding
-(add-hook 'eww-mode-hook
-          (lambda ()
-            (setq shr-use-fonts nil
-                  shr-use-fonts nil
-                  shr-use-colors nil
-                  shr-indentation 2
-                  eww-search-prefix "https://ddg.gg/html?q="
-                  shr-width 120)))
-
+(setq shr-use-fonts nil
+      shr-use-fonts nil
+      shr-use-colors nil
+      shr-external-rendering-functions nil
+      shr-indentation 2
+      eww-search-prefix "https://ddg.gg/html?q="
+      shr-width 80)
+            
 (use-package xterm-color
   :ensure t)
 
@@ -194,7 +194,9 @@
   (setq-default elfeed-search-title-min-width 100))
 
 (use-package ess
-  :ensure t)
+  :ensure t
+  :config
+  (setq ess-indent-with-fancy-comments nil))
 
 (use-package eldoc-box
   :ensure t
@@ -272,6 +274,7 @@
               (define-key evil-normal-state-local-map (kbd "SPC s e") 'org-sort-entries)
               (define-key evil-normal-state-local-map (kbd "SPC s n") 'kg/start-code-block)
               (define-key evil-normal-state-local-map (kbd "SPC s o") 'org-edit-src-code)
+              (define-key evil-normal-state-local-map (kdb "SPC l") 'org-latex-preview)
               (define-key evil-normal-state-local-map (kbd "SPC u") 'org-todo)
               (define-key evil-normal-state-local-map (kbd "SPC o") 'org-toggle-checkbox)))
     :config
@@ -555,6 +558,7 @@
                ;; magit
                "m s" 'magit
                "m b" 'magit-blame-addition
+               "m f" 'magit-log-buffer-file
                "m l" 'elfeed
                "m e" (lambda () (interactive) (eww-browse-url (read-string "url: ")))
                ;; view
