@@ -215,6 +215,11 @@
 (use-package helm
   :ensure t
   :config
+  (custom-set-faces
+   '(helm-source-header
+     ((t (:foreground "#ffffff" :background "#333333" :weight bold :height 1.3)))))
+  (custom-set-faces
+   '(helm-selection ((t (:background "#333333")))))
   (global-set-key (kbd "M-x") 'helm-M-x)
   (global-set-key (kbd "C-x C-f") 'helm-find-files))
 
