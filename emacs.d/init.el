@@ -162,6 +162,14 @@
   (global-set-key (kbd "<mouse-4>") 'scroll-down-line)
   (global-set-key (kbd "<mouse-5>") 'scroll-up-line))
 
+;; set default behavior for find-file and the '/' key
+(defun kg-find-file-slash ()
+  (interactive)
+  (delete-minibuffer-contents)
+  (insert "~/workspace/"))
+
+(define-key minibuffer-local-map "/" 'kg-find-file-slash)
+
 ;;
 ;; Packages and settings
 ;;
