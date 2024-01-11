@@ -14,7 +14,7 @@ Plug 'benmills/vimux'
 Plug 'ervandew/supertab'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'davidhalter/jedi-vim'
-Plug 'ctrlpvim/ctrlp.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'dense-analysis/ale'
 call plug#end()
 
@@ -102,7 +102,7 @@ nnoremap <leader>nn :bnext<cr>
 nnoremap <leader>nd :bdelete<cr>
 nnoremap <leader>no :only<cr>
 nnoremap <leader>ns <C-W><C-W>
-nnoremap <leader>nf :CtrlP<cr>
+nnoremap <leader>nf :FZF<cr>
 nnoremap <leader>j <C-d>
 nnoremap <leader>k <C-u>
 nnoremap <leader>= <C-w>=
