@@ -69,11 +69,38 @@ let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#show_buffers=1
 set laststatus=2
 
-"
-" Ctrlp
-"
-let g:ctrlp_working_path_mode = 'r'
-let g:ctrlp_by_filename = 1
+" fzf
+let g:fzf_layout = { 'down': '~40%' }
+
+function! FzfFileOpenSink(line)
+    " Split the line by colon
+    let parts = split(a:line, ':')
+
+    " Check if the split result has at least two parts (filename and line number)
+    if len(parts) >= 2
+        " Construct the Vim command to open the file at the specific line
+        let fileCmd = parts[0] 
+        let lineNum = parts[1] 
+
+        " Execute the command
+        execute 'edit ' . '+' . lineNum . ' ' fileCmd
+    endif
+endfunction
+
+function! s:RgFZF(query)
+    let command_fmt = 'rg --ignore-file .gitignore --column --line-number --no-heading --color=never --smart-case %s'
+    let initial_command = printf(command_fmt, shellescape(a:query))
+    let reload_command = printf(command_fmt, '{q}')
+    let options = '--delimiter : --nth 4'
+    call fzf#run(fzf#wrap({
+        \ 'source': initial_command,
+        \ 'sink': function('FzfFileOpenSink'),
+        \ 'options': options,
+        \ 'reload': reload_command
+        \ }))
+endfunction
+
+command! -nargs=* Rg call s:RgFZF(<q-args>)
 
 "
 " vimux
@@ -103,6 +130,7 @@ nnoremap <leader>nd :bdelete<cr>
 nnoremap <leader>no :only<cr>
 nnoremap <leader>ns <C-W><C-W>
 nnoremap <leader>nf :FZF<cr>
+nnoremap <leader>ng :Rg<cr>
 nnoremap <leader>j <C-d>
 nnoremap <leader>k <C-u>
 nnoremap <leader>= <C-w>=
