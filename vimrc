@@ -11,11 +11,10 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'morhetz/gruvbox'
 Plug 'scrooloose/nerdtree'
 Plug 'benmills/vimux'
-Plug 'ervandew/supertab'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
-Plug 'davidhalter/jedi-vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'dense-analysis/ale'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'rust-lang/rust.vim'
 call plug#end()
 
 filetype off
@@ -24,6 +23,8 @@ filetype plugin indent on
 " colorscheme gruvbox
 colorscheme gruvbox
 
+set nobackup
+set nowritebackup
 set nocompatible
 set modelines=0
 set number
@@ -102,6 +103,34 @@ endfunction
 
 command! -nargs=* Rg call s:RgFZF(<q-args>)
 
+" Use tab for trigger completion with characters ahead and navigate
+" NOTE: There's always complete item selected by default, you may want to enable
+" no select by `"suggest.noselect": true` in your configuration file
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config
+inoremap <silent><expr> <TAB>
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+" Make <CR> to accept selected completion item or notify coc.nvim to format
+" <C-g>u breaks current undo, please make your own choice
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <c-space> to trigger completion
+if has('nvim')
+  inoremap <silent><expr> <c-space> coc#refresh()
+else
+  inoremap <silent><expr> <c-@> coc#refresh()
+endif
+
 "
 " vimux
 " 
@@ -149,108 +178,11 @@ nnoremap <leader>mb :VimuxRunCommand('git blame -L ' . line('.') . ',' . line('.
 nnoremap <leader>ml :VimuxRunCommand('git blame -L ' . line('.') . ',' . line('.') . ' ' . expand('%:p') . "\| awk '{print $1}' \| xargs git --no-pager log -n 1 --decorate")<cr><cr>
 nnoremap <leader>mL :VimuxRunCommand('git blame -L ' . line('.') . ',' . line('.') . ' ' . expand('%:p') . "\| awk '{print $1}' \| xargs git --no-pager log -p -n 1 --decorate")<cr><cr>
 
-"
-" supertab
-"
-let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
-
-"
-" Ale
-"
-let g:ale_linters_explicit = 1
-let g:ale_sign_column_always = 0
-let g:ale_lint_on_save = 1
-let g:ale_fix_on_save = 1
-let g:ale_warn_about_trailing_whitespace = 0
-let g:ale_linters = {
-\   'ocaml': ['merlin']
-\}  
-let g:ale_fixers = {
-\   'r': ['R', '--slave', '-e', 'langaugeserver::run()'],
-\   'c': ['clangd'],
-\   'cpp': ['clangd'],
-\   'ocaml': ['ocamlformat']
-\}
-
-
-"
-" Go
-"
-let g:go_fmt_command = "goimports"
-let g:go_highlight_functions = 1
-let g:go_highlight_functions_calls = 1
-autocmd FileType go nnoremap <buffer><leader>t :GoInfo<cr>
-autocmd FileType go nnoremap <buffer><leader>gg :GoDef<cr>
-autocmd FileType go nnoremap <buffer><leader>gr :GoRename<cr>
-autocmd FileType go nnoremap <buffer><leader>gl :GoReferrers<cr>
-autocmd FileType go nnoremap <buffer><leader>gc :GoCallees<cr>
-autocmd FileType go nnoremap <buffer><leader>gp <C-o><cr>
-
-"
-" C
-"
-function! MyClangFormat()
-    let l:current_pos = getpos('.')
-    execute '%!clang-format'
-    call setpos('.', l:current_pos)
-endfunction
-
-set omnifunc=syntaxcomplete#Complete
-
-autocmd BufWritePre *.c,*.h,*.cpp,*.hpp call MyClangFormat()
-" autocmd FileType c,cpp ClangFormatAutoEnable
-autocmd FileType c,cpp nnoremap <buffer><leader>t :ALEHover<cr>
-autocmd FileType c,cpp nnoremap <buffer><leader>gg :ALEGoToDefinition<cr>
-autocmd FileType c,cpp nnoremap <buffer><leader>gp :pop<cr>
-autocmd FileType c,cpp nnoremap <buffer><leader>gl :ALEFindReferences<cr>
-
-"
-" Ocaml
-"
-autocmd FileType ocaml nnoremap <buffer><leader>t :ALEHover<cr>
-autocmd FileType ocaml nnoremap <buffer><leader>gg :ALEGoToDefinition<cr>
-autocmd FileType ocaml nnoremap <buffer><leader>gp :pop<cr>
-autocmd FileType ocaml nnoremap <buffer><leader>gl :ALEFindReferences<cr>
-
-
-
-"
-" Python
-"
-let g:jedi#goto_command = ""
-let g:jedi#goto_assignments_command = ""
-let g:jedi#goto_stubs_command = ""
-let g:jedi#goto_definitions_command = ""
-let g:jedi#documentation_command = ""
-let g:jedi#usages_command = ""
-let g:jedi#completions_command = ""
-let g:jedi#rename_command = ""
-let g:jedi#rename_command_keep_name = ""
-
-let g:vimux_temp_file = tempname()
-
-function! MySendPyBlock()
-    let cur = getline('.')
-
-    normal! V
-    normal ]M
-    normal! y
-   
-    let output = system("cat > " . shellescape(g:vimux_temp_file), @")
-    call VimuxTmux('load-buffer ' . g:vimux_temp_file)
-    call VimuxTmux('paste-buffer -d -p -t' . g:VimuxRunnerIndex)
-    call VimuxSendKeys('Enter')
-
-    normal ]M
-    normal! j
-endfunction
-
-
-autocmd FileType python nnoremap <buffer><leader>gp :pop<cr>
-autocmd FileType python nnoremap <buffer><leader>gg :call jedi#goto_definitions()<cr>
-autocmd FileType python nnoremap <buffer><leader>gl :call jedi#usages()<cr>
-autocmd FileType python nnoremap <buffer><leader>gr :call jedi#rename()<cr>
-autocmd FileType python nnoremap <buffer><leader>rr :call MySendPyBlock()<cr>
+nnoremap <leader>t :call CocActionAsync('doHover')<cr>
+nnoremap <leader>gg <Plug>(coc-definition)
+nnoremap <leader>gp <c-o>
+nnoremap <leader>gl <Plug>(coc-references)
+nnoremap <leader>gr <Plug>(coc-rename)
 
 "
 " R
