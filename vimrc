@@ -15,6 +15,7 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'rust-lang/rust.vim'
+Plug 'maxmellon/vim-jsx-pretty'
 call plug#end()
 
 filetype off
@@ -34,6 +35,7 @@ set wrap
 set textwidth=80
 set tabstop=4
 set softtabstop=4
+set shiftwidth=4
 set expandtab
 set noshiftround
 set hidden
