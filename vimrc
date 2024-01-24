@@ -31,7 +31,7 @@ set number
 set ruler
 set encoding=utf-8
 set wrap
-set textwidth=79
+set textwidth=80
 set tabstop=4
 set softtabstop=4
 set expandtab
@@ -72,6 +72,7 @@ set laststatus=2
 
 " fzf
 let g:fzf_layout = { 'down': '~40%' }
+let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow'
 
 function! FzfFileOpenSink(line)
     " Split the line by colon
@@ -193,21 +194,21 @@ function! MySendRBlock()
     let cur = getline('.')
 
     if stridx(cur, 'function') != -1 || stridx(cur, 'list(') != -1
-        normal! V
-        normal! ][
-        normal! y
+        normal V
+        normal ][
+        normal y
        
         let output = system("cat > " . shellescape(g:vimux_temp_file), @")
         call VimuxTmux('load-buffer ' . g:vimux_temp_file)
         call VimuxTmux('paste-buffer -d -p -t' . g:VimuxRunnerIndex)
         call VimuxSendKeys('Enter')
 
-        normal! ][
-        normal! j
+        normal ][
+        normal j
     else
-        normal! V
-        normal! }
-        normal! y
+        normal V
+        normal }
+        normal y
 
         let output = system("cat > " . shellescape(g:vimux_temp_file), @")
         call VimuxTmux('load-buffer ' . g:vimux_temp_file)
@@ -219,5 +220,5 @@ function! MySendRBlock()
     endif
 endfunction
 
-autocmd FileType r setlocal shiftwidth=4 softtabstop=4 expandtab
+autocmd FileType r setlocal shiftwidth=2 softtabstop=2 expandtab
 autocmd FileType r,rmd nnoremap <buffer><leader>rr :call MySendRBlock()<cr>
