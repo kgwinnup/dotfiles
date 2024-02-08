@@ -188,6 +188,11 @@ nnoremap <leader>gl <Plug>(coc-references)
 nnoremap <leader>gr <Plug>(coc-rename)
 
 "
+" Rust
+"
+let g:rustfmt_autosave = 1
+
+"
 " R
 "
 function! MySendRBlock()
