@@ -107,6 +107,12 @@
 (use-package yaml-mode :ensure t :defer t)
 (use-package poly-markdown :ensure t :defer t)
 (use-package eglot :ensure t)
+(use-package json-mode :ensure t)
+(use-package treesit-auto
+  :ensure t
+  :init
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 
 (use-package helm
   :ensure t
@@ -232,12 +238,6 @@
      (eglot-ensure)
      (company-mode)))
 
-(use-package typescript-mode
-  :ensure t
-  :init
-  (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-mode))
-  (add-hook 'typescript-mode-hook (lambda () (kg/lang-std))))
-
 (use-package rust-mode
   :ensure t
   :init
@@ -259,6 +259,10 @@
 (add-hook 'c-mode-hook (lambda () (kg/lang-std)))
 (add-hook 'c++-mode-hook (lambda () (kg/lang-std)))
 (add-hook 'emacs-lisp-mode-hook (lambda () (progn (show-paren-mode) (company-mode))))
+(add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-ts-mode))
+(add-hook 'typescript-ts-mode-hook (lambda () (kg/lang-std)))
+
+
 
 (use-package dired-sidebar
   :ensure t
@@ -336,7 +340,7 @@
     :keys ("M-m")
     :evil-keys ("SPC")
     :evil-states (normal motion visual)
-    :major-modes (rust-mode go-mode c-mode c++-mode typescript-mode)
+    :major-modes (rust-mode go-mode c-mode c++-mode typescript-ts-mode)
     :bindings ("g g" 'xref-find-definitions
                "g p" 'pop-tag-mark
                "g r" 'eglot-rename
