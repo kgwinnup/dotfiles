@@ -11,7 +11,9 @@
           "~/.local/bin"
           "~/.opam/default/bin"
           "~/.cargo/bin"))
-
+;;
+;; elpaca bootstrap
+;;
 (defvar elpaca-installer-version 0.8)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
@@ -77,6 +79,7 @@
               c-basic-offset 4
               tab-width 4
               show-paren-mode t
+              typescript-ts-mode-indent-offset 4
               initial-scratch-message nil
               inhibit-startup-screen t
               auto-save-default nil
@@ -111,6 +114,7 @@
 (use-package treesit-auto
   :ensure t
   :init
+  (setq treesit-auto-install t)
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
 
@@ -340,7 +344,7 @@
     :keys ("M-m")
     :evil-keys ("SPC")
     :evil-states (normal motion visual)
-    :major-modes (rust-mode go-mode c-mode c++-mode typescript-ts-mode)
+    :major-modes (rust-mode go-mode c-mode c++-mode typescript-ts-mode tsx-ts-mode)
     :bindings ("g g" 'xref-find-definitions
                "g p" 'pop-tag-mark
                "g r" 'eglot-rename
