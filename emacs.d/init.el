@@ -95,7 +95,8 @@
               comint-move-point-for-output t
               ;; https://github.com/hlissner/doom-emacs/blob/58af4aef56469f3f495129b4e7d947553f420fca/core/core.el#L184
               auto-mode-case-fold nil
-              evil-want-keybinding nil)
+              evil-want-keybinding nil
+              fill-column 80)
 
 (setq custom-file "~/.emacs.d/custom.el")
 (when (file-exists-p custom-file)
@@ -105,6 +106,7 @@
 (use-package dockerfile-mode :ensure t :defer t)
 (use-package yaml-mode :ensure t :defer t)
 (use-package poly-markdown :ensure t :defer t)
+(use-package eglot :ensure t)
 
 (use-package helm
   :ensure t
@@ -230,17 +232,11 @@
      (eglot-ensure)
      (company-mode)))
 
-(use-package web-mode
+(use-package typescript-mode
   :ensure t
-  :mode (("\\.js\\'" . web-mode)
-         ("\\.tsx\\'" . web-mode)
-         ("\\.ts\\'" . web-mode)
-         ("\\.jsx\\'" . web-mode))
-  :config
-  (add-to-list 'eglot-server-programs '((js-mode typescript-mode web-mode) . (eglot-deno "deno" "lsp")))
-  (add-hook 'web-mode-hook  (lambda ()
-                              (kg/lang-std)
-                              (add-hook 'before-save-hook 'eglot-format nil t))))
+  :init
+  (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-mode))
+  (add-hook 'typescript-mode-hook (lambda () (kg/lang-std))))
 
 (use-package rust-mode
   :ensure t
@@ -340,7 +336,7 @@
     :keys ("M-m")
     :evil-keys ("SPC")
     :evil-states (normal motion visual)
-    :major-modes (rust-mode go-mode c-mode c++-mode web-mode tuareg-mode js-mode)
+    :major-modes (rust-mode go-mode c-mode c++-mode typescript-mode)
     :bindings ("g g" 'xref-find-definitions
                "g p" 'pop-tag-mark
                "g r" 'eglot-rename
