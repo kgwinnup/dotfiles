@@ -1,136 +1,384 @@
-;; Set up the PATH and other environment variables
-(mapcar (lambda (path)
-          (setenv "PATH" (concat path ":" (getenv "PATH")))
-          (add-to-list 'exec-path path))
-        '("/usr/local/bin"
-          "/usr/local/go/bin"
-          "~/go/bin"
-          "/opt/homebrew/bin"
-          "/usr/local/texlive/2023/bin/universal-darwin/"
-          "~/bin"
-          "~/.local/bin"
-          "~/.opam/default/bin"
-          "~/.cargo/bin"))
-;;
-;; elpaca bootstrap
-;;
-(defvar elpaca-installer-version 0.8)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                              :ref nil :depth 1
-                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-                              :build (:not elpaca--activate-package)))
-(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-       (build (expand-file-name "elpaca/" elpaca-builds-directory))
-       (order (cdr elpaca-order))
-       (default-directory repo))
-  (add-to-list 'load-path (if (file-exists-p build) build repo))
-  (unless (file-exists-p repo)
-    (make-directory repo t)
-    (when (< emacs-major-version 28) (require 'subr-x))
-    (condition-case-unless-debug err
-        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                 ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-                                                 ,@(when-let ((depth (plist-get order :depth)))
-                                                     (list (format "--depth=%d" depth) "--no-single-branch"))
-                                                 ,(plist-get order :repo) ,repo))))
-                 ((zerop (call-process "git" nil buffer t "checkout"
-                                       (or (plist-get order :ref) "--"))))
-                 (emacs (concat invocation-directory invocation-name))
-                 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                 ((require 'elpaca))
-                 ((elpaca-generate-autoloads "elpaca" repo)))
-            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-          (error "%s" (with-current-buffer buffer (buffer-string))))
-      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-  (unless (require 'elpaca-autoloads nil t)
-    (require 'elpaca)
-    (elpaca-generate-autoloads "elpaca" repo)
-    (load "./elpaca-autoloads")))
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca `(,@elpaca-order))
+;; -*- lexical-binding: t; -*-
 
-(setq package-enable-at-startup nil)
+;; Disable GUI elements
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(global-display-line-numbers-mode t)
+(setq org-src-block-faces nil)
 
-;; Install use-package support
-(elpaca elpaca-use-package
-  (elpaca-use-package-mode))
+;; Ensure Homebrew GCC + libgccjit are visible to native compiler
+(setenv "PATH" (concat "/opt/homebrew/opt/gcc/bin:" (getenv "PATH")))
+(setenv "PATH" (concat "/opt/homebrew/bin:" (getenv "PATH")))
+(let ((homebrew-bin "/opt/homebrew/bin"))
+  (setenv "PATH" (concat homebrew-bin ":" (getenv "PATH")))
+  (setq exec-path (cons homebrew-bin exec-path)))
+(setenv "LIBRARY_PATH"
+        (concat "/opt/homebrew/opt/libgccjit/lib/gcc/current:"
+                (getenv "LIBRARY_PATH")))
+(setenv "DYLD_LIBRARY_PATH"
+        (concat "/opt/homebrew/opt/libgccjit/lib/gcc/current:"
+                (getenv "DYLD_LIBRARY_PATH")))
 
-;; Various settings
+(add-to-list 'native-comp-eln-load-path
+             (expand-file-name "eln-cache/" user-emacs-directory))
+
+;;; ----------------------------
+;;; straight.el bootstrap
+;;; ----------------------------
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir) user-emacs-directory)))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+;; Use straight.el as backend for use-package
+(straight-use-package 'use-package)
+(setq straight-use-package-by-default t)
+
+;;; ----------------------------
+;;; Global defaults
+;;; ----------------------------
 (setq-default ring-bell-function 'ignore
               require-final-newline t
-              warning-minimum-level :emergency
-              comp-async-report-warnings-errors nil
               compilation-scroll-output t
               scroll-step 1
-              gc-cons-threshold 100000000
-              gc-cons-percentage 0.6
               gc-cons-threshold (* 384 1024 1024)
+              gc-cons-percentage 0.6
               read-process-output-max (* 3 1024 1024)
-              scroll-conservatively  10000
+              scroll-conservatively 10000
               mouse-wheel-scroll-amount '(1 ((shift) . 1))
               mouse-wheel-progressive-speed nil
-              mouse-wheel-follow-mouse 't
+              mouse-wheel-follow-mouse t
               column-number-mode t
               indent-tabs-mode nil
               c-basic-offset 4
               tab-width 4
               show-paren-mode t
-              typescript-ts-mode-indent-offset 4
               initial-scratch-message nil
               inhibit-startup-screen t
               auto-save-default nil
               make-backup-files nil
               shell-file-name "bash"
               initial-major-mode 'org-mode
-              eldoc-echo-area-use-multiline-p 4
-              semantic-idle-truncate-long-summaries t
-              eldoc-prefer-doc-buffer t
-              kg/last-shell-cmd ""
               compilation-environment '("TERM=xterm-256color")
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
-              comint-prompt-read-only t
-              comint-scroll-to-bottom-on-input t
-              comint-scroll-to-bottom-on-output t
-              comint-move-point-for-output t
-              ;; https://github.com/hlissner/doom-emacs/blob/58af4aef56469f3f495129b4e7d947553f420fca/core/core.el#L184
               auto-mode-case-fold nil
-              evil-want-keybinding nil
               fill-column 80)
 
-(setq custom-file "~/.emacs.d/custom.el")
-(when (file-exists-p custom-file)
-  (load custom-file))
 
-(use-package magit :ensure t :demand t)
-(use-package dockerfile-mode :ensure t :defer t)
-(use-package yaml-mode :ensure t :defer t)
-(use-package poly-markdown :ensure t :defer t)
-(use-package eglot :ensure t)
-(use-package json-mode :ensure t)
-(use-package treesit-auto
+;;; ----------------------------
+;;; Packages
+;;; ----------------------------
+(use-package exec-path-from-shell
+  :straight t
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
+
+(straight-use-package 'rg)
+
+(use-package vterm
+  :straight t
+  :commands (vterm))
+
+;;; ----------------------------
+;;; Enable ANSI colors in compile buffer
+;;; ----------------------------
+(use-package ansi-color
+  :straight t
+  :config
+  ;; Filter ANSI escape codes in compilation buffer
+  (defun my/colorize-compilation-buffer ()
+    "Apply ANSI color codes in compilation buffer."
+    (ansi-color-apply-on-region compilation-filter-start (point)))
+  
+  (add-hook 'compilation-filter-hook #'my/colorize-compilation-buffer))
+
+;; Spell checking
+(use-package ispell
+  :ensure nil
+  :init
+  (setq ispell-program-name "aspell"))
+
+(setq ispell-dictionary "en_US")
+(setq ispell-local-dictionary-alist
+      '(("en_US" 
+         "[A-Za-z]" "[^A-Za-z]" 
+         "[']" nil ("-d" "en_US") nil utf-8)))
+
+;; On-the-fly spell check
+(use-package flyspell
+  :ensure nil
+  :hook ((text-mode . flyspell-mode)
+         (prog-mode . flyspell-prog-mode)))
+
+;;; ----------------------------
+;;; TypeScript / Deno support
+;;; ----------------------------
+
+;; typescript-mode
+(use-package typescript-mode
+  :straight t
+  :mode ("\\.ts\\'" . typescript-mode)
+  :mode ("\\.tsx\\'" . typescript-mode)  ;; Ensure tsx also uses typescript-mode
+  :hook (typescript-mode . eglot-ensure))
+
+(use-package corfu
+  :straight t
+  :custom
+  (corfu-cycle t)        ;; Cycle through candidates
+  (corfu-auto t)         ;; Show popup automatically
+  (corfu-auto-delay 0.1)
+  (corfu-quit-at-boundary nil)
+  (corfu-quit-no-match nil)
+  :init
+  (global-corfu-mode))
+
+;; Optional: keybindings for cycling with Tab/Shift-Tab
+(with-eval-after-load 'corfu
+  (define-key corfu-map (kbd "TAB") #'corfu-next)
+  (define-key corfu-map (kbd "<tab>") #'corfu-next)
+  (define-key corfu-map (kbd "<backtab>") #'corfu-previous)
+  (define-key corfu-map (kbd "S-TAB") #'corfu-previous)
+  (define-key corfu-map (kbd "RET") #'corfu-insert)
+  (define-key corfu-map (kbd "<return>") #'corfu-insert))
+
+
+(add-hook 'prog-mode-hook 'eldoc-mode)
+;; Optional: use eldoc-box for better popup
+(use-package eldoc-box
+  :straight t
+  :after eldoc)
+
+;; If you previously enabled global eldoc-box mode:
+;; (eldoc-box-enable) → comment out or remove
+
+(defun my/eglot-format-buffer-on-save ()
+  "Add `eglot-format-buffer` to `before-save-hook` in the current buffer."
+  (add-hook 'before-save-hook
+            (lambda ()
+              (when (bound-and-true-p eglot--managed-mode)
+                (eglot-format-buffer)))
+            nil t)) ;; local hook
+
+
+(use-package rustic
+  :straight t
+  :hook (rustic-mode . eglot-ensure)
+  :config
+  (setq rustic-lsp-client 'eglot)
+  (setq rustic-format-on-save t))
+
+(setq eglot-connect-timeout 120)
+
+(use-package json-mode
+  :straight t
+  :mode "\\.json\\'"
+  :config
+  (setq json-reformat:indent-width 4)
+  (setq js-indent-level 4))
+
+(use-package yaml-mode
+  :straight t
+  :mode (("\\.ya?ml\\'" . yaml-mode)) ;; matches .yaml and .yml
+  )
+
+;; Install and configure dockerfile-mode
+(use-package dockerfile-mode
+  :straight t
+  :mode ("Dockerfile\\'" . dockerfile-mode))
+
+;; Eglot LSP setup
+(use-package eglot
+  :straight t
+  :commands eglot-ensure
+  :config
+  ;; Tell Eglot to use Deno LSP for TypeScript
+  (add-to-list 'eglot-server-programs
+               `(typescript-mode . ("/opt/homebrew/bin/deno" "lsp")))
+  
+  ;; Tell Eglot to use rust-analyzer for Rust
+  (add-to-list 'eglot-server-programs
+               `(rust-mode . ("rust-analyzer")))
+
+  ;; Configure Deno only when deno.json/deno.jsonc is found
+  (defun my/eglot-deno-setup ()
+    (let ((config (or (locate-dominating-file default-directory "deno.json")
+                      (locate-dominating-file default-directory "deno.jsonc"))))
+      (when config
+        (setq-local eglot-workspace-configuration
+                    `(:deno (:enable t
+                                     :lint t
+                                     :config ,(expand-file-name
+                                               "deno.json"
+                                               config))))
+        (when (fboundp 'projectile-reset-project-root)
+          (projectile-reset-project-root config)))))
+
+  ;; Apply setup + format hook in TS buffers
+  (add-hook 'typescript-mode-hook
+            (lambda ()
+              (my/eglot-deno-setup)
+              (add-hook 'before-save-hook #'my/eglot-format-on-save nil t))))
+
+(use-package ess
+  :straight t
+  :init
+  ;; Associate .R and .Rmd files with ESS R mode
+  (add-to-list 'auto-mode-alist '("\\.R\\'" . R-mode))
+  (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . R-mode))
+  :config
+  (setq ess-ask-for-ess-directory nil)) ;; optional: don't ask for working dir
+
+;; Markdown syntax highlighting
+(use-package markdown-mode
+  :straight t
+  :mode ("\\.md\\'" . markdown-mode)
+  :init
+  (setq markdown-command "pandoc") ;; optional, for preview/export
+  :config
+  ;; Enable syntax highlighting for code blocks
+  (setq markdown-fontify-code-blocks-natively t))
+
+;; Tell Evil we don’t want its default keybindings for other packages
+(setq evil-want-keybinding nil)
+
+;; Evil
+(use-package evil
+  :straight t
+  :config
+  ;; Make SPC a leader key in Evil
+  (setq evil-leader/leader "SPC")
+  (evil-mode 1))
+
+(use-package evil-collection
+  :straight t
+  :after evil
+  :config
+  (evil-collection-init))
+
+;; Transient
+(use-package transient
+  :straight t)
+
+;; Keybinding for "mp" to select a folder under ~/workspace
+(defun my/open-workspace-project ()
+  "Select a folder under ~/workspace and open it."
+  (interactive)
+  (let ((projects (directory-files "~/workspace" t "^[^.].*"))) ;; skip . and ..
+    (helm :sources (helm-build-sync-source "Workspace Projects"
+                                           :candidates projects
+                                           :fuzzy-match t
+                                           :action (lambda (dir)
+                                                     (dired dir)))
+          :buffer "*helm workspace projects*")))
+
+;; Helm
+(use-package helm
+  :straight t
+  :after bookmark
+  :init
+  (setq helm-ff-file-name-history-use-recentf t)
+  :config
+  (helm-mode 1))
+
+;; ------------------------------
+;; Org-mode setup
+;; ------------------------------
+(use-package org
+  :straight t
+  :defer t
+  :init
+  ;; Enable Babel languages (add Mermaid)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((R . t)
+     (python . t)
+     (shell . t)
+     (ruby . t)))  ;; enable Mermaid blocks
+
+  ;; Redisplay inline images after executing code blocks
+  (add-hook 'org-babel-after-execute-hook #'org-redisplay-inline-images)
+
+  ;; Org startup settings
+  (setq org-startup-folded t
+        org-src-preserve-indentation t
+        org-startup-with-inline-images t
+        org-image-actual-width nil)
+
+  ;; Org-mode hooks
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (org-indent-mode)
+              (local-set-key (kbd "<tab>") 'org-cycle)
+              (local-set-key (kbd "TAB") 'org-cycle)))
+
+  :config
+  ;; Custom faces for TODO keywords
+  (setq org-todo-keyword-faces
+        '(("IN-PROGRESS" . "orange")
+          ("TODO" . "dodger blue")
+          ("DONE" . "systemGrayColor")
+          ("NOTES" . "coral")
+          ("1-1" . "systemRedColor")))
+
+  (setq org-todo-keywords
+        '((sequence "IN-PROGRESS" "TODO" "DONE" "NOTES" "1-1"))))
+
+;; Ensure projectile is installed
+(use-package projectile
   :ensure t
   :init
-  (setq treesit-auto-install t)
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
-
-(use-package helm
-  :ensure t
+  (projectile-mode +1)
   :config
-  (custom-set-faces
-   '(helm-source-header
-     ((t (:foreground "#ffffff" :background "#333333" :weight bold :height 1.3)))))
-  (custom-set-faces
-   '(helm-selection ((t (:background "#333333")))))
-  (global-set-key (kbd "M-x") 'helm-M-x)
-  (global-set-key (kbd "C-x C-f") 'helm-find-files))
+  ;; Set the projects root directory
+  (setq projectile-project-search-path '("~/workspace/")))
 
+;;; ----------------------------
+;;; Use ripgrep for Projectile (with Helm)
+;;; ----------------------------
 (use-package helm-projectile
-  :ensure t)
+  :straight t
+  :after (helm projectile)
+  :config
+  (helm-projectile-on)
+
+  ;; Make Projectile use ripgrep for finding files in projects
+  (setq projectile-generic-command
+        "rg --files --hidden --glob '!.git/*'"))
+
+
+(defun my/helm-projectile-ripgrep ()
+  "Use ripgrep within the current projectile project with Helm."
+  (interactive)
+  (let ((default-directory (projectile-project-root)))
+    (helm :sources (helm-build-in-buffer-source "Ripgrep Project Search"
+                                                :data (split-string
+                                                       (shell-command-to-string
+                                                        "rg --files --hidden --glob '!.git/*'")
+                                                       "\n" t)
+                                                :fuzzy-match t
+                                                :action (lambda (file) (find-file file)))
+          :buffer "*helm ripgrep project*")))
+
+(use-package magit
+  :straight t
+  :commands (magit-status magit-blame-addition magit-log-buffer-file)
+  :config
+  ;; Optional: show full diffs by default
+  (setq magit-diff-refine-hunk t)
+  (with-eval-after-load 'magit
+    (define-key magit-blame-read-only-mode-map (kbd "q") #'magit-blame-quit)))
 
 (setq browse-url-browser-function 'eww-browse-url)
 ;; eww-mode browser keybinding
@@ -143,236 +391,354 @@
       shr-width 80)
 
 (use-package elfeed
-  :ensure t
-  :defer t
+  :straight t
+  :commands (elfeed)
   :config
-  (setq elfeed-feeds '(; ("https://lobste.rs/rss" lobsters)
-                       ; ("https://hnrss.org/frontpage" hackernews)
-                       ("https://drewdevault.com/blog/index.xml" devault)
-                       ("https://danluu.com/atom.xml" danluu)
-                       ("https://lwn.net/headlines/rss" lwn)
-                       ("https://tilde.news/rss" tildeverse)))
-  (setq-default elfeed-search-filter "@1-week-ago +unread")
-  (setq-default elfeed-search-title-max-width 100)
-  (setq-default elfeed-search-title-min-width 100))
+  ;; Optional: set your feed URLs
+  (setq elfeed-feeds
+        '(("https://news.ycombinator.com/rss" hackernews)
+          ("https://lobste.rs/rss" lobsters)
+          ("https://lwn.net/headlines/rss" lwn)
+          ("https://mcyoung.xyz/feed" mcyoung)
+          ("https://drewdevault.com/blog/index.xml" devault)
+          ("https://danluu.com/atom.xml" danluu))))
 
-(use-package company
-  :ensure t
-  :config
-  (setq company-idle-delay 0)
-  (setq company-tooltip-align-annotations t)
-  (setq company-minimum-prefix-length 1)
-  (define-key company-active-map (kbd "<tab>") 'company-select-next))
-
-(defun kg/start-code-block ()
-  "starts a code block in org mode"
+(defun my/gptel-send-with-prompt ()
+  "Send the current region or buffer to GPTel, with an additional user prompt."
   (interactive)
-  (insert "#+begin_src R :session :results output\n\n#+end_src")
-  ;(insert "#+begin_src\n\n#+end_src")
-  (previous-line)
-  (previous-line))
+  (let* ((user-prompt (read-string "Extra prompt: "))
+         (content (if (use-region-p)
+                      (buffer-substring-no-properties (region-beginning) (region-end))
+                    (buffer-string)))
+         (full-content (concat user-prompt "\n\n" content)))
+    ;; Temporarily override gptel input with combined content
+    (let ((gptel-buffer-text full-content))
+      (gptel-send))))
 
-(use-package org
-  :ensure t
-  :defer t
+(defun my/gptel-ephemeral-popup-once ()
+  "Send region or buffer text to GPTel once and show response in a markdown popup."
+  (interactive)
+  (let* ((user-prompt (read-string "Extra prompt: "))
+         (content (if (use-region-p)
+                      (buffer-substring-no-properties (region-beginning) (region-end))
+                    (buffer-string)))
+         (full-content (concat user-prompt "\n\n" content))
+         (buf (get-buffer-create "*GPTel Output*")))
+    
+    ;; Prepare buffer
+    (with-current-buffer buf
+      (let ((inhibit-read-only t))
+        (erase-buffer)))
+    
+    ;; Display first so tokens stream live
+    (display-buffer buf '(display-buffer-pop-up-window))
+
+    ;; Enable markdown + disable spellcheck + q to close
+    (with-current-buffer buf
+      (markdown-mode)
+      (when (bound-and-true-p flyspell-mode)
+        (flyspell-mode -1))
+      (local-set-key (kbd "q") #'quit-window))
+
+    ;; GPTel one-shot request
+    (gptel-request
+        full-content
+      :buffer buf
+      :callback (lambda (response _info)
+                  (with-current-buffer buf
+                    (let ((inhibit-read-only t))
+                      (erase-buffer)
+                      (insert response)
+                      (goto-char (point-min))
+                      ;; Reformat line widths automatically
+                      (setq fill-column 80)
+                      (fill-region (point-min) (point-max))))))
+
+    ;; Make q close
+    (with-current-buffer buf
+      (local-set-key (kbd "q") #'quit-window))))
+
+(defun my/gptel-rewrite-with-format ()
+  "Rewrite the region with gptel, then auto-format it in org/markdown modes.
+This installs a one-shot hook that formats the rewritten text after gptel
+finishes and the replacement is accepted."
+  (interactive)
+  (unless (use-region-p)
+    (user-error "No active region"))
+  (let* ((beg (region-beginning))
+         (end (region-end))
+         ;; markers survive buffer edits; the second arg t makes end-marker
+         ;; advance when text is inserted at its position.
+         (beg-marker (copy-marker beg))
+         (end-marker (copy-marker end t))
+         (should-format (derived-mode-p 'org-mode 'markdown-mode))
+         ;; one-shot hook: runs with two args (response-beg response-end)
+         (formatter
+          (lambda (_resp-beg _resp-end)
+            (when should-format
+              ;; run formatting in the original buffer where markers live
+              (with-current-buffer (current-buffer)
+                (save-excursion
+                  (goto-char beg-marker)
+                  (while (< (point) end-marker)
+                    (fill-paragraph)
+                    (forward-paragraph))))))))
+    ;; add the one-shot hook
+    (add-hook 'gptel-post-rewrite-functions formatter)
+    (unwind-protect
+        ;; call interactively to avoid passing the wrong arity/args
+        (call-interactively #'gptel-rewrite)
+      ;; ensure we always remove our hook even on error / user cancel
+      (remove-hook 'gptel-post-rewrite-functions formatter))))
+
+
+;(defun my/read-api-key ()
+;  (with-temp-buffer
+;    (insert-file-contents "~/.emacs.d/openai.txt")
+;    (string-trim (buffer-string))))
+
+;(use-package gptel
+;  :straight t
+;  :after (evil transient)
+;  :config
+;  (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
+;  (setq gptel-api-key (my/read-api-key) 
+;        gptel-model 'gpt-4o
+;        gptel-default-mode 'org-mode
+;        gptel-playback t))
+
+(defun my/gptel-auto-format-code (&rest _args)
+  "Auto-fill paragraphs inside code blocks in a gptel chat buffer.
+Runs after gptel inserts a response."
+  (when (derived-mode-p 'gptel-mode)
+    (save-excursion
+      (goto-char (point-min))
+      ;; find ```lang blocks
+      (while (re-search-forward "^```\\([^ \n]*\\)?" nil t)
+        (let ((block-start (match-end 0)))
+          ;; find closing ```
+          (when (re-search-forward "^```" nil t)
+            (let ((block-end (match-beginning 0)))
+              (save-restriction
+                (narrow-to-region block-start block-end)
+                (goto-char (point-min))
+                ;; format paragraph by paragraph
+                (while (not (eobp))
+                  (fill-paragraph)
+                  (forward-paragraph))))))))))
+
+(defun my/gptel-auto-format-and-preview (&rest _args)
+  "Auto-format code blocks and preview LaTeX fragments in a gptel chat buffer.
+Runs after gptel inserts a response."
+  (when (derived-mode-p 'gptel-mode)
+    (save-excursion
+      ;; -----------------------
+      ;; 1️⃣ Format code blocks
+      ;; -----------------------
+      (goto-char (point-min))
+      (while (re-search-forward "^```\\([^ \n]*\\)?" nil t)
+        (let ((block-start (match-end 0)))
+          ;; find closing ```
+          (when (re-search-forward "^```" nil t)
+            (let ((block-end (match-beginning 0)))
+              (save-restriction
+                (narrow-to-region block-start block-end)
+                (goto-char (point-min))
+                ;; format paragraph by paragraph
+                (while (not (eobp))
+                  (fill-paragraph)
+                  (forward-paragraph))))))))
+    (org-preview-latex-fragment)))
+
+(add-hook 'gptel-post-response-hook #'my/gptel-auto-format-code)
+
+(defun my/toggle-visible-windows ()
+  "Move cursor to the next visible window."
+  (interactive)
+  (other-window 1))
+
+;;; ----------------------------
+;;; Run Deno test at point (anywhere in function)
+;;; ----------------------------
+(defun my/deno-test-at-point ()
+  "Run the Deno test under the cursor in the compile buffer.
+If the cursor is inside a Deno.test function, it runs that test; otherwise runs all tests."
+  (interactive)
+  (let* ((default-directory (projectile-project-root))
+         (line (thing-at-point 'line t))
+         test-name)
+    ;; Search backwards for the nearest Deno.test line
+    (save-excursion
+      (when (re-search-backward "Deno\\.test\\([\"']\\)\\([^\"']+\\)\\1" nil t)
+        (setq test-name (match-string 2))))
+    ;; Build the command
+    (let ((command (if test-name
+                       (format "/opt/homebrew/bin/deno test --filter \"%s\"" test-name)
+                     "/opt/homebrew/bin/deno test")))
+      ;; Run in compile buffer
+      (compile command))))
+
+(defun my/eglot-format-buffer-if-active ()
+  "Format buffer with Eglot if it is active."
+  (when (and (bound-and-true-p eglot--managed-mode)
+             (fboundp 'eglot-format-buffer))
+    (eglot-format-buffer)))
+
+(defun my/global-font-size (delta)
+  "Change the global font size by DELTA."
+  (let* ((current-height (face-attribute 'default :height))
+         (new-height (+ current-height delta)))
+    (set-face-attribute 'default nil :height new-height)))
+
+(use-package solarized-theme
+  :straight t
   :init
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((R . t)
-     (python . t)
-     (shell . t)))
-  (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
-  (setq org-startup-folded t)
-  (setq org-src-preserve-indentation t)
-  (add-hook 'org-mode-hook
-            (lambda ()
-              (org-indent-mode)
-              (local-set-key (kbd "C-c C-r") 'org-babel-remove-result)
-              (define-key evil-normal-state-local-map (kbd "SPC g i") 'org-toggle-inline-images)
-              (define-key evil-normal-state-local-map (kbd "SPC g s") 'org-sort)
-              (define-key evil-normal-state-local-map (kbd "SPC s e") 'org-sort-entries)
-              (define-key evil-normal-state-local-map (kbd "SPC s n") 'kg/start-code-block)
-              (define-key evil-normal-state-local-map (kbd "SPC s o") 'org-edit-src-code)
-              ;(define-key evil-normal-state-local-map (kdb "SPC l") 'org-latex-preview)
-              (define-key evil-normal-state-local-map (kbd "SPC u") 'org-todo)
-              (define-key evil-normal-state-local-map (kbd "SPC o") 'org-toggle-checkbox)))
-    :config
-    (setq org-todo-keyword-faces
-          '(("NOTES" . "coral")
-            ("TODO" . "dodger blue")
-            ("IN-PROGRESS" . "orange")
-            ("DONE" . "systemGrayColor")
-            ("1-1" . "systemRedColor")
-            ("IDEA" . "lime green")))
-    (setq org-todo-keywords
-          '((sequence "NOTES" "TODO" "IN-PROGRESS" "DONE" "1-1" "IDEA"))))
-
-(use-package markdown-mode
-  :ensure t
-  :defer t
-  :mode ("\\.md\\'" . markdown-mode)
-  :init
-  (setq markdown-command "multimarkdown")
-  (add-hook 'markdown-mode-hook
-            (lambda ()
-              (turn-on-orgtbl))))
-
-(use-package projectile
-  :ensure t
+  (setq solarized-use-variable-pitch nil)
+  (setq solarized-scale-org-headlines nil)
   :config
-  (setq projectile-indexing-method 'alien)
-  (defun colorize-compilation-buffer ()
-    (ansi-color-apply-on-region compilation-filter-start (point)))
-  (setq projectile-project-search-path '("~/workspace/"))
-  (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
-  (setq compilation-buffer-name-function #'projectile-compilation-buffer-name)
-  (setq compilation-save-buffers-predicate #'projectile-current-project-buffer-p)
-  (projectile-mode +1))
+  (load-theme 'solarized-dark t))
 
-(use-package eldoc-box
-  :ensure t
-  :config
-  ;(add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t)
-  (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
-  (set-face-attribute 'eldoc-box-border nil :background (face-attribute 'mode-line-inactive :background)))
+(defvar my/solarized-current-theme 'light
+  "Current Solarized theme: 'light or 'dark.")
 
-(defmacro kg/lang-std ()
-  `(progn
-     (show-paren-mode)
-     (eglot-ensure)
-     (company-mode)))
+(defun my/toggle-solarized-theme ()
+  "Toggle between Solarized Light and Dark themes."
+  (interactive)
+  ;; Disable current theme first
+  (mapc #'disable-theme custom-enabled-themes)
+  ;; Switch theme
+  (if (eq my/solarized-current-theme 'light)
+      (progn
+        (load-theme 'solarized-dark t)
+        (setq my/solarized-current-theme 'dark))
+    (load-theme 'solarized-light t)
+    (setq my/solarized-current-theme 'light)))
 
-(use-package rust-mode
-  :ensure t
-  :init
-  (add-to-list 'eglot-server-programs '(rust-mode . ("rust-analyzer")))
-  (add-hook 'rust-mode-hook
-            (lambda ()
-              (kg/lang-std)
-              (add-hook 'before-save-hook 'eglot-format nil t))))
-
-(use-package go-mode
-  :ensure t
-  :init
-  (setq gofmt-command "goimports")
-  (add-hook 'go-mode-hook
-            (lambda ()
-              (kg/lang-std)
-              (add-hook 'before-save-hook 'gofmt-before-save nil t))))
-
-(add-hook 'c-mode-hook (lambda () (kg/lang-std)))
-(add-hook 'c++-mode-hook (lambda () (kg/lang-std)))
-(add-hook 'emacs-lisp-mode-hook (lambda () (progn (show-paren-mode) (company-mode))))
-(add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-ts-mode))
-(add-hook 'typescript-ts-mode-hook (lambda () (kg/lang-std)))
-
-
-
-(use-package dired-sidebar
-  :ensure t
-  :init
-  (setq dired-sidebar-close-sidebar-on-file-open t)
-  (add-hook 'dired-sidebar-mode-hook
-            (lambda ()
-              (display-line-numbers-mode -1)
-              (unless (file-remote-p default-directory)
-                (auto-revert-mode)))))
-
-;; Expands to: (elpaca evil (use-package evil :demand t))
-(use-package evil
-  :ensure t
-  :demand t
-  :init
-  (evil-mode))
-
-(use-package evil-collection
+;;; ----------------------------
+;;; Evil leader key setup
+;;; ----------------------------
+;; set these before setting the other keybindings
+(use-package evil-leader
+  :straight t
   :after evil
-  :ensure t
-  :config
-  (evil-collection-init))
-
-(use-package bind-map
-  :ensure t
   :init
-  (bind-map my-base-leader-map
-    :keys ("M-m")
-    :evil-keys ("SPC")
-    :evil-states (normal motion visual)
-    :bindings ("c o" (lambda () (interactive) (find-file "~/.emacs.d/init.el"))
-               "c l" (lambda () (interactive) (load-file "~/.emacs.d/init.el"))
-               "s s" 'ispell
-               "s r" 'ispell-region
-               ;; cli integrations
-               "v u" 'projectile-compile-project
-               ;; perspectives
-               "p p" 'persp-prev
-               "p n" 'persp-next
-               "p s" 'persp-switch
-               "p r" 'persp-rename
-               "p k" 'persp-kill
-               ;; buffer keybindings
-               "n k" (lambda () (interactive) (mapc 'kill-buffer (buffer-list)) (switch-to-buffer "*scratch*"))
-               "n n" 'next-buffer
-               "n p" 'previous-buffer
-               ; "n t" (lambda () (interactive) (dired (projectile-acquire-root)))
-               "n t" (lambda () (interactive) (dired-sidebar-toggle-sidebar))
-               "n s" 'next-multiframe-window
-               "n o" 'delete-other-windows
-               "n d" 'kill-buffer-and-window
-               "n b" 'helm-mini
-               "n r" (lambda () (interactive) (switch-to-buffer "*scratch*"))
-               "n a" (lambda () (interactive) (find-file "~/workspace/org/notes.org"))
-               "n m" (lambda () (interactive) (helm-find-files-1 "~/workspace/org/"))
-               "n f" 'helm-projectile-find-file
-               "n g" 'projectile-grep
-               "n w" 'list-buffers
-               "_" 'split-window-vertically
-               "|" 'split-window-horizontally
-               ;; general movement
-               "j" 'evil-scroll-down
-               "k" 'evil-scroll-up
-               ;; magit
-               "m s" 'magit
-               "m b" 'magit-blame-addition
-               "m f" 'magit-log-buffer-file
-               "m l" 'elfeed
-               "m e" (lambda () (interactive) (eww-browse-url (read-string "url: ")))
-               ;; view
-               "=" (lambda () (interactive) (kg/global-font-size 10))
-               "-" (lambda () (interactive) (kg/global-font-size -10))))
-  (bind-map-for-mode-inherit my-eglot-map my-base-leader-map
-    :keys ("M-m")
-    :evil-keys ("SPC")
-    :evil-states (normal motion visual)
-    :major-modes (rust-mode go-mode c-mode c++-mode typescript-ts-mode tsx-ts-mode)
-    :bindings ("g g" 'xref-find-definitions
-               "g p" 'pop-tag-mark
-               "g r" 'eglot-rename
-               "g h" 'eldoc
-               "t"   'eldoc-box-help-at-point
-               "g u" 'eglot-reconnect
-               "g l" 'xref-find-references)))
+  ;; Enable global leader mode
+  (global-evil-leader-mode)
+  (evil-mode 1)
 
+  (dolist (mode '(rustic-mode go-mode go-ts-mode typescript-mode emacs-lisp-mode))
+    ;; Format buffer on save
+    (add-hook (intern (format "%s-hook" mode))
+              (lambda ()
+                (add-hook 'before-save-hook
+                          #'my/eglot-format-buffer-if-active
+                          nil t)))
 
-(use-package darcula-theme
-  :ensure t
-  :config
-  ;; for whatever reason, the darcula theme doesn't set this value
-  ;; correctly and the default value for the foreground color is Blue
-  ;; which is kind of out of place.
-  (custom-set-faces '(persp-selected-face ((t (:weight bold :background "#cc7832")))))
-  (custom-set-faces '(company-tooltip-selection ((t (:weight bold :foreground "#9876aa")))))
-  (load-theme 'darcula t)
-  (set-frame-font "JetBrains Mono"))
+    ;; Evil leader keybindings
+    (evil-leader/set-key-for-mode mode
+      "gg" 'xref-find-definitions
+      "gl" 'xref-find-references
+      "gp" 'pop-tag-mark
+      "gr" 'eglot-rename
+      "gh" 'e;; Disable automatic eldoc-box
+      "t"  'eldoc-box-help-at-point
+      "gu" 'eglot-reconnect))
 
-;; No scrollbar by default.
-(when (fboundp 'scroll-bar-mode)
-  (scroll-bar-mode -1))
+  
+  ;; Set leader key to SPC
+  (evil-leader/set-leader "<SPC>")
 
-;; No nenubar by default.
-(when (fboundp 'menu-bar-mode)
-  (menu-bar-mode -1))
+  (evil-leader/set-key-for-mode 'elfeed-show-mode
+    ;; n: add a note for the current entry
+    "n" 'my/elfeed-add-note)
 
-;; No toolbar by default.
-(when (fboundp 'tool-bar-mode)
-  (tool-bar-mode -1))
+  (evil-leader/set-key-for-mode 'org-mode
+    "rr" (lambda ()
+           (interactive)
+           (let ((current-prefix-arg nil)) ;; no prefix needed
+             (org-babel-execute-src-block t)))
+
+    "u" 'org-todo
+
+    "S" (lambda ()
+          (interactive)
+          (org-sort-entries nil ?o))
+
+    "i" (lambda ()
+          (interactive)
+          (let ((lang "R"))
+            (insert (format "#+BEGIN_SRC %s\n\n#+END_SRC\n" lang))
+            (forward-line 1))))
+
+  ;; Leader key bindings
+  (evil-leader/set-key
+    ;; Config files
+    "co" (lambda () (interactive) (find-file "~/.emacs.d/init.el"))
+    "cl" (lambda () (interactive) (load-file "~/.emacs.d/init.el"))
+
+    ;; Spell
+    "ss" 'ispell
+    "sr" 'ispell-region
+
+    ;; CLI / project
+    "vu" 'projectile-compile-project
+    "mp" 'my/open-workspace-project
+    "mt" 'my/deno-test-at-point
+
+    ;; Buffer management
+    "nk" (lambda () (interactive) (mapc 'kill-buffer (buffer-list)) (switch-to-buffer "*scratch*"))
+    "nn" 'next-buffer
+    "np" 'previous-buffer
+    "no" 'delete-other-windows
+    "nd" 'kill-buffer-and-window
+    "nb" 'helm-mini
+    "nr" (lambda () (interactive) (switch-to-buffer "*scratch*"))
+    "na" (lambda () (interactive) (find-file "~/workspace/org/notes.org"))
+    "nm" (lambda () (interactive) (helm-find-files-1 "~/workspace/org/"))
+    "nf" 'my/helm-projectile-ripgrep
+    "ng" 'projectile-ripgrep
+    "nw" 'my/toggle-visible-windows
+    "nt" 'treemacs
+
+    ;; Window splits
+    "_" 'split-window-vertically
+    "|" 'split-window-horizontally
+
+    ;; Scrolling
+    "j" 'evil-scroll-down
+    "k" 'evil-scroll-up
+
+    ;; gptel / Magit / git
+    "mg" 'gptel
+    "mv" 'my/gptel-send-with-prompt
+    "ma" 'my/gptel-ephemeral-popup-once
+    "mr" 'my/gptel-rewrite-with-format
+    "ms" 'magit
+    "mb" 'magit-blame-addition
+    "mf" 'magit-log-buffer-file
+    "ml" 'elfeed
+    "me" (lambda () (interactive) (eww-browse-url (read-string "url: ")))
+    "mc" 'my/open-vterm-with-cursor-agent
+
+    ;; Font / view
+    "=" (lambda () (interactive) (my/global-font-size 20))
+    "-" (lambda () (interactive) (my/global-font-size -20))
+    "mt" 'my/toggle-solarized-theme
+    ))
+
+;;; ----------------------------
+;;; Set default font with fallbacks
+;;; ---------------------------
+(defvar my/font-list '("JetBrains Mono" "Menlo" "Monaco" "Courier New" "monospace")
+  "Preferred fonts in order of preference.")
+
+(defun my/set-preferred-font ()
+  "Set the first available font from `my/font-list` as default."
+  (catch 'done
+    (dolist (font my/font-list)
+      (when (member font (font-family-list))
+        (set-face-attribute 'default nil :family font :height 120)
+        (throw 'done font)))))
+
+(my/set-preferred-font)
+(evil-leader-mode t)
