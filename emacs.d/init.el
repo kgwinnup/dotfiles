@@ -91,9 +91,16 @@
 
 (straight-use-package 'rg)
 
+(defun my/vterm-kill-buffer-silently ()
+  "Kill vterm buffer without confirmation."
+  (when (eq major-mode 'vterm-mode)
+    (set-process-query-on-exit-flag (get-buffer-process (current-buffer)) nil)))
+
 (use-package vterm
   :straight t
-  :commands (vterm))
+  :commands (vterm)
+  :config
+  (add-hook 'vterm-mode-hook #'my/vterm-kill-buffer-silently))
 
 ;;; ----------------------------
 ;;; Enable ANSI colors in compile buffer
