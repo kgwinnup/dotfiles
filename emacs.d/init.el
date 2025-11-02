@@ -68,13 +68,17 @@
               inhibit-startup-screen t
               auto-save-default nil
               make-backup-files nil
-              shell-file-name "bash"
+              ;; Use fish shell
+              shell-file-name (executable-find "fish")
+              explicit-shell-file-name (executable-find "fish")
               initial-major-mode 'org-mode
               compilation-environment '("TERM=xterm-256color")
               backup-directory-alist '(("" . "~/.emacs.d/backup"))
               auto-mode-case-fold nil
               fill-column 80)
 
+(with-eval-after-load 'vterm
+  (setq vterm-shell (or (executable-find "fish") "/opt/homebrew/bin/fish")))
 
 ;;; ----------------------------
 ;;; Packages
@@ -399,6 +403,8 @@
         '(("https://news.ycombinator.com/rss" hackernews)
           ("https://lobste.rs/rss" lobsters)
           ("https://lwn.net/headlines/rss" lwn)
+          ("https://v8.dev/blog.atom" v8)
+          ("https://research.swtch.com/feed.atom" russ-cox)
           ("https://mcyoung.xyz/feed" mcyoung)
           ("https://drewdevault.com/blog/index.xml" devault)
           ("https://danluu.com/atom.xml" danluu))))
@@ -491,21 +497,20 @@ finishes and the replacement is accepted."
       ;; ensure we always remove our hook even on error / user cancel
       (remove-hook 'gptel-post-rewrite-functions formatter))))
 
+(defun my/read-openai-api-key ()
+  (with-temp-buffer
+    (insert-file-contents "~/.emacs.d/openai.txt")
+    (string-trim (buffer-string))))
 
-;(defun my/read-api-key ()
-;  (with-temp-buffer
-;    (insert-file-contents "~/.emacs.d/openai.txt")
-;    (string-trim (buffer-string))))
-
-;(use-package gptel
-;  :straight t
-;  :after (evil transient)
-;  :config
-;  (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
-;  (setq gptel-api-key (my/read-api-key) 
-;        gptel-model 'gpt-4o
-;        gptel-default-mode 'org-mode
-;        gptel-playback t))
+(use-package gptel
+  :straight t
+  :after (evil transient)
+  :config
+  (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
+  (setq gptel-api-key (my/read-openai-api-key) 
+        gptel-model 'gpt-4o
+        gptel-default-mode 'org-mode
+        gptel-playback t))
 
 (defun my/gptel-auto-format-code (&rest _args)
   "Auto-fill paragraphs inside code blocks in a gptel chat buffer.
@@ -552,10 +557,16 @@ Runs after gptel inserts a response."
 
 (add-hook 'gptel-post-response-hook #'my/gptel-auto-format-code)
 
-(defun my/toggle-visible-windows ()
+(defun my/toggle-visible-windows-old ()
   "Move cursor to the next visible window."
   (interactive)
   (other-window 1))
+
+(defun my/toggle-visible-windows ()
+  "Move cursor to the next visible window, including side windows."
+  (interactive)
+  (let ((next (next-window (selected-window) nil 'visible)))
+    (select-window next)))
 
 ;;; ----------------------------
 ;;; Run Deno test at point (anywhere in function)
@@ -613,6 +624,25 @@ If the cursor is inside a Deno.test function, it runs that test; otherwise runs 
         (setq my/solarized-current-theme 'dark))
     (load-theme 'solarized-light t)
     (setq my/solarized-current-theme 'light)))
+
+(defun my/vterm-popup ()
+  "Open vterm in a popup window at the bottom taking up half the frame height and focus it."
+  (interactive)
+  (let* ((buffer (get-buffer-create "*vterm*"))
+         (window (display-buffer
+                  buffer
+                  '((display-buffer-in-side-window)
+                    (side . bottom)
+                    (slot . 0)
+                    (window-height . 0.5)
+                    (window-parameters . ((no-other-window . t)
+                                          (no-delete-other-windows . t)))))))
+    ;; Create vterm mode if not already active
+    (unless (get-buffer-process buffer)
+      (with-current-buffer buffer
+        (vterm-mode)))
+    ;; Move focus into the vterm window
+    (select-window window)))
 
 ;;; ----------------------------
 ;;; Evil leader key setup
@@ -682,6 +712,7 @@ If the cursor is inside a Deno.test function, it runs that test; otherwise runs 
 
     ;; CLI / project
     "vu" 'projectile-compile-project
+    "vv" 'my/vterm-popup
     "mp" 'my/open-workspace-project
     "mt" 'my/deno-test-at-point
 
