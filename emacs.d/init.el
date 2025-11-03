@@ -77,9 +77,6 @@
               auto-mode-case-fold nil
               fill-column 80)
 
-(with-eval-after-load 'vterm
-  (setq vterm-shell (or (executable-find "fish") "/opt/homebrew/bin/fish")))
-
 ;;; ----------------------------
 ;;; Packages
 ;;; ----------------------------
@@ -96,11 +93,16 @@
   (when (eq major-mode 'vterm-mode)
     (set-process-query-on-exit-flag (get-buffer-process (current-buffer)) nil)))
 
+
 (use-package vterm
   :straight t
   :commands (vterm)
   :config
-  (add-hook 'vterm-mode-hook #'my/vterm-kill-buffer-silently))
+  (add-hook 'vterm-mode-hook 'my/vterm-kill-buffer-silently))
+
+(require 'vterm)
+(with-eval-after-load 'vterm
+  (setq vterm-shell (or (executable-find "fish") "/opt/homebrew/bin/fish")))
 
 ;;; ----------------------------
 ;;; Enable ANSI colors in compile buffer
@@ -412,7 +414,6 @@
           ("https://lwn.net/headlines/rss" lwn)
           ("https://v8.dev/blog.atom" v8)
           ("https://research.swtch.com/feed.atom" russ-cox)
-          ("https://mcyoung.xyz/feed" mcyoung)
           ("https://drewdevault.com/blog/index.xml" devault)
           ("https://danluu.com/atom.xml" danluu))))
 
@@ -659,6 +660,9 @@ If the cursor is inside a Deno.test function, it runs that test; otherwise runs 
   :straight t
   :after evil
   :init
+  ;; Restrict leader to normal state only
+  (setq evil-leader/in-all-states nil)
+
   ;; Enable global leader mode
   (global-evil-leader-mode)
   (evil-mode 1)
