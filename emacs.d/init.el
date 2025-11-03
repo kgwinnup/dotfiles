@@ -1,15 +1,49 @@
 ;; -*- lexical-binding: t; -*-
 
-;; Disable GUI elements
+;; ----------------------------
+;; Global defaults
+;; ----------------------------
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (global-display-line-numbers-mode t)
-(setq org-src-block-faces nil)
+
+(setq-default ring-bell-function 'ignore
+              require-final-newline t
+              org-src-block-faces nil
+              compilation-scroll-output t
+              scroll-step 1
+              gc-cons-threshold (* 384 1024 1024)
+              gc-cons-percentage 0.6
+              read-process-output-max (* 3 1024 1024)
+              scroll-conservatively 10000
+              mouse-wheel-scroll-amount '(1 ((shift) . 1))
+              mouse-wheel-progressive-speed nil
+              mouse-wheel-follow-mouse t
+              column-number-mode t
+              indent-tabs-mode nil
+              c-basic-offset 4
+              tab-width 4
+              show-paren-mode t
+              initial-scratch-message nil
+              inhibit-startup-screen t
+              auto-save-default nil
+              make-backup-files nil
+              ;; Use fish shell
+              shell-file-name (executable-find "fish")
+              explicit-shell-file-name (executable-find "fish")
+              initial-major-mode 'org-mode
+              compilation-environment '("TERM=xterm-256color")
+              backup-directory-alist '(("" . "~/.emacs.d/backup"))
+              auto-mode-case-fold nil
+              fill-column 80)
 
 ;; Ensure Homebrew GCC + libgccjit are visible to native compiler
+(add-to-list 'exec-path (expand-file-name "~/.cargo/bin"))
+(setenv "PATH" (concat (expand-file-name "~/.cargo/bin") ":" (getenv "PATH")))
 (setenv "PATH" (concat "/opt/homebrew/opt/gcc/bin:" (getenv "PATH")))
 (setenv "PATH" (concat "/opt/homebrew/bin:" (getenv "PATH")))
+(setenv "PATH" (concat "~/.cargo/bin:" (getenv "PATH")))
 (let ((homebrew-bin "/opt/homebrew/bin"))
   (setenv "PATH" (concat homebrew-bin ":" (getenv "PATH")))
   (setq exec-path (cons homebrew-bin exec-path)))
@@ -46,38 +80,6 @@
 (setq straight-use-package-by-default t)
 
 ;;; ----------------------------
-;;; Global defaults
-;;; ----------------------------
-(setq-default ring-bell-function 'ignore
-              require-final-newline t
-              compilation-scroll-output t
-              scroll-step 1
-              gc-cons-threshold (* 384 1024 1024)
-              gc-cons-percentage 0.6
-              read-process-output-max (* 3 1024 1024)
-              scroll-conservatively 10000
-              mouse-wheel-scroll-amount '(1 ((shift) . 1))
-              mouse-wheel-progressive-speed nil
-              mouse-wheel-follow-mouse t
-              column-number-mode t
-              indent-tabs-mode nil
-              c-basic-offset 4
-              tab-width 4
-              show-paren-mode t
-              initial-scratch-message nil
-              inhibit-startup-screen t
-              auto-save-default nil
-              make-backup-files nil
-              ;; Use fish shell
-              shell-file-name (executable-find "fish")
-              explicit-shell-file-name (executable-find "fish")
-              initial-major-mode 'org-mode
-              compilation-environment '("TERM=xterm-256color")
-              backup-directory-alist '(("" . "~/.emacs.d/backup"))
-              auto-mode-case-fold nil
-              fill-column 80)
-
-;;; ----------------------------
 ;;; Packages
 ;;; ----------------------------
 (use-package exec-path-from-shell
@@ -92,7 +94,6 @@
   "Kill vterm buffer without confirmation."
   (when (eq major-mode 'vterm-mode)
     (set-process-query-on-exit-flag (get-buffer-process (current-buffer)) nil)))
-
 
 (use-package vterm
   :straight t
@@ -138,13 +139,11 @@
 ;;; ----------------------------
 ;;; TypeScript / Deno support
 ;;; ----------------------------
-
-;; typescript-mode
 (use-package typescript-mode
   :straight t
-  :mode ("\\.ts\\'" . typescript-mode)
-  :mode ("\\.tsx\\'" . typescript-mode)  ;; Ensure tsx also uses typescript-mode
-  :hook (typescript-mode . eglot-ensure))
+  :mode ("\\.ts\\'" . typescript-ts-mode)
+  :mode ("\\.tsx\\'" . typescript-ts-mode)
+  :hook (typescript-ts-mode . eglot-ensure))
 
 (use-package corfu
   :straight t
@@ -166,23 +165,11 @@
   (define-key corfu-map (kbd "RET") #'corfu-insert)
   (define-key corfu-map (kbd "<return>") #'corfu-insert))
 
-
 (add-hook 'prog-mode-hook 'eldoc-mode)
 ;; Optional: use eldoc-box for better popup
 (use-package eldoc-box
   :straight t
   :after eldoc)
-
-;; If you previously enabled global eldoc-box mode:
-;; (eldoc-box-enable) → comment out or remove
-
-(defun my/eglot-format-buffer-on-save ()
-  "Add `eglot-format-buffer` to `before-save-hook` in the current buffer."
-  (add-hook 'before-save-hook
-            (lambda ()
-              (when (bound-and-true-p eglot--managed-mode)
-                (eglot-format-buffer)))
-            nil t)) ;; local hook
 
 
 (use-package rustic
@@ -206,12 +193,18 @@
   :mode (("\\.ya?ml\\'" . yaml-mode)) ;; matches .yaml and .yml
   )
 
-;; Install and configure dockerfile-mode
 (use-package dockerfile-mode
   :straight t
   :mode ("Dockerfile\\'" . dockerfile-mode))
 
-;; Eglot LSP setup
+(defun my/eglot-format-buffer-on-save ()
+  "Add `eglot-format-buffer` to `before-save-hook` in the current buffer."
+  (add-hook 'before-save-hook
+            (lambda ()
+              (when (bound-and-true-p eglot--managed-mode)
+                (eglot-format-buffer)))
+            nil t)) ;; local hook
+
 (use-package eglot
   :straight t
   :commands eglot-ensure
@@ -652,6 +645,20 @@ If the cursor is inside a Deno.test function, it runs that test; otherwise runs 
     ;; Move focus into the vterm window
     (select-window window)))
 
+(defun my/eglot-evil-leader-bindings ()
+  "Define Evil Leader keys that depend on Eglot being active."
+  (evil-leader/set-key-for-mode major-mode
+    "gg" 'xref-find-definitions
+    "gl" 'xref-find-references
+    "gp" 'pop-tag-mark
+    "gr" 'eglot-rename
+    "gu" 'eglot-reconnect
+    "t"  'eldoc-box-help-at-point))
+
+(add-hook 'eglot-managed-mode-hook #'my/eglot-evil-leader-bindings)
+(add-hook 'rust-ts-mode-hook #'evil-leader-mode)
+(add-hook 'rustic-mode-hook #'evil-leader-mode)
+
 ;;; ----------------------------
 ;;; Evil leader key setup
 ;;; ----------------------------
@@ -663,11 +670,12 @@ If the cursor is inside a Deno.test function, it runs that test; otherwise runs 
   ;; Restrict leader to normal state only
   (setq evil-leader/in-all-states nil)
 
+  :config
   ;; Enable global leader mode
   (global-evil-leader-mode)
   (evil-mode 1)
 
-  (dolist (mode '(rustic-mode go-mode go-ts-mode typescript-mode emacs-lisp-mode))
+  (dolist (mode '(rustic-mode rust-mode rust-ts-mode go-mode go-ts-mode typescript-mode typescript-ts-mode emacs-lisp-mode))
     ;; Format buffer on save
     (add-hook (intern (format "%s-hook" mode))
               (lambda ()
@@ -681,7 +689,6 @@ If the cursor is inside a Deno.test function, it runs that test; otherwise runs 
       "gl" 'xref-find-references
       "gp" 'pop-tag-mark
       "gr" 'eglot-rename
-      "gh" 'e;; Disable automatic eldoc-box
       "t"  'eldoc-box-help-at-point
       "gu" 'eglot-reconnect))
 
