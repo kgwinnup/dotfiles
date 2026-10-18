@@ -1,5 +1,7 @@
 (set-option "font-family" "JetBrains Mono")
 (set-option "auto-revert" #t)
+(define (ansi-term) (term-open "/opt/homebrew/bin/fish"))
+(define (term)      (term-open "/opt/homebrew/bin/fish"))   
 
 ;; Make C-c C-t cycle through ONLY these labels (drop the built-in TODO vocab),
 ;; so the rotation is: nothing -> BUG -> FEATURE -> IDEA -> nothing.
@@ -105,6 +107,10 @@
  ;; Font size
  (evil-leader-set "=" 'my/font-inc)
  (evil-leader-set "-" 'my/font-dec)
+ ;; cmd-= / cmd-- everywhere (fundamental is every buffer's base mode; grid
+ ;; buffers keep their own cmd-= / cmd-- for grid zoom).
+ (define-key "fundamental" "cmd-=" 'my/font-inc)
+ (define-key "fundamental" "cmd--" 'my/font-dec)
  
  ;; --- per-major-mode leader: LSP (was the eglot/xref dolist) -----------------
  ;; Built-in LSP replaces eglot. Applied to the code modes the original covered.
@@ -249,3 +255,38 @@
 ;; SPC m c → analytics dashboard. In *analytics*: r=fetch w=window(7/30/90/all)
 ;; enter=filter by IP c=clear y=copy IP o=ipinfo e=CSV tab=fold ?=menu q=quit.
 (evil-leader-set "m c" 'analytics)
+
+;;; ============================================================================
+;;; onebee-context — chat context usage for onebee
+;;; ============================================================================
+;; Magit-style, read-only dashboard over onebee's Postgres: prompt sizes, models,
+;; Auto lanes, turn composition, and Auto vs single-model chats. The URL is the
+;; authinfo.gpg entry "onebee-pg" (asked for on the first refresh). psql comes
+;; from the "psql-command" option set for psql-dashboard above.
+(package-install-local "~/repos/onebee-context")
+
+;; Launch with M-x onebee-context. ? = menu, a = Auto vs solo, o = overview,
+;; RET = open chat, r = refresh, w = window, s = sort, q = back/close.
+
+;;; ============================================================================
+;;; Title-bar "Dashboards" menu — one click to open each dashboard
+;;; ============================================================================
+;; Commands are passed by name (quoted symbols), so they resolve at click time
+;; even though the packages above define them.
+(titlebar-menu-add "dashboards" "Postgres"              'psql-dashboard)
+(titlebar-menu-add "dashboards" "Kubernetes"            'k8s-dashboard)
+(titlebar-menu-add "dashboards" "Macros Analytics"      'analytics)
+(titlebar-menu-add "dashboards" "Onebee context"        'onebee-context)
+
+;;; ============================================================================
+;;; slideshow — present an Org file as slides
+;;; ============================================================================
+;; Each top-level `* ` heading is a slide; #+TITLE adds a title slide. From the
+;; .org buffer, M-x slideshow-present (or SPC s p) fills the frame with slide 1;
+;; SPC s h starts at the slide under the cursor. In *slideshow*:
+;; n/space/j=next p/k=prev gg/G=first/last r=reload q=quit.
+(package-install-local "~/repos/slideshow")
+(evil-leader-set-for-modes
+  '("org-mode")
+  (list (cons "s p" 'slideshow-present)
+        (cons "s h" 'slideshow-present-here)))
