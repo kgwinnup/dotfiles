@@ -1,7 +1,9 @@
 (set-option "font-family" "JetBrains Mono")
 (set-option "auto-revert" #t)
 (define (ansi-term) (term-open "/opt/homebrew/bin/fish"))
-(define (term)      (term-open "/opt/homebrew/bin/fish"))   
+(define (term)      (term-open "/opt/homebrew/bin/fish"))
+;; A live terminal grabs the keyboard; let M-x through to the editor.
+(set-option "terminal-passthrough-keys" "alt-x")
 
 ;; Make C-c C-t cycle through ONLY these labels (drop the built-in TODO vocab),
 ;; so the rotation is: nothing -> BUG -> FEATURE -> IDEA -> nothing.
@@ -26,7 +28,7 @@
 ;; evil-leader/set-key-for-mode).
 ;;
 ;; Skipped from the original (no macros equivalent / per request): gptel (mv ma
-;; mr mg), theme toggles (mt), eww (me), elfeed (ml), diff-hl (md), ispell
+;; mr mg), theme toggles (mt), elfeed (ml), diff-hl (md), ispell
 ;; (ss sr), github-link (mm), PR review (mu), and the custom toggle-windows (nw)
 ;; / org-sort (S) helpers.
 
@@ -290,3 +292,23 @@
   '("org-mode")
   (list (cons "s p" 'slideshow-present)
         (cons "s h" 'slideshow-present-here)))
+
+;;; ============================================================================
+;;; skim — text web browser (the eww of macros)
+;;; ============================================================================
+;; Renders real pages as faithfully as text allows: HTML5-ish parsing, a CSS
+;; engine (<style>, linked stylesheets, style="", selectors/specificity,
+;; @media, var()), wrapped paragraphs, lists, box-drawn tables, forms, headings
+;; at a larger line scale, and inline images. Typing words instead of a URL
+;; searches (DuckDuckGo HTML by default).
+;;
+;; Options are strings, like k8s/feeds: e.g. "skim-width" (wrap column),
+;; "skim-images" / "skim-css" / "skim-css-colors" ("on"/"off"), "skim-palette"
+;; ("dark"/"light"), "skim-search-url". See ~/repos/skim/README.md.
+(package-install-local "~/repos/skim"
+  'config (lambda () (set-option "skim-width" "100")))
+
+;; SPC m e → skim (eww's old leader). In *skim*: RET follow, TAB next link,
+;; H/L back/forward, o open URL, O edit URL, s search, r reload, yy copy URL,
+;; & external browser, R reader mode, ? menu, q quit.
+(evil-leader-set "m e" 'skim)
